@@ -1,6 +1,6 @@
 {
   "name": "lezer-promql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "lezer-based PromQL grammar",
   "main": "dist/index.cjs",
   "type": "module",
