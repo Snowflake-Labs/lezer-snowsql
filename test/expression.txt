@@ -1,0 +1,155 @@
+# Numeric literals
+
+0.123e3
+
+==>
+
+Expr(NumberLiteral)
+
+# Double-quoted string literal
+
+"test string"
+
+==>
+
+Expr(StringLiteral)
+
+# Single-quoted string literal
+
+'test string'
+
+==>
+
+Expr(StringLiteral)
+
+# Backtick-quoted string literal
+
+`test string`
+
+==>
+
+Expr(StringLiteral)
+
+# Backtick-quoted multi-line string literal
+
+`test
+
+string`
+
+==>
+
+Expr(StringLiteral)
+
+# Addition
+
+1 + 2
+
+==>
+
+Expr(BinaryExpr(Expr(NumberLiteral), BinOp, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral)))
+
+# Complex expression
+
+sum by(job, mode) (rate(node_cpu_seconds_total[1m])) / on(job) group_left sum by(job)(rate(node_cpu_seconds_total[1m]))
+
+==>
+
+Expr(
+  BinaryExpr(
+    Expr(
+      AggregateExpr(
+        AggregateOp(sum),
+        AggregateModifier(
+          By(by),
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              ),
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        FunctionCallBody(
+          FunctionCallArgs(
+            Expr(
+              FunctionCall(
+                FunctionIdentifier(rate),
+                FunctionCallBody(
+                  FunctionCallArgs(
+                    Expr(
+                      MatrixSelector(
+                        Expr(
+                          VectorSelector(
+                            MetricIdentifier(
+                              Identifier
+                            )
+                          )
+                        ),
+                        Duration
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
+    BinOp,
+    BoolModifier,
+    BinModifier(
+      GroupModifiers(
+        OnOrIgnoring(
+          On(on),
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        GroupLeft(group_left),
+        MaybeGroupingLabels
+      )
+    ),
+    Expr(
+      AggregateExpr(
+        AggregateOp(sum),
+        AggregateModifier(
+          By(by),
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        FunctionCallBody(
+          FunctionCallArgs(
+            Expr(
+              FunctionCall(
+                FunctionIdentifier(rate),
+                FunctionCallBody(
+                  FunctionCallArgs(
+                    Expr(
+                      MatrixSelector(
+                        Expr(
+                          VectorSelector(
+                            MetricIdentifier(
+                              Identifier
+                            )
+                          )
+                        ),
+                        Duration
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
