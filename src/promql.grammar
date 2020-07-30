@@ -34,6 +34,7 @@ AggregateOp {
   ckw<"bottomk"> |
   ckw<"count"> |
   ckw<"count_values"> |
+  ckw<"group"> |
   ckw<"max"> |
   ckw<"min"> |
   ckw<"quantile"> |
