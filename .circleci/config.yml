@@ -11,7 +11,7 @@ jobs:
       - run: npm run build
       - run: npm run test
       - persist_to_workspace:
-          root: ~/repo
+          root: ~/project
           paths:
             - dist
   publish:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/repo
+          at: ~/project
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
