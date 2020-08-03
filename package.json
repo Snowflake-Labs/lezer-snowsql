@@ -2,14 +2,14 @@
   "name": "lezer-promql",
   "version": "0.3.0",
   "description": "lezer-based PromQL grammar",
-  "main": "dist/index.cjs",
+  "main": "index.cjs",
   "type": "module",
   "exports": {
-    "import": "./dist/index.es.js",
-    "require": "./dist/index.cjs"
+    "import": "index.es.js",
+    "require": "index.cjs"
   },
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "module": "index.es.js",
+  "types": "index.d.ts",
   "author": "Julius Volz <julius.volz@promlabs.com>",
   "license": "Apache-2.0",
   "devDependencies": {
