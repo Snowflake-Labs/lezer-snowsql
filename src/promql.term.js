@@ -1,4 +1,4 @@
-export const promqlSyntax = {
+export const promQLSyntax = {
     "MatchOp": [
         "=",
         "!=",
