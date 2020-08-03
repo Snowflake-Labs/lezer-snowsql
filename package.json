@@ -27,8 +27,7 @@
   },
   "scripts": {
     "build": "lezer-generator src/promql.grammar -o src/parser && cat src/promql.term.js >> src/parser.js && rollup -c",
-    "build-debug": "lezer-generator src/promql.grammar --names -o src/parser && rollup -c",
-    "prepare": "npm run build",
+    "build-debug": "lezer-generator src/promql.grammar --names -o src/parser && cat src/promql.term.js >> src/parser.js && rollup -c",
     "test": "mocha test/test-*.js"
   },
   "keywords": [
