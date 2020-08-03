@@ -23,10 +23,10 @@ jobs:
           at: ~/project
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run: cp ~/repo/README.md ~/repo/dist/README.md
-      - run: cp ~/repo/package.json ~/repo/dist/package.json
-      - run: npm publish ~/repo/dist --access public
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/project/.npmrc
+      - run: cp ~/project/README.md ~/project/dist/README.md
+      - run: cp ~/project/package.json ~/project/dist/package.json
+      - run: npm publish ~/project/dist --access public
 
 workflows:
     build-and-test:
