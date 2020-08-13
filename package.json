@@ -1,6 +1,6 @@
 {
   "name": "lezer-promql",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "lezer-based PromQL grammar",
   "main": "index.cjs",
   "type": "module",
@@ -13,13 +13,13 @@
   "author": "Julius Volz <julius.volz@promlabs.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "lezer-generator": "^0.9.1",
+    "lezer-generator": "^0.10.1",
     "mocha": "^8.0.1",
     "rollup": "^2.21.0",
     "rollup-plugin-node-resolve": "^5.2.0"
   },
   "dependencies": {
-    "lezer": "^0.9.1"
+    "lezer": "^0.10.0"
   },
   "repository": {
     "type": "git",
