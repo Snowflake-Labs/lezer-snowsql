@@ -1,7 +1,10 @@
 import { Parser } from 'lezer'
 
 export const parser: Parser
-export const promQLSyntax: { [key: string]: string[] }
+export const matchOpTerms: string[],
+    binOpTerms: string[],
+    functionIdentifierTerms: string[],
+    aggregateOpTerms: string[];
 export const
     LineComment: number,
     Expr: number,
