@@ -1,5 +1,4 @@
 import {Bool, Ignoring, On, GroupLeft, GroupRight, Offset, Avg, Bottomk, Count, CountValues, Group, Max, Min, Quantile, Stddev, Stdvar, Sum, Topk, By, Without, And, Or, Unless} from './parser.terms.js';
-import { aggregateOpTerms } from './promql.terms.js';
 
 const keywordTokens = {
   bool: Bool,
