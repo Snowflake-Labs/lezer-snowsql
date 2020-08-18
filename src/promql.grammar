@@ -30,31 +30,23 @@ AggregateExpr {
 }
 
 AggregateOp {
-  ckw<"avg"> |
-  ckw<"bottomk"> |
-  ckw<"count"> |
-  ckw<"count_values"> |
-  ckw<"group"> |
-  ckw<"max"> |
-  ckw<"min"> |
-  ckw<"quantile"> |
-  ckw<"stddev"> |
-  ckw<"stdvar"> |
-  ckw<"sum"> |
-  ckw<"topk">
+  Avg |
+  Bottomk |
+  Count |
+  CountValues |
+  Group |
+  Max |
+  Min |
+  Quantile |
+  Stddev |
+  Stdvar |
+  Sum |
+  Topk
 }
 
 AggregateModifier {
   By GroupingLabels |
   Without GroupingLabels
-}
-
-By {
-  ckw<"by"> // TODO: Handle case-insensitivity for keywords everywhere.
-}
-
-Without {
-  ckw<"without">
 }
 
 BinaryExpr {
@@ -70,9 +62,9 @@ BinaryExpr {
   Expr !eql BinOp<"<">    BinModifier Expr |
   Expr !eql BinOp<"<=">   BinModifier Expr |
   Expr !eql BinOp<"!=">   BinModifier Expr |
-  Expr !and ckw<"and">    BinModifier Expr |
-  Expr !and ckw<"unless"> BinModifier Expr |
-  Expr !or  ckw<"or">     BinModifier Expr
+  Expr !and And           BinModifier Expr |
+  Expr !and Unless        BinModifier Expr |
+  Expr !or  Or            BinModifier Expr
 }
 
 BinModifier {
@@ -84,21 +76,9 @@ BoolModifier {
   Bool
 }
 
-Bool {
-  kw<"bool"> // TODO: Handle case-insensitivity everywhere.
-}
-
 OnOrIgnoring {
   BoolModifier Ignoring GroupingLabels |
   BoolModifier On GroupingLabels
-}
-
-Ignoring {
-  kw<"ignoring">
-}
-
-On {
-  kw<"on">
 }
 
 GroupModifiers {
@@ -110,14 +90,6 @@ GroupModifiers {
 
 MaybeGroupingLabels {
   "" | !mul GroupingLabels // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict.
-}
-
-GroupLeft {
-  kw<"group_left">
-}
-
-GroupRight {
-  kw<"group_right">
 }
 
 GroupingLabels {
@@ -208,10 +180,6 @@ OffsetExpr {
   Expr Offset Duration
 }
 
-Offset {
-  kw<"offset">
-}
-
 MatrixSelector {
   // TODO: Can this not be more specific than "Expr"?
   Expr "[" Duration "]"
@@ -281,8 +249,35 @@ MetricIdentifier {
 
 // Keywords
 
-kw<term> { @specialize[name={term}]<Identifier, term> }
+@external specialize {Identifier} specializeIdentifier from "./tokens" {
+  Bool,
+  Ignoring,
+  On,
+  GroupLeft,
+  GroupRight,
+  Offset
+}
 
 // Contextual keywords
+
+@external extend {Identifier} extendIdentifier from "./tokens" {
+  Avg,
+  Bottomk,
+  Count,
+  CountValues,
+  Group,
+  Max,
+  Min,
+  Quantile,
+  Stddev,
+  Stdvar,
+  Sum,
+  Topk,
+  By,
+  Without,
+  And,
+  Or,
+  Unless
+}
 
 ckw<term> { @extend[name={term}]<Identifier, term> }
