@@ -58,9 +58,9 @@ Expr(
   BinaryExpr(
     Expr(
       AggregateExpr(
-        AggregateOp(sum),
+        AggregateOp(Sum),
         AggregateModifier(
-          By(by),
+          By,
           GroupingLabels(
             GroupingLabelList(
               GroupingLabelList(
@@ -102,22 +102,22 @@ Expr(
     BinModifier(
       GroupModifiers(
         OnOrIgnoring(
-          On(on),
+          On,
           GroupingLabels(
             GroupingLabelList(
               GroupingLabel(LabelName)
             )
           )
         ),
-        GroupLeft(group_left),
+        GroupLeft,
         MaybeGroupingLabels
       )
     ),
     Expr(
       AggregateExpr(
-        AggregateOp(sum),
+        AggregateOp(Sum),
         AggregateModifier(
-          By(by),
+          By,
           GroupingLabels(
             GroupingLabelList(
               GroupingLabel(LabelName)
@@ -149,6 +149,161 @@ Expr(
             )
           )
         )
+      )
+    )
+  )
+)
+
+# Case insensitivity for aggregations and binop modifiers.
+
+SuM BY(testlabel1) (testmetric1) / IGNOring(testlabel2) AVG withOUT(testlabel3) (testmetric2)
+
+==>
+
+Expr(
+  BinaryExpr(
+    Expr(
+      AggregateExpr(
+        AggregateOp(Sum),
+        AggregateModifier(
+          By,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        FunctionCallBody(
+          FunctionCallArgs(
+            Expr(
+              VectorSelector(
+                MetricIdentifier(Identifier)
+              )
+            )
+          )
+        )
+      )
+    ),
+    BinOp,
+    BoolModifier,
+    BinModifier(
+      GroupModifiers(
+        OnOrIgnoring(
+          Ignoring,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        )
+      )
+    ),
+    Expr(
+      AggregateExpr(
+        AggregateOp(Avg),
+        AggregateModifier(
+          Without,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        FunctionCallBody(
+          FunctionCallArgs(
+            Expr(
+              VectorSelector(
+                MetricIdentifier(
+                  Identifier
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+# Case insensitivity for set operators
+
+metric1 and metric2 AND metric3 unless metric4 UNLESS metric5 or metric6 OR metric7
+
+==>
+
+Expr(
+  BinaryExpr(
+    Expr(
+      BinaryExpr(
+        Expr(
+          BinaryExpr(
+            Expr(
+              BinaryExpr(
+                Expr(
+                  BinaryExpr(
+                    Expr(
+                      BinaryExpr(
+                        Expr(
+                          VectorSelector(
+                            MetricIdentifier(Identifier)
+                          )
+                        ),
+                        And,
+                        BoolModifier,
+                        BinModifier(GroupModifiers),
+                        Expr(
+                          VectorSelector(
+                            MetricIdentifier(Identifier)
+                          )
+                        )
+                      )
+                    ),
+                    And,
+                    BoolModifier,
+                    BinModifier(GroupModifiers),
+                    Expr(
+                      VectorSelector(
+                        MetricIdentifier(Identifier)
+                      )
+                    )
+                  )
+                ),
+                Unless,
+                BoolModifier,
+                BinModifier(GroupModifiers),
+                Expr(
+                  VectorSelector(
+                    MetricIdentifier(Identifier)
+                  )
+                )
+              )
+            ),
+            Unless,
+            BoolModifier,
+            BinModifier(GroupModifiers),
+            Expr(
+              VectorSelector(
+                MetricIdentifier(Identifier)
+              )
+            )
+          )
+        ),
+        Or,
+        BoolModifier,
+        BinModifier(GroupModifiers),
+        Expr(
+          VectorSelector(
+            MetricIdentifier(Identifier)
+          )
+        )
+      )
+    ),
+    Or,
+    BoolModifier,
+    BinModifier(GroupModifiers),
+    Expr(
+      VectorSelector(
+        MetricIdentifier(Identifier)
       )
     )
   )
