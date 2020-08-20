@@ -239,8 +239,15 @@ MetricIdentifier {
     "`" ![`]* "`"
   }
 
-  // TODO: Use external tokenizer for durations to ensure that units are ordered from longest to shortest.
-  Duration { ( std.digit+ ("ms" | "s" | "m" | "h" | "d" | "w" | "y") )+ }
+  Duration {
+    ( ( std.digit+ "y" ) ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" ) ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" ) ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" ) ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" ) ( std.digit+ "s" )? ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" ) ( std.digit+ "ms" )? ) |
+    ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" ) )
+  }
   Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 

@@ -311,7 +311,7 @@ Expr(
 
 # Duration units
 
-foo[1y2m3d4h5m6s7ms]
+foo[1y2w3d4h5m6s7ms]
 
 ==>
 
