@@ -308,3 +308,11 @@ Expr(
     )
   )
 )
+
+# Duration units
+
+foo[1y2m3d4h5m6s7ms]
+
+==>
+
+Expr(MatrixSelector(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration))

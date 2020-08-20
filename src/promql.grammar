@@ -239,7 +239,8 @@ MetricIdentifier {
     "`" ![`]* "`"
   }
 
-  Duration { std.digit+ ("s" | "m" | "h" | "d" | "w" | "y")}
+  // TODO: Use external tokenizer for durations to ensure that units are ordered from longest to shortest.
+  Duration { ( std.digit+ ("ms" | "s" | "m" | "h" | "d" | "w" | "y") )+ }
   Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 
