@@ -21,6 +21,12 @@ export const binOpTerms = [
     "or",
     "unless"
 ];
+export const binOpModifierTerms = [
+    "on",
+    "ignoring",
+    "group_left",
+    "group_right",
+];
 export const functionIdentifierTerms = [
     "abs",
     "absent",
@@ -68,7 +74,7 @@ export const functionIdentifierTerms = [
     "time",
     "timestamp",
     "vector",
-    "year"
+    "year",
 ];
 export const aggregateOpTerms = [
     "avg",
@@ -84,3 +90,7 @@ export const aggregateOpTerms = [
     "sum",
     "topk",
 ];
+export const aggregateOpModifierTerms = [
+    "by",
+    "without",
+]
