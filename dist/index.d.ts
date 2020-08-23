@@ -3,8 +3,10 @@ import { Parser } from 'lezer'
 export const parser: Parser
 export const matchOpTerms: string[],
     binOpTerms: string[],
+    binOpModifierTerms: string[],
     functionIdentifierTerms: string[],
-    aggregateOpTerms: string[];
+    aggregateOpTerms: string[],
+    aggregateOpModifierTerms: string[];
 export const
     LineComment: number,
     Expr: number,
