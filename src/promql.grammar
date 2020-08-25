@@ -112,53 +112,53 @@ FunctionCall {
 }
 
 FunctionIdentifier {
-	ckw<"abs"> |
-	ckw<"absent"> |
-	ckw<"absent_over_time"> |
-	ckw<"avg_over_time"> |
-	ckw<"ceil"> |
-	ckw<"changes"> |
-	ckw<"clamp_max"> |
-	ckw<"clamp_min"> |
-	ckw<"count_over_time"> |
-	ckw<"days_in_month"> |
-	ckw<"day_of_month"> |
-	ckw<"day_of_week"> |
-	ckw<"delta"> |
-	ckw<"deriv"> |
-	ckw<"exp"> |
-	ckw<"floor"> |
-	ckw<"histogram_quantile"> |
-	ckw<"holt_winters"> |
-	ckw<"hour"> |
-	ckw<"idelta"> |
-	ckw<"increase"> |
-	ckw<"irate"> |
-	ckw<"label_replace"> |
-	ckw<"label_join"> |
-	ckw<"ln"> |
-	ckw<"log10"> |
-	ckw<"log2"> |
-	ckw<"max_over_time"> |
-	ckw<"min_over_time"> |
-	ckw<"minute"> |
-	ckw<"month"> |
-	ckw<"predict_linear"> |
-	ckw<"quantile_over_time"> |
-	ckw<"rate"> |
-	ckw<"resets"> |
-	ckw<"round"> |
-	ckw<"scalar"> |
-	ckw<"sort"> |
-	ckw<"sort_desc"> |
-	ckw<"sqrt"> |
-	ckw<"stddev_over_time"> |
-	ckw<"stdvar_over_time"> |
-	ckw<"sum_over_time"> |
-	ckw<"time"> |
-	ckw<"timestamp"> |
-	ckw<"vector"> |
-	ckw<"year">
+  AbsentOverTime |
+  Absent |
+  Abs |
+  AvgOverTime |
+  Ceil |
+  Changes |
+  ClampMax |
+  ClampMin |
+  CountOverTime |
+  DaysOfMonth |
+  DayOfMonth |
+  DayOfWeek |
+  Delta |
+  Deriv |
+  Exp |
+  Floor |
+  HistogramQuantile |
+  HoltWinters |
+  Hour |
+  Idelta |
+  Increase |
+  Irate |
+  LabelReplace |
+  LabelJoin |
+  Ln |
+  Log10 |
+  Log2 |
+  MaxOverTime |
+  MinOverTime |
+  Minute |
+  Month |
+  PredictLinear |
+  QuantileOverTime |
+  Rate |
+  Resets |
+  Round |
+  Scalar |
+  Sort |
+  SortDesc |
+  Sqrt |
+  StddevOverTime |
+  StdvarOverTime |
+  SumOverTime |
+  Timestamp |
+  Time |
+  Vector |
+  Year
 }
 
 FunctionCallBody {
@@ -276,6 +276,106 @@ MetricIdentifier {
   EqlSingle { "=" }
   NeqRegex { "!~" }
   Pow { "^" }
+
+    // FunctionIdentifier
+    Abs { "abs" }
+    Absent { "absent" }
+    AbsentOverTime { "absent_over_time" }
+    AvgOverTime { "avg_over_time" }
+    Ceil { "ceil" }
+    Changes { "changes" }
+    ClampMax { "clamp_max" }
+    ClampMin { "clamp_min" }
+    CountOverTime { "count_over_time" }
+    DaysOfMonth { "days_in_month" }
+    DayOfMonth { "day_of_month" }
+    DayOfWeek { "day_of_week" }
+    Delta { "delta" }
+    Deriv { "deriv" }
+    Exp { "exp" }
+    Floor { "floor" }
+    HistogramQuantile { "histogram_quantile" }
+    HoltWinters { "holt_winters" }
+    Hour { "hour" }
+    Idelta { "idelta" }
+    Increase { "increase" }
+    Irate { "irate" }
+    LabelReplace { "label_replace" }
+    LabelJoin { "label_join" }
+    Ln { "ln" }
+    Log10 { "log10" }
+    Log2 { "log2" }
+    MaxOverTime { "max_over_time" }
+    MinOverTime { "min_over_time" }
+    Minute { "minute" }
+    Month { "month" }
+    PredictLinear { "predict_linear" }
+    QuantileOverTime { "quantile_over_time" }
+    Rate { "rate" }
+    Resets { "resets" }
+    Round { "round" }
+    Scalar { "scalar" }
+    Sort { "sort" }
+    SortDesc { "sort_desc" }
+    Sqrt { "sqrt" }
+    StddevOverTime { "stddev_over_time" }
+    StdvarOverTime { "stdvar_over_time" }
+    SumOverTime { "sum_over_time" }
+    Time { "time" }
+    Timestamp { "timestamp" }
+    Vector { "vector" }
+    Year { "year" }
+
+    @precedence {
+      AbsentOverTime,
+      Absent,
+      Abs,
+      AvgOverTime,
+      Ceil,
+      Changes,
+      ClampMax,
+      ClampMin,
+      CountOverTime,
+      DaysOfMonth,
+      DayOfMonth,
+      DayOfWeek,
+      Delta,
+      Deriv,
+      Exp,
+      Floor,
+      HistogramQuantile,
+      HoltWinters,
+      Hour,
+      Idelta,
+      Increase,
+      Irate,
+      LabelReplace,
+      LabelJoin,
+      Ln,
+      Log10,
+      Log2,
+      MaxOverTime,
+      MinOverTime,
+      Minute,
+      Month,
+      PredictLinear,
+      QuantileOverTime,
+      Rate,
+      Resets,
+      Round,
+      Scalar,
+      Sort,
+      SortDesc,
+      Sqrt,
+      StddevOverTime,
+      StdvarOverTime,
+      SumOverTime,
+      Timestamp,
+      Time,
+      Vector,
+      Year,
+      Identifier
+    }
 }
 
 // Keywords
@@ -310,5 +410,3 @@ MetricIdentifier {
   Or,
   Unless
 }
-
-ckw<term> { @extend[name={term}]<Identifier, term> }
