@@ -46,7 +46,7 @@ Expr(StringLiteral)
 
 ==>
 
-Expr(BinaryExpr(Expr(NumberLiteral), BinOp, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral)))
+Expr(BinaryExpr(Expr(NumberLiteral), Add, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral)))
 
 # Complex expression
 
@@ -97,7 +97,7 @@ Expr(
         )
       )
     ),
-    BinOp,
+    Div,
     BoolModifier,
     BinModifier(
       GroupModifiers(
@@ -184,7 +184,7 @@ Expr(
         )
       )
     ),
-    BinOp,
+    Div,
     BoolModifier,
     BinModifier(
       GroupModifiers(
