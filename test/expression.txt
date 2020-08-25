@@ -324,3 +324,53 @@ foo[1m2h]
 ==>
 
 Expr(SubqueryExpr(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration,⚠,Duration))
+
+# Using a function name as a metric name
+
+rate
+
+==>
+
+Expr(VectorSelector(MetricIdentifier(Identifier)))
+
+# Match operators
+
+metric_name{a="1",b!="2",c=~"3",d!~"4"}
+
+==>
+
+Expr(
+  VectorSelector(
+    MetricIdentifier(Identifier),
+    LabelMatchers(
+      LabelMatchList(
+        LabelMatchList(
+          LabelMatchList(
+            LabelMatchList(
+              LabelMatcher(
+                LabelName,
+                MatchOp(EqlSingle),
+                StringLiteral
+              )
+            ),
+            LabelMatcher(
+              LabelName,
+              MatchOp(Neq),
+              StringLiteral
+            )
+          ),
+          LabelMatcher(
+            LabelName,
+            MatchOp(EqlRegex),
+            StringLiteral
+          )
+        ),
+        LabelMatcher(
+          LabelName,
+          MatchOp(NeqRegex),
+          StringLiteral
+        )
+      ),
+    )
+  )
+)
