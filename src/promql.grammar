@@ -50,21 +50,21 @@ AggregateModifier {
 }
 
 BinaryExpr {
-  Expr !pow BinOp<"^">    BinModifier Expr |
-  Expr !mul BinOp<"*">    BinModifier Expr |
-  Expr !mul BinOp<"/">    BinModifier Expr |
-  Expr !mul BinOp<"%">    BinModifier Expr |
-  Expr !add BinOp<"+">    BinModifier Expr |
-  Expr !add BinOp<"-">    BinModifier Expr |
-  Expr !eql BinOp<"==">   BinModifier Expr |
-  Expr !eql BinOp<">=">   BinModifier Expr |
-  Expr !eql BinOp<">">    BinModifier Expr |
-  Expr !eql BinOp<"<">    BinModifier Expr |
-  Expr !eql BinOp<"<=">   BinModifier Expr |
-  Expr !eql BinOp<"!=">   BinModifier Expr |
-  Expr !and And           BinModifier Expr |
-  Expr !and Unless        BinModifier Expr |
-  Expr !or  Or            BinModifier Expr
+  Expr !pow Pow        BinModifier Expr |
+  Expr !mul Mul        BinModifier Expr |
+  Expr !mul Div        BinModifier Expr |
+  Expr !mul Mod        BinModifier Expr |
+  Expr !add Add        BinModifier Expr |
+  Expr !add Sub        BinModifier Expr |
+  Expr !eql Eql        BinModifier Expr |
+  Expr !eql Gte        BinModifier Expr |
+  Expr !eql Gtr        BinModifier Expr |
+  Expr !eql Lte        BinModifier Expr |
+  Expr !eql Lss        BinModifier Expr |
+  Expr !eql Neq        BinModifier Expr |
+  Expr !and And        BinModifier Expr |
+  Expr !and Unless     BinModifier Expr |
+  Expr !or  Or         BinModifier Expr
 }
 
 BinModifier {
@@ -112,53 +112,53 @@ FunctionCall {
 }
 
 FunctionIdentifier {
-	ckw<"abs"> |
-	ckw<"absent"> |
-	ckw<"absent_over_time"> |
-	ckw<"avg_over_time"> |
-	ckw<"ceil"> |
-	ckw<"changes"> |
-	ckw<"clamp_max"> |
-	ckw<"clamp_min"> |
-	ckw<"count_over_time"> |
-	ckw<"days_in_month"> |
-	ckw<"day_of_month"> |
-	ckw<"day_of_week"> |
-	ckw<"delta"> |
-	ckw<"deriv"> |
-	ckw<"exp"> |
-	ckw<"floor"> |
-	ckw<"histogram_quantile"> |
-	ckw<"holt_winters"> |
-	ckw<"hour"> |
-	ckw<"idelta"> |
-	ckw<"increase"> |
-	ckw<"irate"> |
-	ckw<"label_replace"> |
-	ckw<"label_join"> |
-	ckw<"ln"> |
-	ckw<"log10"> |
-	ckw<"log2"> |
-	ckw<"max_over_time"> |
-	ckw<"min_over_time"> |
-	ckw<"minute"> |
-	ckw<"month"> |
-	ckw<"predict_linear"> |
-	ckw<"quantile_over_time"> |
-	ckw<"rate"> |
-	ckw<"resets"> |
-	ckw<"round"> |
-	ckw<"scalar"> |
-	ckw<"sort"> |
-	ckw<"sort_desc"> |
-	ckw<"sqrt"> |
-	ckw<"stddev_over_time"> |
-	ckw<"stdvar_over_time"> |
-	ckw<"sum_over_time"> |
-	ckw<"time"> |
-	ckw<"timestamp"> |
-	ckw<"vector"> |
-	ckw<"year">
+  AbsentOverTime |
+  Absent |
+  Abs |
+  AvgOverTime |
+  Ceil |
+  Changes |
+  ClampMax |
+  ClampMin |
+  CountOverTime |
+  DaysOfMonth |
+  DayOfMonth |
+  DayOfWeek |
+  Delta |
+  Deriv |
+  Exp |
+  Floor |
+  HistogramQuantile |
+  HoltWinters |
+  Hour |
+  Idelta |
+  Increase |
+  Irate |
+  LabelReplace |
+  LabelJoin |
+  Ln |
+  Log10 |
+  Log2 |
+  MaxOverTime |
+  MinOverTime |
+  Minute |
+  Month |
+  PredictLinear |
+  QuantileOverTime |
+  Rate |
+  Resets |
+  Round |
+  Scalar |
+  Sort |
+  SortDesc |
+  Sqrt |
+  StddevOverTime |
+  StdvarOverTime |
+  SumOverTime |
+  Timestamp |
+  Time |
+  Vector |
+  Year
 }
 
 FunctionCallBody {
@@ -215,8 +215,15 @@ LabelMatchList {
   LabelMatcher
 }
 
+MatchOp {
+  EqlSingle |
+  Neq |
+  EqlRegex |
+  NeqRegex
+}
+
 LabelMatcher {
-  LabelName (MatchOp<"="> | MatchOp<"!="> | MatchOp<"=~"> | MatchOp<"!~">) StringLiteral
+  LabelName MatchOp StringLiteral
 }
 
 MetricIdentifier {
@@ -253,8 +260,22 @@ MetricIdentifier {
   Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 
-  BinOp<expr> { expr }
-  MatchOp<expr> { expr }
+  // Operator
+  Sub { "-" }
+  Add { "+" }
+  Mul { "*" }
+  Mod { "%" }
+  Div { "/" }
+  Eql { "==" }
+  Neq { "!=" }
+  Lte { "<=" }
+  Lss { "<" }
+  Gte { ">=" }
+  Gtr { ">" }
+  EqlRegex { "=~" }
+  EqlSingle { "=" }
+  NeqRegex { "!~" }
+  Pow { "^" }
 }
 
 // Keywords
@@ -290,4 +311,54 @@ MetricIdentifier {
   Unless
 }
 
-ckw<term> { @extend[name={term}]<Identifier, term> }
+  // FunctionIdentifier definitions
+  Abs { condFn<"abs"> }
+  Absent { condFn<"absent"> }
+  AbsentOverTime { condFn<"absent_over_time"> }
+  AvgOverTime { condFn<"avg_over_time"> }
+  Ceil { condFn<"ceil"> }
+  Changes { condFn<"changes"> }
+  ClampMax { condFn<"clamp_max"> }
+  ClampMin { condFn<"clamp_min"> }
+  CountOverTime { condFn<"count_over_time"> }
+  DaysOfMonth { condFn<"days_in_month"> }
+  DayOfMonth { condFn<"day_of_month"> }
+  DayOfWeek { condFn<"day_of_week"> }
+  Delta { condFn<"delta"> }
+  Deriv { condFn<"deriv"> }
+  Exp { condFn<"exp"> }
+  Floor { condFn<"floor"> }
+  HistogramQuantile { condFn<"histogram_quantile"> }
+  HoltWinters { condFn<"holt_winters"> }
+  Hour { condFn<"hour"> }
+  Idelta { condFn<"idelta"> }
+  Increase { condFn<"increase"> }
+  Irate { condFn<"irate"> }
+  LabelReplace { condFn<"label_replace"> }
+  LabelJoin { condFn<"label_join"> }
+  Ln { condFn<"ln"> }
+  Log10 { condFn<"log10"> }
+  Log2 { condFn<"log2"> }
+  MaxOverTime { condFn<"max_over_time"> }
+  MinOverTime { condFn<"min_over_time"> }
+  Minute { condFn<"minute"> }
+  Month { condFn<"month"> }
+  PredictLinear { condFn<"predict_linear"> }
+  QuantileOverTime { condFn<"quantile_over_time"> }
+  Rate { condFn<"rate"> }
+  Resets { condFn<"resets"> }
+  Round { condFn<"round"> }
+  Scalar { condFn<"scalar"> }
+  Sort { condFn<"sort"> }
+  SortDesc { condFn<"sort_desc"> }
+  Sqrt { condFn<"sqrt"> }
+  StddevOverTime { condFn<"stddev_over_time"> }
+  StdvarOverTime { condFn<"stdvar_over_time"> }
+  SumOverTime { condFn<"sum_over_time"> }
+  Time { condFn<"time"> }
+  Timestamp { condFn<"timestamp"> }
+  Vector { condFn<"vector"> }
+  Year { condFn<"year"> }
+
+// Conditional function names (only parsed as function names when used as such).
+condFn<term> { @extend<Identifier, term> }
