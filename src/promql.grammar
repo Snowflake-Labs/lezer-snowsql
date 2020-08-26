@@ -121,7 +121,7 @@ FunctionIdentifier {
   ClampMax |
   ClampMin |
   CountOverTime |
-  DaysOfMonth |
+  DaysInMonth |
   DayOfMonth |
   DayOfWeek |
   Delta |
@@ -321,7 +321,7 @@ MetricIdentifier {
   ClampMax { condFn<"clamp_max"> }
   ClampMin { condFn<"clamp_min"> }
   CountOverTime { condFn<"count_over_time"> }
-  DaysOfMonth { condFn<"days_in_month"> }
+  DaysInMonth { condFn<"days_in_month"> }
   DayOfMonth { condFn<"day_of_month"> }
   DayOfWeek { condFn<"day_of_week"> }
   Delta { condFn<"delta"> }
