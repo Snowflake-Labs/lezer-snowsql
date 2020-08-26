@@ -168,8 +168,7 @@ FunctionCallBody {
 
 FunctionCallArgs {
   FunctionCallArgs "," Expr |
-  Expr |
-  FunctionCallArgs ","
+  Expr
 }
 
 ParenExpr {
