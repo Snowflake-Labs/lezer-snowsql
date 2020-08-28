@@ -71,7 +71,7 @@ export const
     ClampMax: number,
     ClampMin: number,
     CountOverTime: number,
-    DaysOfMonth: number,
+    DaysInMonth: number,
     DayOfMonth: number,
     DayOfWeek: number,
     Delta: number,
