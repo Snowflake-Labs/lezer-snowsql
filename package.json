@@ -5,8 +5,8 @@
   "main": "index.cjs",
   "type": "module",
   "exports": {
-    "import": "index.es.js",
-    "require": "index.cjs"
+    "import": "./index.es.js",
+    "require": "./index.cjs"
   },
   "module": "index.es.js",
   "types": "index.d.ts",
