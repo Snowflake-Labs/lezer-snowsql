@@ -26,8 +26,8 @@
     "url": "git+https://github.com/promlabs/lezer-promql.git"
   },
   "scripts": {
-    "build": "lezer-generator src/promql.grammar -o src/parser && cat src/parser.terms.js >> src/parser.js && cat src/promql.terms.js >> src/parser.js && rollup -c",
-    "build-debug": "lezer-generator src/promql.grammar --names -o src/parser && cat src/promql.terms.js >> src/parser.js && rollup -c",
+    "build": "lezer-generator src/promql.grammar -o src/parser && cat src/parser.terms.js >> src/parser.js && bash ./generate-types.sh && rollup -c",
+    "build-debug": "lezer-generator src/promql.grammar --names -o src/parser && bash ./generate-types.sh && rollup -c",
     "test": "mocha test/test-*.js"
   },
   "keywords": [
