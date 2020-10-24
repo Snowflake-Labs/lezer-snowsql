@@ -1,4 +1,4 @@
-@top { Expr }
+@top PromQL { Expr }
 
 @precedence {
   pow @right,
