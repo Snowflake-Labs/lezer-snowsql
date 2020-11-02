@@ -4,7 +4,7 @@
 
 ==>
 
-Expr(NumberLiteral)
+PromQL(Expr(NumberLiteral))
 
 # Double-quoted string literal
 
@@ -12,7 +12,7 @@ Expr(NumberLiteral)
 
 ==>
 
-Expr(StringLiteral)
+PromQL(Expr(StringLiteral))
 
 # Single-quoted string literal
 
@@ -20,7 +20,7 @@ Expr(StringLiteral)
 
 ==>
 
-Expr(StringLiteral)
+PromQL(Expr(StringLiteral))
 
 # Backtick-quoted string literal
 
@@ -28,7 +28,7 @@ Expr(StringLiteral)
 
 ==>
 
-Expr(StringLiteral)
+PromQL(Expr(StringLiteral))
 
 # Backtick-quoted multi-line string literal
 
@@ -38,7 +38,7 @@ string`
 
 ==>
 
-Expr(StringLiteral)
+PromQL(Expr(StringLiteral))
 
 # Addition
 
@@ -46,7 +46,7 @@ Expr(StringLiteral)
 
 ==>
 
-Expr(BinaryExpr(Expr(NumberLiteral), Add, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral)))
+PromQL(Expr(BinaryExpr(Expr(NumberLiteral), Add, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral))))
 
 # Complex expression
 
@@ -54,39 +54,41 @@ sum by(job, mode) (rate(node_cpu_seconds_total[1m])) / on(job) group_left sum by
 
 ==>
 
-Expr(
-  BinaryExpr(
-    Expr(
-      AggregateExpr(
-        AggregateOp(Sum),
-        AggregateModifier(
-          By,
-          GroupingLabels(
-            GroupingLabelList(
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        AggregateExpr(
+          AggregateOp(Sum),
+          AggregateModifier(
+            By,
+            GroupingLabels(
               GroupingLabelList(
+                GroupingLabelList(
+                  GroupingLabel(LabelName)
+                ),
                 GroupingLabel(LabelName)
-              ),
-              GroupingLabel(LabelName)
+              )
             )
-          )
-        ),
-        FunctionCallBody(
-          FunctionCallArgs(
-            Expr(
-              FunctionCall(
-                FunctionIdentifier(Rate),
-                FunctionCallBody(
-                  FunctionCallArgs(
-                    Expr(
-                      MatrixSelector(
-                        Expr(
-                          VectorSelector(
-                            MetricIdentifier(
-                              Identifier
+          ),
+          FunctionCallBody(
+            FunctionCallArgs(
+              Expr(
+                FunctionCall(
+                  FunctionIdentifier(Rate),
+                  FunctionCallBody(
+                    FunctionCallArgs(
+                      Expr(
+                        MatrixSelector(
+                          Expr(
+                            VectorSelector(
+                              MetricIdentifier(
+                                Identifier
+                              )
                             )
-                          )
-                        ),
-                        Duration
+                          ),
+                          Duration
+                        )
                       )
                     )
                   )
@@ -95,52 +97,52 @@ Expr(
             )
           )
         )
-      )
-    ),
-    Div,
-    BoolModifier,
-    BinModifier(
-      GroupModifiers(
-        OnOrIgnoring(
-          On,
-          GroupingLabels(
-            GroupingLabelList(
-              GroupingLabel(LabelName)
+      ),
+      Div,
+      BoolModifier,
+      BinModifier(
+        GroupModifiers(
+          OnOrIgnoring(
+            On,
+            GroupingLabels(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              )
             )
-          )
-        ),
-        GroupLeft,
-        MaybeGroupingLabels
-      )
-    ),
-    Expr(
-      AggregateExpr(
-        AggregateOp(Sum),
-        AggregateModifier(
-          By,
-          GroupingLabels(
-            GroupingLabelList(
-              GroupingLabel(LabelName)
+          ),
+          GroupLeft,
+          MaybeGroupingLabels
+        )
+      ),
+      Expr(
+        AggregateExpr(
+          AggregateOp(Sum),
+          AggregateModifier(
+            By,
+            GroupingLabels(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              )
             )
-          )
-        ),
-        FunctionCallBody(
-          FunctionCallArgs(
-            Expr(
-              FunctionCall(
-                FunctionIdentifier(Rate),
-                FunctionCallBody(
-                  FunctionCallArgs(
-                    Expr(
-                      MatrixSelector(
-                        Expr(
-                          VectorSelector(
-                            MetricIdentifier(
-                              Identifier
+          ),
+          FunctionCallBody(
+            FunctionCallArgs(
+              Expr(
+                FunctionCall(
+                  FunctionIdentifier(Rate),
+                  FunctionCallBody(
+                    FunctionCallArgs(
+                      Expr(
+                        MatrixSelector(
+                          Expr(
+                            VectorSelector(
+                              MetricIdentifier(
+                                Identifier
+                              )
                             )
-                          )
-                        ),
-                        Duration
+                          ),
+                          Duration
+                        )
                       )
                     )
                   )
@@ -160,61 +162,63 @@ SuM BY(testlabel1) (testmetric1) / IGNOring(testlabel2) AVG withOUT(testlabel3) 
 
 ==>
 
-Expr(
-  BinaryExpr(
-    Expr(
-      AggregateExpr(
-        AggregateOp(Sum),
-        AggregateModifier(
-          By,
-          GroupingLabels(
-            GroupingLabelList(
-              GroupingLabel(LabelName)
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        AggregateExpr(
+          AggregateOp(Sum),
+          AggregateModifier(
+            By,
+            GroupingLabels(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              )
             )
-          )
-        ),
-        FunctionCallBody(
-          FunctionCallArgs(
-            Expr(
-              VectorSelector(
-                MetricIdentifier(Identifier)
+          ),
+          FunctionCallBody(
+            FunctionCallArgs(
+              Expr(
+                VectorSelector(
+                  MetricIdentifier(Identifier)
+                )
               )
             )
           )
         )
-      )
-    ),
-    Div,
-    BoolModifier,
-    BinModifier(
-      GroupModifiers(
-        OnOrIgnoring(
-          Ignoring,
-          GroupingLabels(
-            GroupingLabelList(
-              GroupingLabel(LabelName)
+      ),
+      Div,
+      BoolModifier,
+      BinModifier(
+        GroupModifiers(
+          OnOrIgnoring(
+            Ignoring,
+            GroupingLabels(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              )
             )
           )
         )
-      )
-    ),
-    Expr(
-      AggregateExpr(
-        AggregateOp(Avg),
-        AggregateModifier(
-          Without,
-          GroupingLabels(
-            GroupingLabelList(
-              GroupingLabel(LabelName)
+      ),
+      Expr(
+        AggregateExpr(
+          AggregateOp(Avg),
+          AggregateModifier(
+            Without,
+            GroupingLabels(
+              GroupingLabelList(
+                GroupingLabel(LabelName)
+              )
             )
-          )
-        ),
-        FunctionCallBody(
-          FunctionCallArgs(
-            Expr(
-              VectorSelector(
-                MetricIdentifier(
-                  Identifier
+          ),
+          FunctionCallBody(
+            FunctionCallArgs(
+              Expr(
+                VectorSelector(
+                  MetricIdentifier(
+                    Identifier
+                  )
                 )
               )
             )
@@ -231,91 +235,92 @@ metric1 and metric2 AND metric3 unless metric4 UNLESS metric5 or metric6 OR metr
 
 ==>
 
-Expr(
-  BinaryExpr(
-    Expr(
-      BinaryExpr(
-        Expr(
-          BinaryExpr(
-            Expr(
-              BinaryExpr(
-                Expr(
-                  BinaryExpr(
-                    Expr(
-                      BinaryExpr(
-                        Expr(
-                          VectorSelector(
-                            MetricIdentifier(Identifier)
-                          )
-                        ),
-                        And,
-                        BoolModifier,
-                        BinModifier(GroupModifiers),
-                        Expr(
-                          VectorSelector(
-                            MetricIdentifier(Identifier)
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        BinaryExpr(
+          Expr(
+            BinaryExpr(
+              Expr(
+                BinaryExpr(
+                  Expr(
+                    BinaryExpr(
+                      Expr(
+                        BinaryExpr(
+                          Expr(
+                            VectorSelector(
+                              MetricIdentifier(Identifier)
+                            )
+                          ),
+                          And,
+                          BoolModifier,
+                          BinModifier(GroupModifiers),
+                          Expr(
+                            VectorSelector(
+                              MetricIdentifier(Identifier)
+                            )
                           )
                         )
-                      )
-                    ),
-                    And,
-                    BoolModifier,
-                    BinModifier(GroupModifiers),
-                    Expr(
-                      VectorSelector(
-                        MetricIdentifier(Identifier)
+                      ),
+                      And,
+                      BoolModifier,
+                      BinModifier(GroupModifiers),
+                      Expr(
+                        VectorSelector(
+                          MetricIdentifier(Identifier)
+                        )
                       )
                     )
-                  )
-                ),
-                Unless,
-                BoolModifier,
-                BinModifier(GroupModifiers),
-                Expr(
-                  VectorSelector(
-                    MetricIdentifier(Identifier)
+                  ),
+                  Unless,
+                  BoolModifier,
+                  BinModifier(GroupModifiers),
+                  Expr(
+                    VectorSelector(
+                      MetricIdentifier(Identifier)
+                    )
                   )
                 )
-              )
-            ),
-            Unless,
-            BoolModifier,
-            BinModifier(GroupModifiers),
-            Expr(
-              VectorSelector(
-                MetricIdentifier(Identifier)
+              ),
+              Unless,
+              BoolModifier,
+              BinModifier(GroupModifiers),
+              Expr(
+                VectorSelector(
+                  MetricIdentifier(Identifier)
+                )
               )
             )
-          )
-        ),
-        Or,
-        BoolModifier,
-        BinModifier(GroupModifiers),
-        Expr(
-          VectorSelector(
-            MetricIdentifier(Identifier)
+          ),
+          Or,
+          BoolModifier,
+          BinModifier(GroupModifiers),
+          Expr(
+            VectorSelector(
+              MetricIdentifier(Identifier)
+            )
           )
         )
-      )
-    ),
-    Or,
-    BoolModifier,
-    BinModifier(GroupModifiers),
-    Expr(
-      VectorSelector(
-        MetricIdentifier(Identifier)
+      ),
+      Or,
+      BoolModifier,
+      BinModifier(GroupModifiers),
+      Expr(
+        VectorSelector(
+          MetricIdentifier(Identifier)
+        )
       )
     )
   )
 )
-
 # Duration units
 
 foo[1y2w3d4h5m6s7ms]
 
 ==>
 
-Expr(MatrixSelector(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration))
+PromQL(Expr(MatrixSelector(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration)))
 
 # Incorrectly ordered duration units
 
@@ -323,7 +328,7 @@ foo[1m2h]
 
 ==>
 
-Expr(SubqueryExpr(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration,⚠,Duration))
+PromQL(Expr(SubqueryExpr(Expr(VectorSelector(MetricIdentifier(Identifier))),Duration,⚠,Duration)))
 
 # Using a function name as a metric name
 
@@ -331,7 +336,7 @@ rate
 
 ==>
 
-Expr(VectorSelector(MetricIdentifier(Identifier)))
+PromQL(Expr(VectorSelector(MetricIdentifier(Identifier))))
 
 # Match operators
 
@@ -339,38 +344,40 @@ metric_name{a="1",b!="2",c=~"3",d!~"4"}
 
 ==>
 
-Expr(
-  VectorSelector(
-    MetricIdentifier(Identifier),
-    LabelMatchers(
-      LabelMatchList(
+PromQL(
+  Expr(
+    VectorSelector(
+      MetricIdentifier(Identifier),
+      LabelMatchers(
         LabelMatchList(
           LabelMatchList(
             LabelMatchList(
+              LabelMatchList(
+                LabelMatcher(
+                  LabelName,
+                  MatchOp(EqlSingle),
+                  StringLiteral
+                )
+              ),
               LabelMatcher(
                 LabelName,
-                MatchOp(EqlSingle),
+                MatchOp(Neq),
                 StringLiteral
               )
             ),
             LabelMatcher(
               LabelName,
-              MatchOp(Neq),
+              MatchOp(EqlRegex),
               StringLiteral
             )
           ),
           LabelMatcher(
             LabelName,
-            MatchOp(EqlRegex),
+            MatchOp(NeqRegex),
             StringLiteral
           )
         ),
-        LabelMatcher(
-          LabelName,
-          MatchOp(NeqRegex),
-          StringLiteral
-        )
-      ),
+      )
     )
   )
 )

@@ -13,13 +13,14 @@
   "author": "Julius Volz <julius.volz@promlabs.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "lezer-generator": "^0.11.1",
+    "lezer": "^0.12.0",
+    "lezer-generator": "^0.12.0",
     "mocha": "^8.1.3",
     "rollup": "^2.27.1",
     "@rollup/plugin-node-resolve": "^9.0.0"
   },
-  "dependencies": {
-    "lezer": "^0.11.1"
+  "peerDependencies": {
+    "lezer": "^0.12.0"
   },
   "repository": {
     "type": "git",
