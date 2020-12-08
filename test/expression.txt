@@ -46,7 +46,7 @@ PromQL(Expr(StringLiteral))
 
 ==>
 
-PromQL(Expr(BinaryExpr(Expr(NumberLiteral), Add, BoolModifier, BinModifier(GroupModifiers), Expr(NumberLiteral))))
+PromQL(Expr(BinaryExpr(Expr(NumberLiteral), Add, BinModifiers, Expr(NumberLiteral))))
 
 # Complex expression
 
@@ -99,20 +99,16 @@ PromQL(
         )
       ),
       Div,
-      BoolModifier,
-      BinModifier(
-        GroupModifiers(
-          OnOrIgnoring(
-            On,
-            GroupingLabels(
-              GroupingLabelList(
-                GroupingLabel(LabelName)
-              )
+      BinModifiers(
+        OnOrIgnoring(
+          On,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
             )
-          ),
-          GroupLeft,
-          MaybeGroupingLabels
-        )
+          )
+        ),
+        GroupLeft
       ),
       Expr(
         AggregateExpr(
@@ -188,15 +184,12 @@ PromQL(
         )
       ),
       Div,
-      BoolModifier,
-      BinModifier(
-        GroupModifiers(
-          OnOrIgnoring(
-            Ignoring,
-            GroupingLabels(
-              GroupingLabelList(
-                GroupingLabel(LabelName)
-              )
+      BinModifiers(
+        OnOrIgnoring(
+          Ignoring,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
             )
           )
         )
@@ -254,8 +247,7 @@ PromQL(
                             )
                           ),
                           And,
-                          BoolModifier,
-                          BinModifier(GroupModifiers),
+                          BinModifiers,
                           Expr(
                             VectorSelector(
                               MetricIdentifier(Identifier)
@@ -264,8 +256,7 @@ PromQL(
                         )
                       ),
                       And,
-                      BoolModifier,
-                      BinModifier(GroupModifiers),
+                      BinModifiers,
                       Expr(
                         VectorSelector(
                           MetricIdentifier(Identifier)
@@ -274,8 +265,7 @@ PromQL(
                     )
                   ),
                   Unless,
-                  BoolModifier,
-                  BinModifier(GroupModifiers),
+                  BinModifiers,
                   Expr(
                     VectorSelector(
                       MetricIdentifier(Identifier)
@@ -284,8 +274,7 @@ PromQL(
                 )
               ),
               Unless,
-              BoolModifier,
-              BinModifier(GroupModifiers),
+              BinModifiers,
               Expr(
                 VectorSelector(
                   MetricIdentifier(Identifier)
@@ -294,8 +283,7 @@ PromQL(
             )
           ),
           Or,
-          BoolModifier,
-          BinModifier(GroupModifiers),
+          BinModifiers,
           Expr(
             VectorSelector(
               MetricIdentifier(Identifier)
@@ -304,8 +292,7 @@ PromQL(
         )
       ),
       Or,
-      BoolModifier,
-      BinModifier(GroupModifiers),
+      BinModifiers,
       Expr(
         VectorSelector(
           MetricIdentifier(Identifier)
@@ -377,6 +364,72 @@ PromQL(
             StringLiteral
           )
         ),
+      )
+    )
+  )
+)
+
+# Binary expression with bool modifier
+
+metric_name > bool 1
+
+==>
+
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(Identifier)
+        )
+      ),
+      Gtr,
+      BinModifiers(Bool),
+      Expr(NumberLiteral)
+    )
+  )
+)
+
+# Binary expression with group_x() labels.
+
+metric1 + on(foo) group_left(bar, baz) metric2
+
+==>
+
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(Identifier)
+        )
+      ),
+      Add,
+      BinModifiers(
+        OnOrIgnoring(
+          On,
+          GroupingLabels(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            )
+          )
+        ),
+        GroupLeft,
+        GroupingLabels(
+          GroupingLabelList(
+            GroupingLabelList(
+              GroupingLabel(LabelName)
+            ),
+            GroupingLabel(LabelName)
+          )
+        )
+      ),
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
       )
     )
   )
