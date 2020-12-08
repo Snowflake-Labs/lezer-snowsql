@@ -50,46 +50,37 @@ AggregateModifier {
 }
 
 BinaryExpr {
-  Expr !pow Pow        BinModifier Expr |
-  Expr !mul Mul        BinModifier Expr |
-  Expr !mul Div        BinModifier Expr |
-  Expr !mul Mod        BinModifier Expr |
-  Expr !add Add        BinModifier Expr |
-  Expr !add Sub        BinModifier Expr |
-  Expr !eql Eql        BinModifier Expr |
-  Expr !eql Gte        BinModifier Expr |
-  Expr !eql Gtr        BinModifier Expr |
-  Expr !eql Lte        BinModifier Expr |
-  Expr !eql Lss        BinModifier Expr |
-  Expr !eql Neq        BinModifier Expr |
-  Expr !and And        BinModifier Expr |
-  Expr !and Unless     BinModifier Expr |
-  Expr !or  Or         BinModifier Expr
-}
-
-BinModifier {
-  GroupModifiers
-}
-
-BoolModifier {
-  "" |
-  Bool
+  Expr !pow Pow    BinModifiers Expr |
+  Expr !mul Mul    BinModifiers Expr |
+  Expr !mul Div    BinModifiers Expr |
+  Expr !mul Mod    BinModifiers Expr |
+  Expr !add Add    BinModifiers Expr |
+  Expr !add Sub    BinModifiers Expr |
+  Expr !eql Eql    BinModifiers Expr |
+  Expr !eql Gte    BinModifiers Expr |
+  Expr !eql Gtr    BinModifiers Expr |
+  Expr !eql Lte    BinModifiers Expr |
+  Expr !eql Lss    BinModifiers Expr |
+  Expr !eql Neq    BinModifiers Expr |
+  Expr !and And    BinModifiers Expr |
+  Expr !and Unless BinModifiers Expr |
+  Expr !or  Or     BinModifiers Expr
 }
 
 OnOrIgnoring {
-  BoolModifier Ignoring GroupingLabels |
-  BoolModifier On GroupingLabels
+  Ignoring GroupingLabels |
+  On GroupingLabels
 }
 
-GroupModifiers {
-  BoolModifier |
-  OnOrIgnoring |
-  OnOrIgnoring GroupLeft MaybeGroupingLabels |
-  OnOrIgnoring GroupRight MaybeGroupingLabels
-}
-
-MaybeGroupingLabels {
-  "" | !mul GroupingLabels // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict.
+BinModifiers {
+  Bool?
+  (
+    OnOrIgnoring
+    (
+      (GroupLeft | GroupRight)
+      (!mul GroupingLabels)? // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict because we always want to count opening parenthesis after this to be counted toward this modifier, not toward a next sub-expression.
+    )?
+  )?
 }
 
 GroupingLabels {
