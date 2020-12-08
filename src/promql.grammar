@@ -78,7 +78,7 @@ BinModifiers {
     OnOrIgnoring
     (
       (GroupLeft | GroupRight)
-      (!mul GroupingLabels)? // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict.
+      (!mul GroupingLabels)? // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict because we always want to count opening parenthesis after this to be counted toward this modifier, not toward a next sub-expression.
     )?
   )?
 }
