@@ -109,6 +109,7 @@ FunctionIdentifier {
   AvgOverTime |
   Ceil |
   Changes |
+  Clamp |
   ClampMax |
   ClampMin |
   CountOverTime |
@@ -127,6 +128,7 @@ FunctionIdentifier {
   Irate |
   LabelReplace |
   LabelJoin |
+  LastOverTime |
   Ln |
   Log10 |
   Log2 |
@@ -140,6 +142,7 @@ FunctionIdentifier {
   Resets |
   Round |
   Scalar |
+  Sgn |
   Sort |
   SortDesc |
   Sqrt |
@@ -308,6 +311,7 @@ MetricIdentifier {
   AvgOverTime { condFn<"avg_over_time"> }
   Ceil { condFn<"ceil"> }
   Changes { condFn<"changes"> }
+  Clamp { condFn<"clamp"> }
   ClampMax { condFn<"clamp_max"> }
   ClampMin { condFn<"clamp_min"> }
   CountOverTime { condFn<"count_over_time"> }
@@ -326,6 +330,7 @@ MetricIdentifier {
   Irate { condFn<"irate"> }
   LabelReplace { condFn<"label_replace"> }
   LabelJoin { condFn<"label_join"> }
+  LastOverTime {condFn<"last_over_time">}
   Ln { condFn<"ln"> }
   Log10 { condFn<"log10"> }
   Log2 { condFn<"log2"> }
@@ -339,6 +344,7 @@ MetricIdentifier {
   Resets { condFn<"resets"> }
   Round { condFn<"round"> }
   Scalar { condFn<"scalar"> }
+  Sgn { condFn<"sgn"> }
   Sort { condFn<"sort"> }
   SortDesc { condFn<"sort_desc"> }
   Sqrt { condFn<"sqrt"> }
