@@ -26,6 +26,8 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/project/.npmrc
       - run: cp ~/project/README.md ~/project/dist/README.md
       - run: cp ~/project/package.json ~/project/dist/package.json
+      - run: cp ~/project/LICENSE ~/project/lib/LICENSE
+      - run: cp ~/project/CHANGELOG.md ~/project/lib/CHANGELOG.md
       - run: npm publish ~/project/dist --access public
 
 workflows:
