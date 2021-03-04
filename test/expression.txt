@@ -534,7 +534,7 @@ PromQL(
         )
       )
       At,
-      Start
+      AtModifierPreprocessors(Start),
     )
   )
 )
@@ -555,7 +555,7 @@ PromQL(
         )
       )
       At,
-      End
+      AtModifierPreprocessors(End),
     )
   )
 )
@@ -597,7 +597,7 @@ PromQL(
         )
       )
       At,
-      Start
+      AtModifierPreprocessors(Start),
     )
   )
 )

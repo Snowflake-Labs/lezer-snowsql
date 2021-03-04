@@ -225,8 +225,13 @@ MetricIdentifier {
 }
 
 StepInvariantExpr {
-  Expr At ( NumberLiteral | Start | End )
+  Expr At ( NumberLiteral | AtModifierPreprocessors "(" ")" )
 }
+
+AtModifierPreprocessors {
+    Start | End
+}
+
 
 
 @skip { whitespace | LineComment }
@@ -280,8 +285,8 @@ StepInvariantExpr {
   At { "@" }
 
   // Modifier Preprocessors
-  Start { "start()" }
-  End { "end()" }
+  Start { "start" }
+  End { "end" }
 }
 
 // Keywords
