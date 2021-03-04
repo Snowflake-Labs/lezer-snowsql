@@ -517,3 +517,151 @@ PromQL(
     )
   )
 )
+
+# Simple At start
+
+foo @ start()
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      AtModifierPreprocessors(Start),
+    )
+  )
+)
+
+# Simple At end
+
+foo @ end()
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      AtModifierPreprocessors(End),
+    )
+  )
+)
+
+# Simple At number
+
+foo @ 1234
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      NumberLiteral
+    )
+  )
+)
+
+# At Modifier with space between bracket
+
+foo @ start(                 )
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      AtModifierPreprocessors(Start),
+    )
+  )
+)
+
+# Complex test with At modifier
+
+rate(process_cpu_seconds_total[1m])
+  and
+topk(7, rate(process_cpu_seconds_total[1h] @ 1234))
+
+==>
+PromQL(
+  Expr(
+    BinaryExpr(
+      Expr(
+        FunctionCall(
+          FunctionIdentifier(Rate),
+          FunctionCallBody(
+            FunctionCallArgs(
+              Expr(
+                MatrixSelector(
+                  Expr(VectorSelector(MetricIdentifier(Identifier))),
+                  Duration
+                )
+              )
+            )
+          )
+        )
+      ),
+      And,
+      BinModifiers,
+      Expr(
+        AggregateExpr(
+          AggregateOp(Topk),
+          FunctionCallBody(
+            FunctionCallArgs(
+              FunctionCallArgs(Expr(NumberLiteral)),
+              Expr(
+                FunctionCall(
+                  FunctionIdentifier(Rate),
+                  FunctionCallBody(
+                    FunctionCallArgs(
+                      Expr(
+                        StepInvariantExpr(
+                          Expr(
+                            MatrixSelector(
+                              Expr(
+                                VectorSelector(MetricIdentifier(Identifier))
+                              ),
+                              Duration
+                            )
+                          ),
+                          At,
+                          NumberLiteral
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)

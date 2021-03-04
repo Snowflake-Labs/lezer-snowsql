@@ -20,7 +20,8 @@ Expr {
   StringLiteral |
   SubqueryExpr |
   UnaryExpr |
-  VectorSelector
+  VectorSelector |
+  StepInvariantExpr
 }
 
 AggregateExpr {
@@ -223,6 +224,16 @@ MetricIdentifier {
   Identifier
 }
 
+StepInvariantExpr {
+  Expr At ( NumberLiteral | AtModifierPreprocessors "(" ")" )
+}
+
+AtModifierPreprocessors {
+    Start | End
+}
+
+
+
 @skip { whitespace | LineComment }
 
 @tokens {
@@ -269,6 +280,13 @@ MetricIdentifier {
   EqlSingle { "=" }
   NeqRegex { "!~" }
   Pow { "^" }
+
+  // Special Modifier
+  At { "@" }
+
+  // Modifier Preprocessors
+  Start { "start" }
+  End { "end" }
 }
 
 // Keywords
