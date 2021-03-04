@@ -2,4 +2,4 @@
 ===================
 
 * **[Feature]** Support `@` modifiers. You can learn more about it in the [Prometheus Blog](https://prometheus.io/blog/2021/02/18/introducing-the-@-modifier/)
-* **[Feature]** Support new promQL function (clamp, sgn, last_over_time)
+* **[Feature]** Support new PromQL functions (`clamp()`, `sgn()`, `last_over_time()`)
