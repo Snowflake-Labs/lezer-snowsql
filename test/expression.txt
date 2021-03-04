@@ -434,3 +434,86 @@ PromQL(
     )
   )
 )
+
+# Function last_over_time
+
+last_over_time(data[1m])
+
+==>
+PromQL(
+  Expr(
+    FunctionCall(
+      FunctionIdentifier(LastOverTime),
+      FunctionCallBody(
+        FunctionCallArgs(
+          Expr(
+            MatrixSelector(
+              Expr(
+                VectorSelector(
+                  MetricIdentifier(
+                    Identifier
+                  )
+                )
+              ),
+              Duration
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+# Function sgn
+
+sgn(data)
+
+==>
+PromQL(
+  Expr(
+    FunctionCall(
+      FunctionIdentifier(Sgn),
+      FunctionCallBody(
+        FunctionCallArgs(
+          Expr(
+            VectorSelector(
+              MetricIdentifier(
+                Identifier
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+# Function clamp
+
+clamp(data,0,1)
+
+==>
+PromQL(
+  Expr(
+    FunctionCall(
+      FunctionIdentifier(Clamp),
+      FunctionCallBody(
+        FunctionCallArgs(
+          FunctionCallArgs(
+            FunctionCallArgs(
+              Expr(
+                VectorSelector(
+                  MetricIdentifier(
+                    Identifier
+                  )
+                )
+              )
+            ),
+            Expr(NumberLiteral)
+          ),
+          Expr(NumberLiteral)
+        )
+      )
+    )
+  )
+)
