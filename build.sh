@@ -24,7 +24,7 @@ bash ./generate-types.sh
 
 rollup -c
 
-# Finally copy some useful file for documentation purpose
+# Finally, copy some useful files into the distribution folder for documentation purposes.
 cp ./README.md ./dist/README.md
 cp ./CHANGELOG.md ./dist/CHANGELOG.md
 cp ./LICENSE ./dist/LICENSE
