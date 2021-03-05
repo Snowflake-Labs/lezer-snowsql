@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -ex
+
 lezer-generator src/promql.grammar -o src/parser
 
 cat src/parser.terms.js >> src/parser.js
