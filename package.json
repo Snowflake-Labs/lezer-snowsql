@@ -28,7 +28,6 @@
   },
   "scripts": {
     "build": "bash ./build.sh",
-    "build-debug": "lezer-generator src/promql.grammar --names -o src/parser && bash ./generate-types.sh && rollup -c",
     "test": "mocha test/test-*.js"
   },
   "keywords": [
