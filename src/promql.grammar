@@ -254,9 +254,13 @@ AtModifierPreprocessors {
   whitespace { std.whitespace+ }
   LineComment { "#" ![\n]* }
 
-  NumberLiteral { // TODO: Handle NaN etc.
-    (std.digit+ ("." std.digit*)? | "." std.digit+) (("e" | "E") ("+" | "-")? std.digit+)? |
-    "0x" (std.digit | $[a-fA-F])+
+  NumberLiteral {
+    ("+" | "-")? (
+      (std.digit+ ("." std.digit*)? | "." std.digit+) (("e" | "E") ("+" | "-")? std.digit+)? |
+      "0x" (std.digit | $[a-fA-F])+ |
+      $[nN]$[aA]$[nN] |
+      $[iI]$[nN]$[fF]
+    )
   }
   StringLiteral { // TODO: This is for JS, make this work for PromQL.
     '"' (![\\\n"] | "\\" _)* '"'? |
@@ -301,6 +305,11 @@ AtModifierPreprocessors {
   // Modifier Preprocessors
   Start { "start" }
   End { "end" }
+
+  // To parse signed numbers into a number literal and not a unary expression.
+  @precedence { NumberLiteral, "+", "-" }
+  // To parse NaN/Inf as a number literal.
+  @precedence { NumberLiteral, Identifier }
 }
 
 // Keywords

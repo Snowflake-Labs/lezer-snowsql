@@ -665,3 +665,73 @@ PromQL(
     )
   )
 )
+
+# Mixed-case NaN.
+
+NaN
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Lower-cased NaN.
+
+nan
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Inf.
+
+Inf
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Negative Inf.
+
+-Inf
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Lower-cased Inf.
+
+inf
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Upper-cased Inf.
+
+INF
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Negative number literal.
+
+-42
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Explicitly positive number literal.
+
++42
+
+==>
+PromQL(Expr(NumberLiteral))
+
+# Trying to illegally use NaN as a metric name.
+
+NaN{foo="bar"}
+
+==>
+PromQL(Expr(BinaryExpr(Expr(NumberLiteral),⚠,BinModifiers,Expr(VectorSelector(LabelMatchers(LabelMatchList(LabelMatcher(LabelName,MatchOp(EqlSingle),StringLiteral))))))))
+
+# Trying to illegally use Inf as a metric name.
+
+Inf{foo="bar"}
+
+==>
+PromQL(Expr(BinaryExpr(Expr(NumberLiteral),⚠,BinModifiers,Expr(VectorSelector(LabelMatchers(LabelMatchList(LabelMatcher(LabelName,MatchOp(EqlSingle),StringLiteral))))))))
