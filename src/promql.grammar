@@ -239,14 +239,16 @@ MetricIdentifier {
 }
 
 StepInvariantExpr {
-  Expr At ( NumberLiteral | AtModifierPreprocessors "(" ")" )
+  Expr At ( NumberLiteral | SignedNumber | AtModifierPreprocessors "(" ")" )
 }
 
 AtModifierPreprocessors {
-    Start | End
+  Start | End
 }
 
-
+SignedNumber{
+  ("+" | "-" ) NumberLiteral
+}
 
 @skip { whitespace | LineComment }
 
