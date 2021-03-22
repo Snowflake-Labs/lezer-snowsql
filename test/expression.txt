@@ -666,6 +666,48 @@ PromQL(
   )
 )
 
+# At modifier with negative number
+
+foo @ - 1234
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      SignedNumber(NumberLiteral)
+    )
+  )
+)
+
+# At modifier with explicit positive number
+
+foo @ + 1234
+
+==>
+PromQL(
+  Expr(
+    StepInvariantExpr(
+      Expr(
+        VectorSelector(
+          MetricIdentifier(
+            Identifier
+          )
+        )
+      )
+      At,
+      SignedNumber(NumberLiteral)
+    )
+  )
+)
+
 # Mixed-case NaN.
 
 NaN
