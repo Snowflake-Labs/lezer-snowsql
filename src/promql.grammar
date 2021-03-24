@@ -185,7 +185,7 @@ ParenExpr {
 }
 
 OffsetExpr {
-  Expr Offset Duration
+  Expr Offset Sub? Duration
 }
 
 MatrixSelector {

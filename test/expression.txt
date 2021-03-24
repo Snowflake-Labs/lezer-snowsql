@@ -777,3 +777,24 @@ Inf{foo="bar"}
 
 ==>
 PromQL(Expr(BinaryExpr(Expr(NumberLiteral),⚠,BinModifiers,Expr(VectorSelector(LabelMatchers(LabelMatchList(LabelMatcher(LabelName,MatchOp(EqlSingle),StringLiteral))))))))
+
+# Negative offset
+
+foo offset -5d
+
+==>
+PromQL(Expr(OffsetExpr(Expr(VectorSelector(MetricIdentifier(Identifier))), Offset, Sub, Duration)))
+
+# Negative offset with space
+
+foo offset - 5d
+
+==>
+PromQL(Expr(OffsetExpr(Expr(VectorSelector(MetricIdentifier(Identifier))), Offset, Sub, Duration)))
+
+# Positive offset
+
+foo offset 5d
+
+==>
+PromQL(Expr(OffsetExpr(Expr(VectorSelector(MetricIdentifier(Identifier))), Offset, Duration)))
