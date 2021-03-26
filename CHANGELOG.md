@@ -1,4 +1,10 @@
+0.18.0 / 2021-03-26
+===================
+
+* **[Feature]**: Support negative offset
+
 0.17.0 / 2021-03-22
+===================
 
 * **[Feature]** Support signed numbers and special float value literals
 
