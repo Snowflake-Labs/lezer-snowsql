@@ -4,7 +4,7 @@
 
 ## Overview
 
-This is a PromQL grammar for the [lezer](https://lezer.codemirror.net/) parser system. It is inspired by the initial
+This is a SnowSQL grammar for the [lezer](https://lezer.codemirror.net/) parser system. It is inspired by the initial
 grammar coming from [Prometheus](https://github.com/prometheus/prometheus/blob/master/promql/parser/generated_parser.y)
 written in yacc.
 
