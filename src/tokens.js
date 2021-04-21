@@ -12,15 +12,77 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bool, Ignoring, On, GroupLeft, GroupRight, Offset, Avg, Bottomk, Count, CountValues, Group, Max, Min, Quantile, Stddev, Stdvar, Sum, Topk, By, Without, And, Or, Unless} from './parser.terms.js';
+import {Bool, Allowed, IP ,Account,
+  Name,
+  Password,
+  Email,
+  Admin,
+  Edition,
+  Standard,
+  Enterprise,
+  Business,
+  Critical,
+  First,
+  Role,
+  Last,
+  Must,
+  Change,
+  True ,
+  False, File, Format, List, Restrict, Cascade, Schema, DropExpr, Drop, Task, Warehouse, CreateExpr,Stage, Type, Columns, Describe, View, User, Table, Desc, Create, Policy,Network, Allowed_IP_Policy, Blocked_IP_Policy, DescribeExpr, whitespace, SelectExpr, Ignoring, On, Count, CountValues, Group, By, And, Or, Select, From, Where} from './parser.terms.js';
 
 const keywordTokens = {
+
+
+  
+  account: Account,
+  name: Name,
+  password: Password,
+   email :Email,
+   admin: Admin,
+   edition: Edition,
+   standard: Standard,
+   file: File,
+   format : Format,
+   schema : Schema,
+   task: Task,
+   warehouse : Warehouse,
+  list: List,
+   enterprise: Enterprise,
+  business: Business,
+  critical: Critical,
+  first: First,
+  last: Last,
+  must: Must,
+  change:  Change,
+  true: True ,
+  false: False,
+  allowed: Allowed,
+  ip: IP,
   bool: Bool,
   ignoring: Ignoring,
   on: On,
-  group_left: GroupLeft,
-  group_right: GroupRight,
-  offset: Offset,
+  selectExpr: SelectExpr,
+  describeExpr: DescribeExpr,
+  view : View,
+  user : User,
+  describe: Describe,
+  desc : Desc,
+  from : From,
+  columns: Columns,
+  select: Select,
+  stage: Stage,
+  type: Type,
+  where : Where,
+  table: Table,
+  dropExpr: DropExpr,
+
+  creatExpr:CreateExpr,
+  drop :Drop,
+  cascade : Cascade,
+  restrict : Restrict,
+  role: Role,
+  create: Create, policy: Policy, network: Network, allowd_ip_policy: Allowed_IP_Policy,  Blocked_IP_Policy
+
 }
 
 export const specializeIdentifier = (value, stack) => {
@@ -28,23 +90,11 @@ export const specializeIdentifier = (value, stack) => {
 }
 
 const contextualKeywordTokens = {
-  avg: Avg,
-  bottomk: Bottomk,
   count: Count,
-  count_values: CountValues,
   group: Group,
-  max: Max,
-  min: Min,
-  quantile: Quantile,
-  stddev: Stddev,
-  stdvar: Stdvar,
-  sum: Sum,
-  topk: Topk,
   by: By,
-  without: Without,
   and: And,
   or: Or,
-  unless: Unless,
 }
 
 export const extendIdentifier = (value, stack) => {
