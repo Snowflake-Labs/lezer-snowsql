@@ -1,7 +1,7 @@
 {
-  "name": "lezer-promql",
+  "name": "lezer-snowsql",
   "version": "0.18.0",
-  "description": "lezer-based PromQL grammar",
+  "description": "lezer-based SnowSQL grammar",
   "main": "index.cjs",
   "type": "module",
   "exports": {
@@ -10,14 +10,14 @@
   },
   "module": "index.es.js",
   "types": "index.d.ts",
-  "author": "Julius Volz <julius.volz@promlabs.com>",
+  "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "lezer": "^0.13.1",
     "lezer-generator": "^0.13.1",
     "mocha": "^8.1.3",
-    "rollup": "^2.27.1",
-    "@rollup/plugin-node-resolve": "^9.0.0"
+    "rollup": "^2.27.1"
   },
   "peerDependencies": {
     "lezer": "^0.13.0"
