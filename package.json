@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Snowflake-Labs/lezer-snowsql.git"
+    "url": "git+https://github.com/Snowflake-Labs/lezer-snowsql#lezer-snowsql-wip.git"
   },
   "scripts": {
     "build": "bash ./build.sh",
