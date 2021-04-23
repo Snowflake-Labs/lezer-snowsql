@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/promlabs/lezer-promql.git"
+    "url": "git+https://github.com/Snowflake-Labs/lezer-snowsql.git"
   },
   "scripts": {
     "build": "bash ./build.sh",
