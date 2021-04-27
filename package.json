@@ -28,6 +28,8 @@
   },
   "scripts": {
     "build": "bash ./build.sh",
+    "prepare": "npm run build",
+
     "test": "mocha test/test-*.js"
   },
   "keywords": [
