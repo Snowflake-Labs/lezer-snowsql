@@ -29,3 +29,9 @@ cp ./README.md ./dist/README.md
 cp ./CHANGELOG.md ./dist/CHANGELOG.md
 cp ./LICENSE ./dist/LICENSE
 cp ./package.json ./dist/package.json
+
+rm  -rf .circleci src test node_modules rm -f .gitignore .npmginore generate-types.sh LICENSE MAINTAINERS.md package-lock.json build.sh CHANGELOG.md rollup.config.js package.json README.md 
+cd ./dist/ 
+mv index.cjs index.d.ts index.es.js LICENSE CHANGELOG.md README.md package.json ../ 
+cd ../ 
+rm -r dist
