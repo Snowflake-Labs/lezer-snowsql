@@ -1,5 +1,6 @@
-@top SnowSQL {Expr}
-
+// Entry point of the grammar.
+@top SnowSQL {Expr+}
+// The precedence order
 @precedence {
   pow @right,
   mul @left,
@@ -8,42 +9,27 @@
   and @left,
   or @left
 }
-
-
+// Expr is the parent node
 Expr {
-  SelectExpr |
-  CreateExpr|
-  DescribeExpr |
-  DropExpr|
- //BinaryExpr |
   NumberLiteral |
   ParenExpr |
   StringLiteral |
   SubqueryExpr |
-  UnaryExpr 
+  UnaryExpr |
+  Stmt //We wanted to refer to our constructs as statements however we have not yet removed all of the promql construts a
+  //nd most of them refer to expr as the parent node so we made stmt a child node of expr but the parent node for all our defnitions. 
   }
 
-/*
+//Parent node for our statement constructs
+Stmt {
+  SelectStmt | // The logic for the select statement will be here. 
+  CreateStmt| //create statement
+  DescribeStmt | //describe statement.
+  DropStmt //Drop statement.
 
-BinaryExpr {
-  Expr !pow Pow    BinModifiers Expr |
-  Expr !mul Mul    BinModifiers Expr |
-  Expr !mul Div    BinModifiers Expr |
-  Expr !mul Mod    BinModifiers Expr |
-  Expr !add Add    BinModifiers Expr |
-  Expr !add Sub    BinModifiers Expr |
-  
-  Expr !eql Eql    BinModifiers Expr |
-  Expr !eql Gte    BinModifiers Expr |
-  Expr !eql Gtr    BinModifiers Expr |
-  Expr !eql Lte    BinModifiers Expr |
-  Expr !eql Lss    BinModifiers Expr |
-  Expr !eql Neq    BinModifiers Expr |
-  Expr !and And    BinModifiers Expr |
-  Expr !or  Or     BinModifiers Expr
-  
 }
-*/
+
+
 
 OnOrIgnoring {
   Ignoring GroupingLabels |
@@ -72,11 +58,144 @@ GroupingLabelList {
   GroupingLabel
 }
 
-//@skip { whitespace | LineComment }
+
 
 
 GroupingLabel {
   LabelName
+}
+//This is where the select statement is defined currently it only supports the from and where clause. 
+SelectStmt{
+  Select  (Mul  | ((Identifier)(Comma Identifier)*))  
+  From  Identifier  (Where WhereOp)? Smc 
+}
+
+WhereOp
+{
+(Identifier (Not)? Between (Identifier|NumberLiteral) And (Identifier|NumberLiteral) ) | //For between 
+(In Identifier ("," Identifier)* ) |  // For in 
+(Like Identifier (Escape Identifier)? ) |  //or for like 
+(  (Null|  (Not)? Identifier Is Null)    ) | //For  Null and not Null
+( (Not)? Identifier ((And|Or|Not) Identifier)+)  // For the logical operators
+}
+ 
+InOp
+{
+( Identifier (Not)? In Identifier ("," Identifier)* )?
+}
+
+LikeOp
+{
+(Identifier (Not)? Like Identifier Escape Identifier)?
+}
+
+NullOp
+{
+( (Identifier Is (Not)? Null)| ( (Not)? Identifier Is Null) )?
+}
+
+LogicOp
+{
+( (Not)? Identifier ((And|Or|Not) Identifier)+)?          
+}
+// Create statement currently supports create account 
+CreateStmt{
+
+  Create Account Identifier       Admin_name EqlSingle Identifier       Admin_password EqlSingle Sqt Identifier  Cqt  ( First_name EqlSingle Identifier )? ( Last_name EqlSingle Identifier )?
+  Email EqlSingle Identifier     ( Must_change_password EqlSingle ( True | False ) )? Edition EqlSingle ( Standard | Enterprise | Business_critical ) AccountOptional Smc |
+  
+
+  Create ( Or Replace )? Api Integration ( If Not Exists )? Identifier     Api_provider "=" ( Aws_api_gateway | Aws_private_api_gateway )
+    Api_aws_role_arn "="  Identifier 
+    Api_allowed_prefixes "=" Opl Identifier Opr
+    ( Api_blocked_prefixes "=" "(" Identifier ")" )?
+    Enabled "=" ( True | False )
+    ( Comment "="  Identifier  )? ";" |
+//create file format
+Create ( Or Replace )? ( Stage | File Format | Sequence | Task ) ( If Not Exists )? Identifier   Clone Identifier     ";" |
+
+//create database
+Create ( Or Replace )? ( Transient )? Database ( If Not Exists )? Identifier     
+( Clone Identifier           ( ( At | Before ) ( ( Timestamp "=" Identifier | Offset "=" Identifier | Statement "=" Identifier ) ) )? )?
+ DbOp
+  ";" | 
+  Create Database Identifier From Share Identifier Dot Identifier     ";" |
+  Create Database Identifier     As Replica Of Identifier  "." Identifier
+    Auto_refresh_materialized_views_on_secondary "=" ( True | False )
+    ";" |
+//create network policy
+  Create  Network  Policy  Identifier  Allowed_IP_List EqlSingle Opl   Sqt Identifier   Sqt Opr  (Blocked_IP_List EqlSingle Opl   Sqt Identifier   Sqt Opr)?Smc |
+// create external function
+  Create ( Or Replace )? ( Secure )? External Function Identifier ( "(" Identifier ")" )? 
+  Returns Identifier ( Null |Not  Null )?  
+  ExFOp1
+  Api_integration "=" Identifier   
+  ExFOp2
+  As Identifier ";" |
+  
+  Create ( Or Replace )? ( Secure )? Function Identifier  
+  Returns ( Identifier | Table ( Identifier   ) )
+  ( ( Not )? Null )?
+  ( Language Javascript )?
+  ( ( Called On Null Input | ( Returns Null On Null Input | Strict ) ) )?
+  ( Volatile | Immutable )?
+  ( Comment "="  Identifier  )?
+  As  Identifier  ";" 
+}
+
+
+
+NameOp
+{
+  ( First_name "=" Identifier )? ( Last_name "=" Identifier )?
+}
+
+AccountOptional
+{
+  ( Region_group "=" Identifier )?  ( Region "=" Identifier )? ( Comment "="  Identifier  )?
+}
+ExFOp1
+{
+  ( ( Called On Null Input | ( Returns Null On Null Input | Strict ) ) )?
+  ( Volatile | Immutable )?
+  ( Comment "="  Identifier  )?
+
+}
+ExFOp2
+{
+  ( Headers "=" (  Identifier  "="  Identifier )+ )?
+  ( Context_headers "=" ( Identifier  "," Identifier ) )?
+  ( Max_batch_rows "=" NumberLiteral )?
+  ( Compression "=" Identifier )?
+}
+EtOp
+{
+  ( Refresh_on_create "="  ( True | False ) )?
+  ( Auto_refresh "=" ( True | False ) )?
+  ( Pattern "="  Identifier  )?  
+}
+
+DbOp
+{
+  ( Data_retention_time_in_days "=" Identifier )?
+  ( Max_data_extension_time_in_days "=" Identifier )?
+  ( Default_ddl_collation "="  Identifier  )?
+  ( Comment "="  Identifier  )?
+}
+DropStmt{
+
+ Drop  (Table|User)  Identifier Smc
+
+}
+
+DescribeStmt{
+  
+
+  (Describe | Desc)  Table  Identifier (  Type  EqlSingle  (Stage| Columns )*)? Smc|
+ (Describe | Desc)  Table  Identifier Smc |
+  (Describe | Desc)  View  Identifier Smc |
+  (Describe | Desc)  User  Identifier Smc |
+  (Describe | Desc)  Network  Policy  Identifier Smc
 }
 
 
@@ -85,61 +204,6 @@ ParenExpr {
   "(" Expr ")"
 }
 
-
-SelectExpr{
-  //( Identifier "," Identifier )  |( Identifier (Identifier ",")* Identifier )  | 
-
-  // Select whitespace  (Mul | Identifier| Identifier+(Smc Identifier+)*) whitespace From whitespace Identifier  Smc |
-
-  //Select whitespace Mul whitespace  From whitespace  Identifier Smc |
-
-  //Select whitespace Mul whitespace  From whitespace  Identifier Smc |
-
-  //Select whitespace  "(" ArithExpr ")" Smc|
-
-  Select whitespace   "("? NumberLiteral whitespace  Add whitespace NumberLiteral  ")"?  Smc |
-  
-  Select whitespace   (    Mul  | ((Identifier)(Comma Identifier)*)) whitespace From whitespace  Identifier Smc 
-
-  // Select whitespace (Mul | Identifier | "," )+  whitespace From whitespace Identifier whitespace Where (whitespace| Identifier | "," )+ (">=" | "<=" | "!=" | ">" | "<") Identifier Smc
-}
-
-
- 
-CreateExpr{
-
-  // Create whitespace Account (whitespace)? Identifier Admin "-" Name (whitespace)? "=" (whitespace)? Identifier whitespace Admin Dash Password (whitespace)? "=" (whitespace)? "'" Identifier "'"  whitespace Email (whitespace)? "=" (whitespace)? Identifier whitespace Edition (whitespace)? "=" (whitespace)? (Standard|Enterprise|Business "-" Edition) AccountOptional ";"
-
-  Create whitespace Account (whitespace) Identifier Admin "-" Name (whitespace) "=" (whitespace)? Identifier whitespace Admin Dash Password (whitespace)? "=" (whitespace)? "'" Identifier "'" whitespace Email (whitespace)? "=" (whitespace) Identifier whitespace Edition (whitespace)? "=" (whitespace) (Standard |Enterprise |Business "-" Critical) (First "-" Name (whitespace)?"="(whitespace) Identifier)?(Last "-" Name (whitespace)?"="(whitespace) Identifier) (Must "-" Change "-" Password(whitespace)?"="(whitespace) (True|False) ) ";"
-  
-  //(Create whitespace Account (whitespace)? Identifier Admin "-" Name (whitespace)? "=" (whitespace)? Identifier whitespace Admin Dash Password (whitespace)? "=" (whitespace)? "'" Identifier "'"  whitespace Email (whitespace)? "=" (whitespace)? Identifier whitespace Edition (whitespace)? "=" (whitespace)? (Standard|Enterprise|Business "-" Edition) AccountOptional ";")
-
-  //Create whitespace Network whitespace Policy whitespace Identifier whitespace Allowed whitespace* "-"  whitespace*  IP   whitespace* "-"  whitespace* List EqlSingle Opl (whitespace)? Sqt Identifier (whitespace)? Sqt Opr  (Blocked_IP_Policy EqlSingle Opl (whitespace)? Sqt Identifier (whitespace)? Sqt Opr)?Smc|
-  
-  // Create whitespace Account (whitespace)? Identifier Admin "-" Name (whitespace)? "=" (whitespace)? Identifier whitespace Admin Dash Password (whitespace)? "=" (whitespace)? "'" Identifier "'"  whitespace Email (whitespace)? "=" (whitespace)? Identifier whitespace Edition (whitespace)? "=" (whitespace)? (Standard |Enterprise |Business "-" Critical) (First "-" Name (whitespace)?"="(whitespace)?  Identifier)? (Must "-" Change "-" Password(whitespace)?"="(whitespace)? (True|False) )? ";" 
-
-  //Create whitespace Managed whitespace Account whitespace Identifier Admin"-"Name (whitespace)? "=" (whitespace)? Admin"-"Password
-
-}
-
-
-
-DropExpr{
-
-  Drop whitespace (Table|User) whitespace Identifier Smc
-  //Drop whitespace Table whitespace If 
-
-}
-
-DescribeExpr{
-
-  (Describe | Desc) whitespace Table whitespace Identifier ( whitespace Type whitespace EqlSingle whitespace (Stage| Columns )*)? Smc|
-  (Describe | Desc) whitespace Table whitespace Identifier Smc |
-  (Describe | Desc) whitespace View whitespace Identifier Smc |
-  (Describe | Desc) whitespace User whitespace Identifier Smc |
-  (Describe | Desc) whitespace Network whitespace Policy whitespace Identifier Smc
-  
-}
 
 SubqueryExpr {
   Expr "[" Duration ":" ("" | Duration) "]"
@@ -193,7 +257,9 @@ SignedNumber{
   ("+" | "-" ) NumberLiteral
 }
 
-//@skip { whitespace | LineComment }
+@skip { whitespace  | LineComment}
+
+
 
 @tokens {
   whitespace { std.whitespace+ }
@@ -225,13 +291,15 @@ SignedNumber{
     ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" ) ( std.digit+ "ms" )? ) |
     ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" ) )
   }
-  Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
+  Identifier { ((std.asciiLetter|std.digit | "_" | ":") (std.asciiLetter* | std.digit* | "_" | ":"|"@"|"/"|"+"|"-"|"*"|"/"|"^"|"("|")"|">"|"<"|"%"|".")*)  }
+
+  //Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 
   // Operator
   Smc {";"}
   Uscr {"_"}
-  Dash {"-"}
+  Dash {"-"} 
   //Star {"*"}
   Sub { "-" }
   Add { "+" }
@@ -245,19 +313,20 @@ SignedNumber{
   Gte { ">=" }
   Gtr { ">" }
   Sqt {"'"}
+  Cqt{"'"}
   EqlRegex { "=~" }
   EqlSingle { "=" }
   NeqRegex { "!~" }
   Pow { "^" }
   Opl {"("}
   Opr {")"}
-
+  Dot {"."}
 
   //SQL
   Comma {","}
 
   // Special Modifier
-  At { "@" }
+  Atr { "@" }
 
   // Modifier Preprocessors
   Start { "start" }
@@ -270,10 +339,11 @@ SignedNumber{
 }
 
 
-/*
+
 ArithExpr{
-  NumberLiteral Sub|Add NumberLiteral
-}*/
+ "("? (NumberLiteral|Identifier)   (Add|Sub)  (NumberLiteral|Identifier) ")"? 
+
+}
 
 
 
@@ -281,70 +351,26 @@ ArithExpr{
 // Keywords
 
 @external specialize {Identifier} specializeIdentifier from "./tokens" {
-  Bool,
-  Ignoring,
-  On,
-  GroupLeft,
-  GroupRight,
-  Offset,
-  Account,
-  Name,
-  Password,
-  Email,
-  Admin,
-  Edition,
-  Standard
-  Enterprise,
-  Business,
-  Critical,
-  First,
-  Last,
-  Must,
-  Change,
-  True ,
-  False,
-  From,
-  Select,
-  List,
-  Drop,
-  Schema,
-  Cascade,
-  Restrict,
-  Task,
-  Role,
-  Warehouse,
-  File,
-  Format,
-  If,
-  Exists,
-  Allowed,
-  IP,
-  Blocked_IP_Policy,
-  Allowed_IP_Policy,
-  Columns,
-  Create,
-  Policy,
-  Type,
-  Stage,
-  Where,
-  Desc,
-  View,
-  User,
-  Describe,
-  Table,
-  Network
+Account,Admin,Admin_name,Admin_password,Allowed_IP_List,And,Api,Api_allowed_prefixes,Api_aws_role_arn,Api_blocked_prefixes,Api_integration,Api_provider,As,At,Auto,Auto_refresh,
+Auto_refresh_materialized_views_on_secondary,
+Avro,Aws_api_gateway,Aws_private_api_gateway,Aws_sns_topic,Azure_ad_application_id,Azure_api_management,Azure_tenant_id,Before,Between,Blocked_IP_List,Bool,Brotli,Business,Business_critical,By,Bz2,Called,
+Cascade,Change,Clone,Columns,Comment,Compression,Constraint,Context_headers,Copy,Create,Critical,Csv,Data_retention_time_in_days,Database,Default_ddl_collation,Deflate,Desc,Describe,Drop,Edition,Email,
+Enabled,Enterprise,Escape,Exists,External,Externalstage,False,Field_delimiter,File,File_format,First,First_name,Foreign,Format,Format_name,From,Function,Grants,GroupLeft,GroupRight,Gzip,Headers,IP,
+If,Ignoring,Immutable,In,Input,Integration,Is,Javascript,Json,Key,Language,Last,Last_name,Like,List,Location,Max_batch_rows,Max_data_extension_time_in_days,Must,Must_change_password,Name,Network,None,Not,Null,
+Of,Offset,On,Or,Orc,Parquet,Partition,Password,Pattern,Policy,Primary,Raw_deflate,Record_delimiter,References,Refresh_on_create,Region,Region_group,Replace,Replica,Restrict,Returns,Role,Schema,Secure,Select,
+Sequence,Share,Skip_blank_lines,Skip_header,Snappy,Stage,Standard,Statement,Strict,Table,Task,Timestamp,Transient,True,Type,Unique,User,View,Volatile,Warehouse,Where,With,Zstd
+
 }
 
 // Contextual keywords
 
-@external extend {Identifier} extendIdentifier from "./tokens" {
+/*@external extend {Identifier} extendIdentifier from "./tokens" {
 
  
   Count,
   Group,
   By,
-  And,
-  Or
-  
-}
+  And
+}*/
+
 
