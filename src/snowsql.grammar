@@ -67,12 +67,12 @@ GroupingLabel {
 //This is where the select statement is defined currently it only supports the from and where clause. 
 SelectStmt{
   Select  (Mul  | ((Identifier)(Comma Identifier)*))  
-  From  Identifier  (Where WhereOp)? Smc 
+  From  Identifier  (Where Identifier WhereOp)? Smc 
 }
 
 WhereOp
 {
-(Identifier (Not)? Between (Identifier|NumberLiteral) And (Identifier|NumberLiteral) ) | //For between 
+((Not)? Between (Identifier|NumberLiteral) And (Identifier|NumberLiteral) ) | //For between 
 (In Identifier ("," Identifier)* ) |  // For in 
 (Like Identifier (Escape Identifier)? ) |  //or for like 
 (  (Null|  (Not)? Identifier Is Null)    ) | //For  Null and not Null
