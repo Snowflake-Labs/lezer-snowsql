@@ -1,7 +1,8 @@
 # lezer-snowsql
 
-[![CircleCI](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql.svg?style=shield)](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql) [![NPM version](https://img.shields.io/npm/v/lezer-snowsql.svg)](https://www.npmjs.org/package/lezer-snowsql)
-
+<!-- [![CircleCI](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql.svg?style=shield)](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql) [![NPM version](https://img.shields.io/npm/v/lezer-snowsql.svg)](https://www.npmjs.org/package/lezer-snowsql)
+ -->
+ 
 ## Overview
 
 This is a SnowSQL grammar for the [lezer](https://lezer.codemirror.net/) parser system. It is inspired by the initial
