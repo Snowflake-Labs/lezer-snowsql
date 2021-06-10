@@ -2,19 +2,19 @@ Requirements: npm/yarn
 
 ------------
 
-Steps to start with CodeMirror PromQL and Lezer PromQL. 
+Steps to start with CodeMirror SnowSQL and Lezer SnowSQL. 
 
-Clone codemirror-promql
+Clone codemirror-snowsql
 
-Cd to codemirror-promql after cloning.
+Cd to codemirror-snowsql after cloning.
 
 Run `npm install` to install dependencies.
 
-Run `npm run build` to build codemirror-promql.
+Run `npm run build` to build codemirror-snowsql.
 
 Run `npm start` to start it.
 
-The same steps can be repeated with CodeMirror SnowSQL and Lezer PromQL. Currently please clone the WIP branches for both repos. 
+The same steps can be repeated with CodeMirror SnowSQL and Lezer SnowSQL. Currently please clone the WIP branches for both repos. 
 
 codemirror-snowsql-wip and lezer-snowsql-wip
 --------------

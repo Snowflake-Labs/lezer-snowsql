@@ -2,7 +2,3 @@
 /src/parser.*
 .tern-*
 /dist/
-
-# IntelliJ
-
-.idea/

@@ -1,15 +1,15 @@
 {
   "name": "lezer-snowsql",
-  "version": "0.18.0",
+  "version": "0.1.0",
   "description": "lezer-based SnowSQL grammar",
-  "main": "index.cjs",
+  "main": "dist/index.cjs",
   "type": "module",
   "exports": {
-    "import": "./index.es.js",
-    "require": "./index.cjs"
+    "import": "./dist/index.es.js",
+    "require": "./dist/index.cjs"
   },
-  "module": "index.es.js",
-  "types": "index.d.ts",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -34,10 +34,10 @@
   },
   "keywords": [
     "lezer",
-    "promql"
+    "snowsql"
   ],
   "bugs": {
-    "url": "https://github.com/promlabs/lezer-promql/issues"
+    "url": "https://github.com/Snowflake-Labs/lezer-snowsql/issues"
   },
-  "homepage": "https://github.com/promlabs/lezer-promql#readme"
+  "homepage": "https://github.com/Snowflake-Labs/lezer-snowsql#readme"
 }
