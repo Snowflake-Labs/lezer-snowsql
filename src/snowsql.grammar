@@ -1,6 +1,8 @@
-// Entry point of the grammar.
-@top SnowSQL {Expr+}
-// The precedence order
+@top SnowSQL {
+    
+  (Stmt Smc )+
+
+}
 @precedence {
   pow @right,
   mul @left,
@@ -9,178 +11,568 @@
   and @left,
   or @left
 }
-// Expr is the parent node
-Expr {
-  NumberLiteral |
-  ParenExpr |
-  StringLiteral |
-  SubqueryExpr |
-  UnaryExpr |
-  Stmt //We wanted to refer to our constructs as statements however we have not yet removed all of the promql construts a
-  //nd most of them refer to expr as the parent node so we made stmt a child node of expr but the parent node for all our defnitions. 
-  }
 
-//Parent node for our statement constructs
 Stmt {
-  SelectStmt | // The logic for the select statement will be here. 
-  CreateStmt| //create statement
-  DescribeStmt | //describe statement.
-  DropStmt //Drop statement.
+  SelectStmt | 
+  DescribeStmt | 
+  DropStmt |
+  CreateIntegration|
+  CreateAPIIntegration|
+  CreateManagedAccount |
+  CreateStmt |
+  CreateMaterializedView |
+  CreateNotificationIntegration|
+  CreateResourceMonitor |
+  CreateRowAccessPolicy |
+ /*
+  CreateTask |
+  CreateView |
+  CreateWarehouse|
+  CreateSchema
+*/
 
 }
 
 
+Select_base{
 
-OnOrIgnoring {
-  Ignoring GroupingLabels |
-  On GroupingLabels
-}
-
-BinModifiers {
-  Bool?
-  (
-    OnOrIgnoring
-    (
-      (GroupLeft | GroupRight)
-      (!mul GroupingLabels)? // TODO: Is the "!mul" here correct? Inserted it to resolve a shift/reduce conflict because we always want to count opening parenthesis after this to be counted toward this modifier, not toward a next sub-expression.
-    )?
-  )?
-}
-
-GroupingLabels {
-  "(" GroupingLabelList ")" |
-  "(" GroupingLabelList "," ")" |
-  "(" ")"
-}
-
-GroupingLabelList {
-  GroupingLabelList "," GroupingLabel |
-  GroupingLabel
+  Select Target_list From_clause (Where_clause)?
+ 
 }
 
 
-
-
-GroupingLabel {
-  LabelName
-}
-//This is where the select statement is defined currently it only supports the from and where clause. 
-SelectStmt{
-  Select  (Mul  | ((Identifier)(Comma Identifier)*))  
-  From  Identifier  (Where Identifier WhereOp)? Smc 
+From_clause{
+      
+	From From_list|						
+				
 }
 
-WhereOp
-{
-((Not)? Between (Identifier|NumberLiteral) And (Identifier|NumberLiteral) ) | //For between 
-(In Identifier ("," Identifier)* ) |  // For in 
-(Like Identifier (Escape Identifier)? ) |  //or for like 
-(  (Null|  (Not)? Identifier Is Null)    ) | //For  Null and not Null
-( (Not)? Identifier ((And|Or|Not) Identifier)+)  // For the logical operators
+Target_list{
+
+  Star |
+
+  Identifier|
+
+  (Identifier)(Comma Identifier)*|
+
+  Select_with_parens (As ColIdentifier)?
+
+}
+
+From_list{
+
+  Identifier|
+
+  (Identifier)(Comma Identifier)*|
+
+  Select_with_parens As? ColIdentifier 
+
+}
+
+Table_ref{
+
+  Relation_expr
+  
+}
+
+Relation_expr{
+
+  Identifier
+
+}
+
+Where_clause{
+
+  Where ExpressionA	
+
+}
+
+ExpressionA{
+
+  Opl ExpressionA Opr |
+
+ ( ColIdentifier | Opl ExpressionA Opr   |NumberLiteral | Select_with_parens (As ColIdentifier)?)  (Add|Sub|Gtr|Lss|Eql|Gte|Lte |And| Or| In| Not In| Is (Not Null|Null))  ( ExpressionA |ColIdentifier|ExpressionA|StringLiteral| NumberLiteral|Select_with_parens (As ColIdentifier)?)|
+
+
+}
+
+
+ExpressionB{
+
+  ExpressionC |
+
+  Select_with_parens (As ColIdentifier)?|
+ 
+  ExpressionB (Add|Sub|Lss|Gtr) ExpressionB |
+
+  Add ExpressionB |
+
+  Sub ExpressionB
+
+}
+
+SelectStmt{ 
+  
+  Select_no_parens		|
+
+	Select_with_parens	
+       
+}
+
+Select_with_parens{
+
+	Opl Select_no_parens Opr|		
+
+	Opl Select_with_parens Opr		
+}
+
+Select_no_parens {
+
+  Select_base
+
+}
+
+ExpressionC
+{ 
+
+ Opl ExpressionA Opr 
+
+}
+
+
+ColIdentifier {
+
+  Identifier
+
 }
  
-InOp
-{
-( Identifier (Not)? In Identifier ("," Identifier)* )?
-}
-
-LikeOp
-{
-(Identifier (Not)? Like Identifier Escape Identifier)?
-}
-
-NullOp
-{
-( (Identifier Is (Not)? Null)| ( (Not)? Identifier Is Null) )?
-}
-
-LogicOp
-{
-( (Not)? Identifier ((And|Or|Not) Identifier)+)?          
-}
-// Create statement currently supports create account 
 CreateStmt{
-
-  Create Account Identifier       Admin_name EqlSingle Identifier       Admin_password EqlSingle Sqt Identifier  Cqt  ( First_name EqlSingle Identifier )? ( Last_name EqlSingle Identifier )?
-  Email EqlSingle Identifier     ( Must_change_password EqlSingle ( True | False ) )? Edition EqlSingle ( Standard | Enterprise | Business_critical ) AccountOptional Smc |
-  
-
-  Create ( Or Replace )? Api Integration ( If Not Exists )? Identifier     Api_provider "=" ( Aws_api_gateway | Aws_private_api_gateway )
-    Api_aws_role_arn "="  Identifier 
-    Api_allowed_prefixes "=" Opl Identifier Opr
-    ( Api_blocked_prefixes "=" "(" Identifier ")" )?
-    Enabled "=" ( True | False )
-    ( Comment "="  Identifier  )? ";" |
-//create file format
+Create Account Identifier Admin_name Eql Identifier  Admin_password Eql Sqt Identifier Cqt ( First_name Eql Identifier )? ( Last_name Eql Identifier )?
+Email Eql Identifier ( Must_change_password Eql ( True | False ) )? Edition Eql ( Standard | Enterprise | Business_critical ) AccountOptional Smc |
+//create clone
 Create ( Or Replace )? ( Stage | File Format | Sequence | Task ) ( If Not Exists )? Identifier   Clone Identifier     ";" |
 
 //create database
 Create ( Or Replace )? ( Transient )? Database ( If Not Exists )? Identifier     
-( Clone Identifier           ( ( At | Before ) ( ( Timestamp "=" Identifier | Offset "=" Identifier | Statement "=" Identifier ) ) )? )?
- DbOp
-  ";" | 
+( Clone Identifier           ( ( At | Before ) ( ( Timestamp Eql Identifier | Offset Eql Identifier | Statement Eql Identifier ) ) )? )?
+ DbOp ";" | 
+
   Create Database Identifier From Share Identifier Dot Identifier     ";" |
   Create Database Identifier     As Replica Of Identifier  "." Identifier
-    Auto_refresh_materialized_views_on_secondary "=" ( True | False )
+    Auto_refresh_materialized_views_on_secondary Eql ( True | False )
     ";" |
 //create network policy
-  Create  Network  Policy  Identifier  Allowed_IP_List EqlSingle Opl   Sqt Identifier   Sqt Opr  (Blocked_IP_List EqlSingle Opl   Sqt Identifier   Sqt Opr)?Smc |
-// create external function
-  Create ( Or Replace )? ( Secure )? External Function Identifier ( "(" Identifier ")" )? 
-  Returns Identifier ( Null |Not  Null )?  
-  ExFOp1
-  Api_integration "=" Identifier   
-  ExFOp2
-  As Identifier ";" |
-  
-  Create ( Or Replace )? ( Secure )? Function Identifier  
-  Returns ( Identifier | Table ( Identifier   ) )
-  ( ( Not )? Null )?
-  ( Language Javascript )?
-  ( ( Called On Null Input | ( Returns Null On Null Input | Strict ) ) )?
-  ( Volatile | Immutable )?
-  ( Comment "="  Identifier  )?
-  As  Identifier  ";" 
+  Create  Network  Policy  Identifier  Allowed_IP_List Eql Opl "'" IpA "'" ("," "'" IpA "'")* Opr  
+  (Blocked_IP_List Eql Opl  "'" IpA "'" ("," "'" IpA "'")* Opr)? Smc |
+
+  //Create Role
+  Create ( Or Replace )? Role ( If Not Exists )? Identifier   ( Comment Eql  Identifier  )? ";" |
+  //Create share
+  Create ( Or Replace )? Share Identifier   ( Comment Eql  Identifier  )? ";"
+
+}
+
+CreateAPIIntegration
+{
+  Create ( Or Replace )? Api Integration ( If Not Exists )? Identifier Api_provider Eql ( Aws_api_gateway | Aws_private_api_gateway )
+  Api_aws_role_arn Eql "'" UrLi "'"
+  ( Api_key Eql  Identifier  )?
+  Api_allowed_prefixes Eql Opl "'" UrLi "'" Opr
+  ( Api_blocked_prefixes Eql "(" UrLi ")" )?
+  Enabled Eql ( True | False )
+  ( Comment Eql  Identifier  )? ";" |
+
+  Create ( Or Replace )? Api Integration ( If Not Exists )? Identifier Api_provider Eql Azure_api_management
+    Azure_tenant_id Eql  Identifier 
+    Azure_ad_application_id Eql  Identifier 
+    ( Api_key Eql  Identifier  )?
+    Api_allowed_prefixes Eql Opl "'" UrLi "'" Opr
+  ( Api_blocked_prefixes Eql "(" UrLi ")" )?
+    Enabled Eql ( True | False )
+    ( Comment Eql  Identifier  )? ";" |
+
+    Create ( Or Replace )? Api Integration ( If Not Exists )? Identifier     Api_provider Eql Google_api_gateway
+    Google_audience Eql  Identifier 
+    Api_allowed_prefixes Eql Opl "'" UrLi "'" Opr
+    ( Api_blocked_prefixes Eql "(" UrLi ")" )?
+    Enabled Eql ( True | False )
+    ( Comment Eql  Identifier  )? ";" 
+    
 }
 
 
 
+
+CreateIntegration
+{
+  Create ( Or Replace )? Identifier Integration ( If Not Exists )? Identifier   ( Identifier )?
+  ( Comment Eql  Identifier  )? ";"
+}
+
+CreateManagedAccount
+{
+  Create Managed Account Identifier     Admin_name Eql Identifier "," Admin_password Eql  "'"    Identifier  "'"  ","
+    Type Eql Reader 
+    ( "," Comment Eql  Identifier  )? ";"
+}
+
+CreateMaskingPolicy
+{
+  Create ( Or Replace )? Masking Policy ( If Not Exists )? Identifier As
+  Val Identifier  Returns Identifier "->" Identifier ( Comment Eql  Identifier  )? ";" 
+}
+
+CreateMaterializedView
+{
+Create ( Or Replace )? ( Secure )? Materialized View ( If Not Exists )? Identifier   ( Copy Grants )?
+( Identifier )
+( Comment Eql  Identifier  )?
+( Cluster By ( Identifier (", " Identifier)* ) )?
+As Identifier ";" 
+}
+
+CreateNotificationIntegration
+{
+  //CreateNotificationIntegration?
+  Create ( Or Replace )? Notification Integration (If Not Exists)?
+  Identifier   Enabled Eql ( True | False )
+  Type Eql Queue
+  (Notification_provider Eql Gcp_pubsub
+  Gcp_pubsub_subscription_name Eql  Identifier |
+  Notification_provider Eql Azure_storage_queue
+  Azure_storage_queue_primary_uri Eql  Identifier 
+  Azure_tenant_id Eql  Identifier ) 
+  ( Comment Eql  Identifier  )? ";"  
+}
+
+CreatePipe
+{
+Create ( Or Replace )? Pipe ( If Not Exists )? Identifier   ( Auto_ingest Eql ( True | False )? )?
+( Aws_sns_topic Eql Identifier )?
+( Integration Eql  Identifier  )?
+( Comment Eql  Identifier  )?
+As Identifier ";" }
+
+CreateProcedure
+{
+  Create ( Or Replace )? Procedure Identifier+  
+  Returns Identifier ( Not Null )?
+  Language Javascript
+  ( ( Called On Null Input | ( Returns Null On Null Input | Strict ) ) )?
+  ( Volatile | Immutable )?
+  ( Comment Eql  Identifier  )?
+  ( Execute As ( Caller | Owner ) )?
+  As "$$" Identifier "$$" ";" 
+}
+
+CreateResourceMonitor
+{
+  Create ( Or Replace )? Resource Monitor Identifier With
+  ( Credit_quota Eql NumberLiteral )?
+  ( Frequency Eql ( Monthly | Daily | Weekly | Yearly | Never ) )?
+  ( Start_timestamp Eql ( Identifier | Immediately ) )?
+  ( End_timestamp Eql Identifier )?
+  ( Triggers ( On NumberLiteral Percent Do ( Suspend | Suspend_immediate | Notify ) )* ) ";" 
+}
+
+CreateRowAccessPolicy
+{
+  Create ( Or Replace )? Row Access Policy ( If Not Exists )? Identifier As
+  "("Identifier+ ")"   Returns Boolean "->" Identifier ( Comment Eql  Identifier  )? ";" 
+}
+
+CreateSchema
+{
+  Create ( Or Replace )? ( Transient )? Schema ( If Not Exists )? Identifier  
+   ( Clone Identifier         ( ( At | Before ) ( ( Timestamp "=>" Identifier | Offset "=>" Identifier | Statement "=>" Identifier ) ) )? )?
+  ( With Managed Access )?
+  ( Data_retention_time_in_days Eql Identifier )?
+  ( Max_data_extension_time_in_days Eql Identifier )?
+  ( Default_ddl_collation Eql  Identifier  )?
+  ( Comment Eql  Identifier  )? ";" 
+}
+
+
+CreateSecurityIntegration
+{
+  Create ( Or Replace )? Security Integration (If Not Exists)?
+  Identifier
+  (CreateSecurityIntegrationExternalOAuth |
+    CreateSecurityIntegrationSAML2|
+    CreateSecurityIntegrationSCIM|
+    CreateSecurityIntegrationPartnerApplications|
+    CreateSecurityIntegrationCustomClients
+  )
+
+
+}
+
+
+
+CreateSecurityIntegrationExternalOAuth
+{
+   (Type Eql External_oauth
+  Enabled Eql ( True | False )
+  External_oauth_type Eql ( Okta | Azure | Ping_federate | Custom )
+  (External_oauth_issuer Eql  Identifier  )?
+  External_oauth_token_user_mapping_claim Eql  Identifier 
+  External_oauth_snowflake_user_mapping_attribute Eql Login_name | Email_address
+  ( External_oauth_jws_keys_url Eql  Identifier  )?
+  ( External_oauth_rsa_public_key Eql Identifier )?
+  ( External_oauth_rsa_public_key_2 Eql Identifier )?
+  ( External_oauth_audience_list Eql ( Identifier ) )?
+  ( External_oauth_any_role_mode Eql Disable | Enable | Enable_for_privilege )? ";" ) 
+}
+
+CreateSecurityIntegrationSAML2
+{
+  
+  Type Eql Saml2
+  Enabled Eql True | False
+  Saml2_issuer Eql  Identifier 
+  Saml2_sso_url Eql  Identifier 
+  Saml2_provider Eql  Identifier 
+  Saml2_x509_cert Eql  Identifier 
+  ( Saml2_sp_initiated_login_page_label Eql  Identifier  )?
+  ( Saml2_enable_sp_initiated Eql True | False )?
+  ( Saml2_snowflake_x509_cert Eql  Identifier  )?
+  ( Saml2_sign_request Eql True | False )?
+  ( Saml2_requested_nameid_format Eql  Identifier  )?
+  ( Saml2_post_logout_redirect_url Eql  Identifier  )?
+  ( Saml2_force_authn Eql True | False )?
+  ( Saml2_snowflake_issuer_url Eql  Identifier  )?
+  ( Saml2_snowflake_acs_url Eql  Identifier  )? ";"  
+   
+}
+
+CreateSecurityIntegrationSCIM
+{
+    Type Eql Scim
+    Scim_client Eql Okta | Azure | Custom
+    Run_as_role Eql Okta_provisioner | Aad_provisioner | Generic_scim_provisioner
+    ( Network_policy )? Eql  Identifier  ";" 
+}  
+
+CreateSecurityIntegrationPartnerApplications
+{
+  Type Eql Oauth
+  Oauth_client Eql Identifier   ( Enabled Eql ( True | False ) )?
+  ( Oauth_issue_refresh_tokens Eql True | False )?
+  ( Oauth_refresh_token_validity Eql Identifier )?
+  ( Blocked_roles_list Eql  Identifier  + )?
+  ( Comment Eql  Identifier  )? ";" 
+
+}
+
+CreateSecurityIntegrationCustomClients
+{
+  
+    Type Eql Oauth
+    Oauth_client Eql Custom
+    Oauth_client_type Eql Confidential | Public
+    Oauth_redirect_uri Eql  Identifier 
+    ( Enabled Eql ( True | False ) )?
+    ( Oauth_allow_non_tls_redirect_uri Eql True | False )?
+    ( Oauth_enforce_pkce Eql True | False )?
+    ( Pre_authorized_roles_list Eql  Identifier+ )?
+    ( Blocked_roles_list Eql   Identifier+   )?
+    ( Oauth_issue_refresh_tokens Eql True | False )?
+    ( Oauth_refresh_token_validity Eql Identifier )?
+    ( Network_policy Eql  Identifier  )?
+    ( Oauth_client_rsa_public_key Eql Identifier )?
+    ( Oauth_client_rsa_public_key_2 Eql Identifier )?
+    ( Comment Eql  Identifier  )? ";" 
+}
+
+CreateSequence
+{
+  Create ( Or Replace )? Sequence ( If Not Exists )? Identifier   ( With )?
+  ( Start ( With )? ( Eql )? Identifier )?
+  ( Increment ( By )? ( Eql )? Identifier )?
+  ( Comment Eql  Identifier  )? ";" 
+}
+
+
+CreateStage
+{
+
+  Create ( Or Replace )? ( Temporary )? Stage ( If Not Exists )? Identifier   
+
+   ( ( Url Eql S3 ":" "/" "/" Identifier  
+    
+      ( ( Storage_integration Eql Identifier ) | ( Credentials Eql ( (  ( Aws_key_id Eql  Identifier  Aws_secret_key Eql  Identifier  ( Aws_token Eql  Identifier  )? ) | Aws_role Eql  Identifier   ) )  ) )?
+      ( Encryption Eql ( ( Type Eql Aws_cse )? ( Master_key Eql  Identifier  )? |
+                       ( Type Eql Aws_sse_s3 )? |
+                       ( Type Eql Aws_sse_kms ( Kms_key_id Eql  Identifier  )? )?|
+                       ( Type Eql None )? ) )? )  |
+      
+    (  Url Eql Gcs ":" "/" "/" Identifier  Identifier 
+      ( Storage_integration Eql Identifier )?
+      ( Encryption Eql ( ( Type Eql Gcs_sse_kms )? ( Kms_key_id Eql  Identifier  )? | ( Type Eql None )? ) )? ) |
+    
+    (
+      Url Eql Azure ":" "/" "/"     Identifier 
+      ( ( Storage_integration Eql Identifier ) | ( Credentials Eql ( ( Azure_sas_token Eql Identifier )? ) ) )?
+      ( Encryption Eql ( (Type Eql ( Azure_cse | None ) )? ( Master_key Eql  Identifier  )? ) )? )
+      
+      )?
+     
+       FileformatCreateStage?
+      ( Copy_options Eql ( Copyoptions ) )?
+      ( Comment Eql  Identifier  )? ";" 
+
+  
+    }
+
+FileformatCreateStage
+{
+  ( File_format Eql ( ( Format_name Eql  Identifier  |  
+  (
+(Type Eql  Csv
+Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
+     Record_delimiter Eql  Identifier  | None
+     Field_delimiter Eql  Identifier  | None
+     File_extension Eql  Identifier 
+     Skip_header Eql Identifier      Skip_blank_lines Eql True | False
+     Date_format Eql  Identifier  | Auto
+     Time_format Eql  Identifier  | Auto
+     Timestamp_format Eql  Identifier  | Auto
+     Binary_format Eql Hex | Base64 | Utf8
+     Escape Eql  Identifier  | None
+     Escape_unenclosed_field Eql  Identifier  | None
+     Trim_space Eql True | False
+     Field_optionally_enclosed_by Eql  Identifier  | None
+     Null_if Eql (  Identifier  ( ","  Identifier )+ )
+     Error_on_column_count_mismatch Eql True | False
+     Replace_invalid_characters Eql True | False
+     Validate_utf8 Eql True | False
+     Empty_field_as_null Eql True | False
+     Skip_byte_order_mark Eql True | False
+     Encoding Eql  Identifier  | Utf8     
+) |
+
+(
+    Type Eql Json
+     Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
+     Date_format Eql  Identifier  | Auto
+     Time_format Eql  Identifier  | Auto
+     Timestamp_format Eql  Identifier  | Auto
+     Binary_format Eql Hex | Base64 | Utf8
+     Trim_space Eql True | False
+     Null_if Eql (  Identifier  ( "," Identifier )+ )
+     File_extension Eql  Identifier 
+     Enable_octal Eql True | False
+     Allow_duplicate Eql True | False
+     Strip_outer_array Eql True | False
+     Strip_null_values Eql True | False
+     Replace_invalid_characters Eql True | False
+     Ignore_utf8_errors Eql True | False
+     Skip_byte_order_mark Eql True | False
+) |
+
+(
+    Type Eql Avro
+     Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
+     Trim_space Eql True | False
+     Null_if Eql (  Identifier  ( ","  Identifier )+ )
+) |
+
+ ( Type Eql Orc
+     Trim_space Eql True | False
+     Null_if Eql (  Identifier  ( ","  Identifier  )+ ) ) |
+( Type Eql Parquet
+     Compression Eql Auto | Lzo | Snappy | None
+     Snappy_compression Eql True | False
+     Binary_as_text Eql True | False
+     Trim_space Eql True | False
+     Null_if Eql (  Identifier  ( ","  Identifier  )+ ) ) |
+ ( Type Eql Xml
+     Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
+     Ignore_utf8_errors Eql True | False
+     Preserve_space Eql True | False
+     Strip_outer_element Eql True | False
+     Disable_snowflake_data Eql True | False
+     Disable_auto_convert Eql True | False
+     Skip_byte_order_mark Eql True | False
+)
+)
+   ) ) )
+
+
+
+}
+
+CreateTask
+{
+  Create ( Or Replace )? Task ( If Not Exists )? Identifier   Warehouse Eql Identifier   ( Schedule Eql ( Identifier Minute | Using Cron Identifier  ) )?
+  ( Allow_overlapping_execution Eql True | False )?
+  ( Identifier Eql Identifier  )*
+  ( User_task_timeout_ms Eql Identifier )?
+  ( Copy Grants )?
+  ( Comment Eql  Identifier  )?
+  ( After Identifier )?
+( When Identifier )?
+As
+  Identifier 
+}
+
+CreateUser 
+{
+  Create ( Or Replace )? User ( If Not Exists )? Identifier   ( Password Eql  Identifier 
+  Login_name Eql Identifier   Display_name Eql Identifier   First_name Eql Identifier   Middle_name Eql Identifier   Last_name Eql Identifier   Email Eql Identifier   Must_change_password Eql True | False
+  Disabled Eql True | False
+  Snowflake_support Eql True | False
+  Days_to_expiry Eql Identifier   Mins_to_unlock Eql Identifier   Default_warehouse Eql Identifier   Default_namespace Eql Identifier   Default_role Eql Identifier   Mins_to_bypass_mfa Eql Identifier  
+   Rsa_public_key Eql Identifier   Rsa_public_key_2 Eql Identifier   Comment Eql  Identifier  )?
+  ( Network_policy Eql Identifier )?
+   Abort_detached_query Eql True | False
+  Autocommit Eql True | False
+  Binary_input_format Eql Identifier   Binary_output_format Eql Identifier   Date_input_format Eql Identifier   Date_output_format Eql Identifier   Error_on_nondeterministic_merge Eql True | False
+  Error_on_nondeterministic_update Eql True | False
+  Json_indent Eql Identifier   Lock_timeout Eql Identifier   Query_tag Eql Identifier   Rows_per_resultset Eql Identifier   Simulated_data_sharing_consumer Eql Identifier   
+  Statement_timeout_in_seconds Eql Identifier   Strict_json_output Eql True | False
+  Timestamp_day_is_always_24h Eql True | False
+  Timestamp_input_format Eql Identifier   Timestamp_ltz_output_format Eql Identifier   Timestamp_ntz_output_format Eql Identifier   Timestamp_output_format Eql Identifier   
+  Timestamp_type_mapping Eql Identifier   Timestamp_tz_output_format Eql Identifier   Timezone Eql Identifier   Time_input_format Eql Identifier   Time_output_format Eql Identifier   
+  Transaction_default_isolation_level Eql Identifier   Two_digit_century_start Eql Identifier   Unsupported_ddl_action Eql Identifier   Use_cached_result Eql True | False
+  Week_of_year_policy Eql Identifier   Week_start Eql Identifier ";"
+}
+
 NameOp
 {
-  ( First_name "=" Identifier )? ( Last_name "=" Identifier )?
+  ( First_name Eql Identifier )? ( Last_name Eql Identifier )?
 }
 
 AccountOptional
 {
-  ( Region_group "=" Identifier )?  ( Region "=" Identifier )? ( Comment "="  Identifier  )?
+  ( Region_group Eql Identifier )?  ( Region Eql Identifier )? ( Comment Eql  Identifier  )?
 }
 ExFOp1
 {
+  Returns Identifier ( Null |Not  Null )?
   ( ( Called On Null Input | ( Returns Null On Null Input | Strict ) ) )?
   ( Volatile | Immutable )?
-  ( Comment "="  Identifier  )?
+  ( Comment Eql  Identifier  )?
+  Api_integration Eql Identifier 
 
 }
+
 ExFOp2
 {
-  ( Headers "=" (  Identifier  "="  Identifier )+ )?
-  ( Context_headers "=" ( Identifier  "," Identifier ) )?
-  ( Max_batch_rows "=" NumberLiteral )?
-  ( Compression "=" Identifier )?
+  //Api_integration Eql Identifier 
+  ( Headers Eql (  Identifier  Eql  Identifier )+ )?
+  ( Context_headers Eql ( Identifier  "," Identifier ) )?
+  ( Max_batch_rows Eql NumberLiteral )?
+  ( Compression Eql Identifier )?
 }
-EtOp
-{
-  ( Refresh_on_create "="  ( True | False ) )?
-  ( Auto_refresh "=" ( True | False ) )?
-  ( Pattern "="  Identifier  )?  
-}
+
 
 DbOp
 {
-  ( Data_retention_time_in_days "=" Identifier )?
-  ( Max_data_extension_time_in_days "=" Identifier )?
-  ( Default_ddl_collation "="  Identifier  )?
-  ( Comment "="  Identifier  )?
+  ( Data_retention_time_in_days Eql Identifier )?
+  ( Max_data_extension_time_in_days Eql Identifier )?
+  ( Default_ddl_collation Eql  Identifier  )?
+  ( Comment Eql  Identifier  )?
 }
 DropStmt{
 
@@ -188,30 +580,43 @@ DropStmt{
 
 }
 
+CreateView 
+{
+  Create ( Or Replace )? ( Secure )? ( Recursive )? View ( If Not Exists )? Identifier   ( ( Identifier ) )?
+  ( Copy Grants )?
+  ( Comment Eql  Identifier  )?
+  As Identifier ";"
+}
+
+CreateWarehouse
+{
+  Create ( Or Replace )? Warehouse ( If Not Exists )? Identifier         ( ( With )? Warehouse_size Eql Xsmall | Small | Medium | Large | Xlarge | Xxlarge | Xxxlarge | X4large
+  Max_cluster_count Eql Identifier   Min_cluster_count Eql Identifier   Scaling_policy Eql Standard | Economy
+  Auto_suspend Eql Identifier | Null
+  Auto_resume Eql True | False
+  Initially_suspended Eql True | False
+  Resource_monitor Eql Identifier   Comment Eql  Identifier  )?
+  ( Max_concurrency_level Eql Identifier   Statement_queued_timeout_in_seconds Eql Identifier   Statement_timeout_in_seconds Eql Identifier )? ";" 
+}
+
 DescribeStmt{
   
 
-  (Describe | Desc)  Table  Identifier (  Type  EqlSingle  (Stage| Columns )*)? Smc|
+  (Describe | Desc)  Table  Identifier (  Type  Eql  (Stage| Columns )*)? Smc|
  (Describe | Desc)  Table  Identifier Smc |
   (Describe | Desc)  View  Identifier Smc |
   (Describe | Desc)  User  Identifier Smc |
   (Describe | Desc)  Network  Policy  Identifier Smc
+  (Describe | Desc) ( External )? Table Identifier ( Type Eql  ( Columns | Stage ) )? ";"  |
+  (Describe | Desc) File Format Identifier ";"  |
+  (Describe | Desc) Function Identifier ( "," Identifier )+ ";" |
+  (Describe | Desc) ( ( Api | Notification | Security | Storage ) )? Integration Identifier ";" |
+  (Describe | Desc) Masking Policy Identifier ";" |
+  (Describe | Desc) Materialized View Identifier ";" 
+  
+
 }
 
-
-
-ParenExpr {
-  "(" Expr ")"
-}
-
-
-SubqueryExpr {
-  Expr "[" Duration ":" ("" | Duration) "]"
-}
-
-UnaryExpr {
-  !mul UnaryOp Expr
-}
 
 UnaryOp {
   "-" |
@@ -225,32 +630,12 @@ LabelMatchers {
   "{" "}"
 }
 
-LabelMatchList {
-  LabelMatchList "," LabelMatcher |
-  LabelMatcher
-}
 
 MatchOp {
-  EqlSingle |
+  Eql |
   Neq |
   EqlRegex |
   NeqRegex
-}
-
-LabelMatcher {
-  LabelName MatchOp StringLiteral
-}
-
-MetricIdentifier {
-  Identifier
-}
-
-StepInvariantExpr {
-  Expr At ( NumberLiteral | SignedNumber | AtModifierPreprocessors "(" ")" )
-}
-
-AtModifierPreprocessors {
-  Start | End
 }
 
 SignedNumber{
@@ -274,7 +659,7 @@ SignedNumber{
       $[iI]$[nN]$[fF]
     )
   }
-  StringLiteral { // TODO: This is for JS, make this work for PromQL.
+  StringLiteral { 
     '"' (![\\\n"] | "\\" _)* '"'? |
     "'" (![\\\n'] | "\\" _)* "'"? |
     "`" ![`]* "`"
@@ -291,86 +676,89 @@ SignedNumber{
     ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" ) ( std.digit+ "ms" )? ) |
     ( ( std.digit+ "y" )? ( std.digit+ "w" )? ( std.digit+ "d" )? ( std.digit+ "h" )? ( std.digit+ "m" )? ( std.digit+ "s" )? ( std.digit+ "ms" ) )
   }
-  Identifier { ((std.asciiLetter|std.digit | "_" | ":") (std.asciiLetter* | std.digit* | "_" | ":"|"@"|"/"|"+"|"-"|"*"|"/"|"^"|"("|")"|">"|"<"|"%"|".")*)  }
-
-  //Identifier { (std.asciiLetter | "_" | ":") (std.asciiLetter | std.digit | "_" | ":" )*}
+  Identifier { ((std.asciiLetter+|std.digit+ | "_" | ":") (std.asciiLetter* | std.digit* | "_" | ":"|"@"|"/"|"+"|"-"|"*"|"/"|"^"|"("|")"|">"|"<"|"%"|"."|"!"|"'")* )  }
+  UrLi {  (std.asciiLetter+|std.digit+ | "_" | ":"|"/"|"-"|".")+ }
+  IpA 
+  {    ( std.digit? std.digit? std.digit "." ) (std.digit? std.digit? std.digit "." ) (std.digit? std.digit? std.digit "." ) 
+            ("/" std.digit | std.digit"/"std.digit | std.digit"/"std.digit std.digit | std.digit| std.digit std.digit | std.digit std.digit std.digit ) 
+      }   
+         
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 
   // Operator
   Smc {";"}
   Uscr {"_"}
   Dash {"-"} 
-  //Star {"*"}
+  Star {"*"}
   Sub { "-" }
   Add { "+" }
   Mul { "*" }
   Mod { "%" }
   Div { "/" }
-  Eql { "==" }
+  Eql { "=" }
   Neq { "!=" }
   Lte { "<=" }
+  Eqa {"=>"}
   Lss { "<" }
   Gte { ">=" }
   Gtr { ">" }
   Sqt {"'"}
   Cqt{"'"}
   EqlRegex { "=~" }
-  EqlSingle { "=" }
+  EqlSingle { "==" }
   NeqRegex { "!~" }
   Pow { "^" }
   Opl {"("}
   Opr {")"}
   Dot {"."}
+  Arr{"->"}
+  Usd {"$"}
+  Fws {"/"}
+  Col {":"}
 
   //SQL
   Comma {","}
-
   // Special Modifier
   Atr { "@" }
-
-  // Modifier Preprocessors
-  Start { "start" }
   End { "end" }
-
-  // To parse signed numbers into a number literal and not a unary expression.
+  //Aws{"s3"}
+  //Gcp{"gcp"}
+  //Azure{"Azure"}
+  //AzureURL{"blob.core.windows.net"}
   @precedence { NumberLiteral, "+", "-" }
   // To parse NaN/Inf as a number literal.
   @precedence { NumberLiteral, Identifier }
 }
 
-
-
-ArithExpr{
- "("? (NumberLiteral|Identifier)   (Add|Sub)  (NumberLiteral|Identifier) ")"? 
-
-}
-
-
-
-
 // Keywords
 
 @external specialize {Identifier} specializeIdentifier from "./tokens" {
-Account,Admin,Admin_name,Admin_password,Allowed_IP_List,And,Api,Api_allowed_prefixes,Api_aws_role_arn,Api_blocked_prefixes,Api_integration,Api_provider,As,At,Auto,Auto_refresh,
-Auto_refresh_materialized_views_on_secondary,
-Avro,Aws_api_gateway,Aws_private_api_gateway,Aws_sns_topic,Azure_ad_application_id,Azure_api_management,Azure_tenant_id,Before,Between,Blocked_IP_List,Bool,Brotli,Business,Business_critical,By,Bz2,Called,
-Cascade,Change,Clone,Columns,Comment,Compression,Constraint,Context_headers,Copy,Create,Critical,Csv,Data_retention_time_in_days,Database,Default_ddl_collation,Deflate,Desc,Describe,Drop,Edition,Email,
-Enabled,Enterprise,Escape,Exists,External,Externalstage,False,Field_delimiter,File,File_format,First,First_name,Foreign,Format,Format_name,From,Function,Grants,GroupLeft,GroupRight,Gzip,Headers,IP,
-If,Ignoring,Immutable,In,Input,Integration,Is,Javascript,Json,Key,Language,Last,Last_name,Like,List,Location,Max_batch_rows,Max_data_extension_time_in_days,Must,Must_change_password,Name,Network,None,Not,Null,
-Of,Offset,On,Or,Orc,Parquet,Partition,Password,Pattern,Policy,Primary,Raw_deflate,Record_delimiter,References,Refresh_on_create,Region,Region_group,Replace,Replica,Restrict,Returns,Role,Schema,Secure,Select,
-Sequence,Share,Skip_blank_lines,Skip_header,Snappy,Stage,Standard,Statement,Strict,Table,Task,Timestamp,Transient,True,Type,Unique,User,View,Volatile,Warehouse,Where,With,Zstd
+  Aad_provisioner,Abort_detached_query,Abort_statement,Access,Account,Admin,Admin_name,Admin_password,After,Allow_duplicate,Allow_overlapping_execution,Allowed_IP_List,And,Api,Api_allowed_prefixes,Api_aws_role_arn,
+  Api_blocked_prefixes,Api_integration,Api_key,Api_provider,As,At,Auto,Auto_ingest,Auto_refresh,Auto_refresh_materialized_views_on_secondary,Auto_resume,Auto_suspend,Autocommit,Autoincrement,Avro,Aws_api_gateway,
+  Aws_cse,Aws_key_id,Aws_private_api_gateway,Aws_role,Aws_secret_key,Aws_sns_topic,Aws_sse_kms,Aws_sse_s3,Aws_token,Azure,Azure_ad_application_id,Azure_api_management,Azure_cse,Azure_sas_token,Azure_storage_queue,
+  Azure_storage_queue_primary_uri,Azure_tenant_id,Base64,Before,Between,Binary_as_text,Binary_format,Binary_input_format,Binary_output_format,Blob,Blocked_IP_List,Blocked_roles_list,Bool,Boolean,Brotli,Business,
+  Business_critical,By,Bz2,Called,Caller,Cascade,Case_insensitive,Case_sensitive,Change,Change_tracking,Clone,Cluster,Collate,Columns,Comment,Compression,Confidential,Constraint,Context_headers,Continue,
+  Copy,Copy_options,Copyoptions,Core,Create,Credentials,Credit_quota,Critical,Cron,Csv,Custom,Daily,Data,Data_retention_time_in_days,Database,Date_format,Date_input_format,Date_output_format,Days_to_expiry,
+  Default,Default_ddl_collation,Default_namespace,Default_role,Default_warehouse,Deflate,Desc,Describe,Disable,Disable_auto_convert,Disable_snowflake_data,Disabled,Display_name,Do,Drop,Economy,Edition,Email,
+  Email_address,Empty_field_as_null,Enable,Enable_for_privilege,Enable_octal,Enabled,Encoding,Encryption,End_timestamp,Enforce_length,Enterprise,Error_on_column_count_mismatch,Error_on_nondeterministic_merge,
+  Error_on_nondeterministic_update,Escape,Escape_unenclosed_field,Execute,Exists,External,External_oauth,External_oauth_any_role_mode,External_oauth_audience_list,External_oauth_issuer,External_oauth_jws_keys_url,
+  External_oauth_rsa_public_key,External_oauth_rsa_public_key_2,External_oauth_snowflake_user_mapping_attribute,External_oauth_token_user_mapping_claim,External_oauth_type,Externalstage,False,Field_delimiter,
+  Field_optionally_enclosed_by,File,File_extension,File_format,First,First_name,For,Force,Foreign,Format,Format_name,Formattypeoptions,Frequency,From,Function,Gcp_pubsub,Gcp_pubsub_subscription_name,Gcs,
+  Gcs_sse_kms,Generic_scim_provisioner,Global,Google_api_gateway,Google_audience,Grants,GroupLeft,GroupRight,Gzip,Headers,Hex,IP,Identity,If,Ignore_utf8_errors,Ignoring,Immediately,Immutable,In,Increment,
+  Initially_suspended,Input,Integration,Is,Javascript,Json,Json_indent,Key,Kms_key_id,Language,Large,Last,Last_name,Like,List,Local,Location,Lock_timeout,Login_name,Lzo,Managed,Masking,Master_key,Match_by_column_name,
+  Materialized,Max_batch_rows,Max_cluster_count,Max_concurrency_level,Max_data_extension_time_in_days,Medium,Middle_name,Min_cluster_count,Mins_to_bypass_mfa,Mins_to_unlock,Minute,Monitor,Monthly,Must,Must_change_password,
+  Name,Net,Network,Network_policy,Never,None,Not,Notification,Notification_provider,Notify,Null,Null_if,Numeric,Oauth,Oauth_allow_non_tls_redirect_uri,Oauth_client,Oauth_client_rsa_public_key,Oauth_client_rsa_public_key_2,
+  Oauth_client_type,Oauth_enforce_pkce,Oauth_issue_refresh_tokens,Oauth_redirect_uri,Oauth_refresh_token_validity,Of,Offset,Okta,Okta_provisioner,On,On_error,Only,Or,Orc,Owner,Parquet,Partition,Password,
+  Pattern,Percent,Ping_federate,Pipe,Policy,Pre_authorized_roles_list,Preserve_space,Primary,Procedure,Public,Purge,Query_tag,Queue,Raw_deflate,Reader,Record_delimiter,Recursive,References,Refresh_on_create,
+  Region,Region_group,Replace,Replace_invalid_characters,Replica,Resource,Resource_monitor,Restrict,Return_failed_only,Returns,Ribe,Role,Row,Rows_per_resultset,Rsa_public_key,Rsa_public_key_2,Run_as_role,
+  S3,Saml2,Saml2_enable_sp_initiated,Saml2_force_authn,Saml2_issuer,Saml2_post_logout_redirect_url,Saml2_provider,Saml2_requested_nameid_format,Saml2_sign_request,Saml2_snowflake_acs_url,Saml2_snowflake_issuer_url,
+  Saml2_snowflake_x509_cert,Saml2_sp_initiated_login_page_label,Saml2_sso_url,Saml2_x509_cert,Scaling_policy,Schedule,Schema,Scim,Scim_client,Secure,Security,Select,Sequence,Share,Simulated_data_sharing_consumer,
+  Size_limit,Skip_blank_lines,Skip_byte_order_mark,Skip_file,Skip_header,Small,Snappy,Snappy_compression,Snowflake_support,Stage,Stage_copy_options,Stage_file_format,Standard,Start,Start_timestamp,Statement,
+  Statement_queued_timeout_in_seconds,Statement_timeout_in_seconds,Storage,Storage_integration,Strict,Strict_json_output,Strip_null_values,Strip_outer_array,Strip_outer_element,Supported,Suspend,Suspend_immediate,
+  Table,Task,Temporary,Text,Time_format,Time_input_format,Time_output_format,Timestamp,Timestamp_day_is_always_24h,Timestamp_format,Timestamp_input_format,Timestamp_ltz_output_format,Timestamp_ntz_output_format,
+  Timestamp_output_format,Timestamp_type_mapping,Timestamp_tz_output_format,Timezone,Transaction_default_isolation_level,Transient,Triggers,Trim_space,True,Truncatecolumns,Two_digit_century_start,Type,Types,
+  Unique,Unsupported_ddl_action,Url,Use_cached_result,User,User_task_timeout_ms,Using,Utf8,Validate_utf8,View,Volatile,Warehouse,Warehouse_size,Week_of_year_policy,Week_start,Weekly,When,Where,Windows,With,
+  X4large,Xlarge,Xml,Xsmall,Xxlarge,Xxxlarge,Yearly,Zstd
 
 }
-
-// Contextual keywords
-
-/*@external extend {Identifier} extendIdentifier from "./tokens" {
-
- 
-  Count,
-  Group,
-  By,
-  And
-}*/
-
 
