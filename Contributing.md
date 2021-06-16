@@ -21,11 +21,11 @@ codemirror-snowsql-wip and lezer-snowsql-wip
 
 Adding queries to the grammar: 
 
-* Clone lezer-promql or  lezer-snowsql-wip
+* Clone lezer-snowsql or  lezer-snowsql-wip
 
 * Go to the .grammar file which is in the scr directory. 
 
-* In the file find a construct named as Expr. The promql linter and parser treats this as the parent node so we have not yet renamed it. 
+* In the file find a construct named as Expr. The snowsql linter and parser treats this as the parent node so we have not yet renamed it. 
 In this you will find “Stmt”. This is the parent node for all the statements we are constructing. This is the list of expressions that are supported by the 
 grammar. Also please note that the ‘|’ symbol represents ‘or’. 
 
@@ -104,7 +104,7 @@ Go to codemirror-snowsql-master/node_modules/lezer-snowsql and replace all the f
 
 
 To handle errors with these expressions, for example, the select expression or select statement,
-you will need to import ‘SelectStmt’ from ‘lezer-promql’.
+you will need to import ‘SelectStmt’ from ‘lezer-snowsql’.
 
 Then, write a case for this SelectStmt, inside checkAST’s switch-case. 
 Like below:
@@ -117,7 +117,7 @@ Then you’ll need to define the checkSelect function to handle specific error c
 
 -----------
 
-For syntax highlighting, you can add the tokens in the parser configuration inside `LezerLanguage.define`, which is present in the file promql.ts.
+For syntax highlighting, you can add the tokens in the parser configuration inside `LezerLanguage.define`, which is present in the file snowsql.ts.
 
 The highlight definitions for these tags, along with their colours are present in src/app/theme.ts
 
