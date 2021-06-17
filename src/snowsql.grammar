@@ -1,6 +1,6 @@
 @top SnowSQL {
     
-  (Stmt Smc)+
+  (Stmt )+
 
 }
 
@@ -14,18 +14,18 @@
 }
 
 Stmt {
-  SelectStmt | 
-  DescribeStmt | 
-  DropStmt |
-  CreateIntegration|
-  CreateAPIIntegration|
-  CreateManagedAccount |
-  CreateStmt |
-  CreateMaterializedView |
-  CreateNotificationIntegration|
-  CreateResourceMonitor |
-  CreateRowAccessPolicy |
-  CreateView 
+  SelectStmt Smc | 
+  DescribeStmt Smc | 
+  DropStmt Smc |
+  CreateIntegration Smc|
+  CreateAPIIntegration Smc|
+  CreateManagedAccount Smc |
+  CreateStmt Smc|
+  CreateMaterializedView Smc |
+  CreateNotificationIntegration Smc|
+  CreateResourceMonitor Smc|
+  CreateRowAccessPolicy Smc|
+  CreateView Smc
   /*
   CreateTask |
   CreateView |
