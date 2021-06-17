@@ -26,12 +26,6 @@ Stmt {
   CreateResourceMonitor Smc|
   CreateRowAccessPolicy Smc|
   CreateView Smc
-  /*
-  CreateTask |
-  CreateView |
-  CreateWarehouse|
-  CreateSchema
-  */
 
 }
 
