@@ -1,0 +1,433 @@
+# Simple select statement
+
+select * from foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Star),From_clause(From,From_list(Identifier)))))),Smc))
+
+# Select with fields
+
+select foo, bar from foobar;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)))))),Smc))
+
+
+# Select with where
+
+select foo from foobar where foobar = 11;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Eql,NumberLiteral)))))),Smc))
+
+
+# Select with basic arithmetic expression
+
+select foo,bar from foobar where (foo + bar) > 3;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(Opl,ExpressionA(ColIdentifier(Identifier),Plus,ColIdentifier(Identifier)),Opr,Gtr,NumberLiteral)))))),Smc))
+
+
+# Select with basic arithmetic expression without parentheses
+
+select foo,bar from foobar where foo + bar > 3;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Plus,ExpressionA(ColIdentifier(Identifier),Gtr,NumberLiteral))))))),Smc))
+
+
+# Select with where and string
+
+select foo, bar from foobar;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)))))),Smc))
+
+
+# Select with where and gte operator
+
+select foo from foobar where foo >= 50;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Gte,NumberLiteral)))))),Smc))
+
+# Nested select statement
+
+select foo,bar from foobar where bar in (select foobar from foo WHERE barfoo = 'foobar'); 
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Eql,StringLiteral)))),Opr))))))),Smc))
+
+# Create materialized view
+
+create materialized view foobar comment= 'Test view' as select foo from bar; 
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateMaterializedView(Create,Materialized,View,Identifier,Comment,Eql,StringLiteral,As,SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier))))))),Smc))
+
+
+# Create database
+
+create database mytestdb;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Database,Identifier,DbOp)),Smc))
+
+
+# Create account
+
+create account foobar admin_name = foo admin_password = 'TestPassword1' email = myemail@myorg.org  edition = enterprise;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Account,Identifier,Admin_name,Eql,Identifier,Admin_password,Eql,StringLiteral,Email,Eql,EmailAddr,Edition,Eql,Enterprise,AccountOptional)),Smc))
+
+
+# Create netowrk policy
+
+create network policy foo allowed_ip_list=('1.1.1.0/24');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Opl,Sqt,IpA,Sqt,Opr)),Smc))
+
+
+# Create netowrk policy with blocked ip list
+
+create network policy foo allowed_ip_list=('1.1.1.0/24') blocked_ip_list=('1.1.1.1');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Opl,Sqt,IpA,Sqt,Opr,Blocked_IP_List,Eql,Opl,Sqt,IpA,Sqt,Opr)),Smc))
+
+
+# Describe table
+
+describe table foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(Identifier))),Smc))
+
+
+
+# Describe stream
+
+describe stream foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Stream),ObjName(Identifier))),Smc))
+
+
+# Describe function
+
+desc function multiply(number, number);
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Desc,Function,Identifier,UdfSig(Opl,UdfParam(UdfParamIdentifier(Identifier)),Comma,UdfParam(UdfParamIdentifier(Identifier)),Opr))),Smc))
+
+
+# Describe view
+
+describe view foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(View),ObjName(Identifier))),Smc))
+
+
+
+# Describe integration
+
+describe api integration foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Api,Integration),ObjName(Identifier))),Smc))
+
+
+# Describe network policy
+
+describe network policy foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Network,Policy),ObjName(Identifier))),Smc))
+
+
+# Describe file format
+
+describe file format foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(File,Format),ObjName(Identifier))),Smc))
+
+
+# Describe with desc keyword
+
+desc file format foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Desc,DescribeTargetSimple(File,Format),ObjName(Identifier))),Smc))
+
+
+# Drop sequence
+
+drop sequence if exists foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Sequence),IfExists(If,Exists),ObjName(Identifier))),Smc))
+
+
+# Drop table
+
+drop table if exists foo cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Table),IfExists(If,Exists),ObjName(Identifier),DropOptions(Cascade))),Smc))
+
+
+# Drop managed account
+
+drop managed account foo_bar;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetSimple(Managed,Account),ObjName(Identifier))),Smc))
+
+
+# Drop warehouse
+
+drop warehouse foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Warehouse),ObjName(Identifier))),Smc))
+
+
+# Drop procedure
+
+drop procedure add_accounting_user(varchar);
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,Procedure,ObjName(Identifier),UdfSig(Opl,UdfParam(UdfParamIdentifier(Identifier)),Opr))),Smc))
+
+
+
+# Drop tag if exists
+
+drop tag if exists foobar ;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Tag),IfExists(If,Exists),ObjName(Identifier))),Smc))
+
+
+
+# Drop schema, with cascade option
+
+drop schema myschema cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(Identifier),DropOptions(Cascade))),Smc))
+
+
+# Drop sequence, with restrict option
+
+
+drop schema myschema cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(Identifier),DropOptions(Cascade))),Smc))
+
+
+# Commit
+
+commit;
+
+==> 
+
+SnowSQL(Stmts(Stmt(CommitStmt(Commit)),Smc))
+
+
+# Rollback
+
+rollback;
+
+==> 
+
+SnowSQL(Stmts(Stmt(RollbackStmt(Rollback)),Smc))
+
+
+# Truncate table
+
+truncate table if exists foobar;
+
+==> 
+
+SnowSQL(Stmts(Stmt(TruncateStmt(Truncate,Table,IfExists(If,Exists),ObjName(Identifier))),Smc))
+
+
+# Truncate materialized view
+
+truncate materialized view val;
+
+==> 
+
+SnowSQL(Stmts(Stmt(TruncateStmt(Truncate,Materialized,View,ObjName(Identifier))),Smc))
+
+# Use database with variable
+
+use database identifier($database);
+
+==>
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,Database,ObjName(IdentifierKW,Opl,IdentifierVar,Opr))),Smc))
+
+
+# Use database 
+
+use database foobar;
+
+==>
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,Database,ObjName(Identifier))),Smc))
+
+
+# Use role
+
+Use role foobar;
+
+==>
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,Role,ObjName(Identifier))),Smc))
+
+
+# Use Schema
+
+use schema foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,Schema,ObjName(Identifier))),Smc))
+
+
+# Use schema with db 
+
+use foo.bar;
+
+==> 
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,ObjName(Identifier,Dot,Identifier))),Smc))
+
+
+# Use warehouse
+
+use warehouse foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(UseStmt(Use,Warehouse,ObjName(Identifier))),Smc))
+
+
+# Grant ownership on
+
+
+grant ownership on integration foo_bar_foobar_barfoo TO ROLE foobar_foo_bar_barfoos;
+
+==>
+
+SnowSQL(Stmts(Stmt(GrantPrivilegesStmt(Grant,PrivilegePrefix(Ownership),On,PrivilegeObj(PrivilegeObjectType(Integration),ObjName(Identifier)),To,Role,ObjName(Identifier))),Smc))
+
+
+# Grant usage on 
+
+GRANT USAGE ON INTEGRATION gcp_security_logs TO ROLE security_engineer;
+
+==>
+
+SnowSQL(Stmts(Stmt(GrantPrivilegesStmt(Grant,PrivilegePrefix(Usage),On,PrivilegeObj(PrivilegeObjectType(Integration),ObjName(Identifier)),To,Role,ObjName(Identifier))),Smc))
+
+
+# Grant all privileges on function
+
+grant all privileges on function mydb.myschema.add5(number) to role analyst;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(GrantPrivilegesStmt(Grant,PrivilegePrefix(All,Privileges),On,PrivilegeObj(PrivilegeObjectType(Function),ObjName(Identifier,Dot,Identifier,Dot,Identifier),UdfTypeSig(Opl,Types(UserDefinedType(Identifier)),Opr)),To,Role,ObjName(Identifier))),Smc))
+
+
+# Create storage integration 
+
+create storage integration gcs_int type = external_stage storage_provider = gcs enabled = true storage_allowed_locations = ('gcs://mybucket1/path1/', 'gcs://mybucket2/path2/');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,ObjName(Identifier),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Gcs)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Opl,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Opr))))),Smc))
+
+
+
+# Create storage integration with mutliple storage_allowed_locations
+
+CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integration TYPE=EXTERNAL_STAGE ENABLED=TRUE AZURE_TENANT_ID='3f78fa49-fd80-4d3c-91b8-f34f31d7417e' STORAGE_ALLOWED_LOCATIONS=(
+  'azure://loggingeus2sfc.blob.core.windows.net/insights-logs-auditlogs',
+  'azure://loggingeus2sfc.blob.core.windows.net.blob.core.windows.net/insights-operational-logs',
+  'azure://loggingeus2sfc.blob.core.windows.net.blob.core.windows.net/insights-logs-signinlogs'
+)
+;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,IfNotExists(If,Not,Exists),ObjName(Identifier),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Azure_tenant_id),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Opl,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Opr))))),Smc))
+
+
+# Create api integration 
+
+create or replace api integration demonstration_external_api_integration_01 api_provider=aws_api_gateway api_aws_role_arn='arn:aws:iam::123456789012:role/my_cloud_account_role' api_allowed_prefixes=('https://xyz.execute-api.us-west-2.amazonaws.com/production') enabled=true;
+
+==>
+
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,OptOrReplace(Or,Replace),IntegrationTypes(Api),Integration,ObjName(Identifier),KeyValueProperty(KeyName(Api_provider),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Aws_api_gateway)))),KeyValueProperty(KeyName(Api_aws_role_arn),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Api_allowed_prefixes),Eql,KeyValue(KeyValueList(Opl,ListableKeyValue(StringLiteral),Opr))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))))),Smc))
+
+
+# Multiple queries
+
+select * from foo;
+select foo, bar from foobar;
+select foo from foobar where foobar = 11;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Star),From_clause(From,From_list(Identifier)))))),Smc,Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)))))),Smc,Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Eql,NumberLiteral)))))),Smc))
+
+
+
+# Nested select query 16 levels
+
+select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from (select * from foobar) as foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in ( select foo,bar from foobar where bar in (select foobar from foo WHERE barfoo = 'foobar'))))))))))))))); 
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Star),From_clause(From,From_list(Identifier)))),Opr),As,ColIdentifier(Identifier))),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier,Comma,Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),In,Select_with_parens(Opl,Select_no_parens(Select_base(Select,Target_list(Identifier),From_clause(From,From_list(Identifier)),Where_clause(Where,ExpressionA(ColIdentifier(Identifier),Eql,StringLiteral)))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))),Opr))))))),Smc))
