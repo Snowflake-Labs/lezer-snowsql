@@ -2,122 +2,200 @@ Requirements: npm/yarn
 
 ------------
 
-Steps to start with CodeMirror SnowSQL and Lezer SnowSQL. 
+### Getting started with Lezer SnowSQL:
 
-Clone codemirror-snowsql
+Clone lezer-snowsql
 
-Cd to codemirror-snowsql after cloning.
+Cd to lezer-snowsql after cloning.
 
-Run `npm install` to install dependencies.
+Run `npm install` or  `yarn install` to install the dependencies.
 
-Run `npm run build` to build codemirror-snowsql.
+Run `npm run build` or `yarn run build` to build lezer-snowsql.
 
-Run `npm start` to start it.
+Run `npm start` or `yarn start` to start it.
 
-The same steps can be repeated with CodeMirror SnowSQL and Lezer SnowSQL. Currently please clone the WIP branches for both repos. 
-
-codemirror-snowsql-wip and lezer-snowsql-wip
 --------------
 
-Adding queries to the grammar: 
 
-* Clone lezer-snowsql or  lezer-snowsql-wip
+### Structure:
 
-* Go to the .grammar file which is in the scr directory. 
+* The statement definitions are present in the snowsql.grammar file, inside src/ directory. 
 
-* In the file find a construct named as Expr. The snowsql linter and parser treats this as the parent node so we have not yet renamed it. 
-In this you will find “Stmt”. This is the parent node for all the statements we are constructing. This is the list of expressions that are supported by the 
-grammar. Also please note that the ‘|’ symbol represents ‘or’. 
+* The second file in src/, tokens.js file contains the keywords used in snowsql.grammar.
 
-* You will be able to see a list with the name of stmt a lillte below the expr list. This is where you need to add the sql statement construct you wish to support. 
-For example, the first construct in the list is “SelectStmt” which supports the logic for a basic select statement. 
+Rules are made up of terms. A term can mean non-terminals and tokens. Non-terminals contain terms, so can contain both non-terminals and tokens. Tokens match a piece of text.
 
-* Now if you scroll down you will find “SelectStmt” again this is where the logic for the select statement is defined. 
+Rule/Non-terminal definition names should begin with a capital letter and have no spaces in-between.
 
-Let us break down the statement. 
+Symbols and their purpose:
 
+?: Specifies one optional occurrence of the term it is placed after.  
+*: Specifies 0 or more occurrences of the term it is placed after.  
++: Specifies or more occurrences of the term it is placed after.  
+|: Specifies alternative/or for a term.  
 
+--------------
 
+### Adding statements to the grammar: 
 
+* In the grammar, we have an Stmt rule, which is the parent rule for all the statements. So for every new statement defined, this is the rule where the name of the rule should be added. E.g.
 
-SelectStmt is the name we have given to the construct that will define the select statement logic. 
-Construct names must begin in capital letters and have no space between them. 
-
-Now that we have added SelectStmt to the Stmt list we can define the logic in SelectStmt. 
-
-After the Expr list you write the following code:
 ```
-SelectStmt{
-  Select  (Mul  | ((Identifier)(Comma Identifier)*))  
-  From  Identifier  (Where WhereOp)? Smc 
+Stmt 
+{ 
+  .
+  .
+  .  
+  DescribeStmt |
+  DropStmt |
+  NewStmt
+  
 }
 ```
-This code defines the logic for the select statement.
-
-Select is the first keyword followed by a whitespace after that the brack open and the ‘|’ says that the user can choose to either write a mul(*) or write an 
-identifier(which represents a column name here). 
-
-The identifier keyword says that there must be at least one column name given if mul is not chosen. Whenever a keyword is seen in an expression like that it will 
-demand one occurrence of whatever the keyword defines. 
-The comma and identifier specify that the user must input a comma next if there is more than one column name to be used. The star after the expression allows the 
-user to add any number of columns to the first one. 
-
-The rest of the keywords will demand one appearance of whatever their definition states. 
-
-For example the definition of whitespace means that there must be one whitespace between from the table name. 
-
-The statement ends with a semicolon required from the user. 
-
-Identifier: `{ ((std.asciiLetter|std.digit | "_" | ":") (std.asciiLetter* | std.digit* | "_" | ":"|"@"|"/"|"+"|"-"|"*"|"/"|"^"|"("|")"|">"|"<"|"%"|".")*)  }`
-
-This is the identifier definition. It states the identifier with either a digit or letter or an underscore or “:”. Then after that we can have as many repetitions 
-as we wish of digits or letter or the symbols listed.  
-
-The next step is to define the keywords we have used here. Mul Identifier and whitespace are already predefined. We need to add select from comma and semicolon. 
-
-To add select and from go to this line: ‘@external specialize {Identifier} specializeIdentifier from “./tokens{ ‘
-
-Now add select and from to this list. 
-
-Now go to the line ‘ // operator’
-
-Add the definition of comma to the list : ‘ comma{“,”} ‘
-Also add ‘ smc{;} ‘
-
-Subqueries (where clause)
-
-You may notice the select statement has a construct “WhereOp”. This is due to the fact that usage of “?” (which represents one optional occurrence of the given 
-construct) regex symbol. If this symbol is used too much in one query the compilation of the grammar will take a lot of time that is why it is better to delegate 
-part of the query to a subquery construct. 
-
-Subquery constructs are defined like normal query constructs only. The same process for a normal query construct is to be followed for a sub query construct. 
-
-Add the changes in the terms files and all here. 
-
-Now open terminal and cd to lezer snowsql master. Run the command ‘npm run build’ .
-
-Your grammar should compile successfully. It will generate a set of files in the dist folder of lezer snowsql master. 
-
-Go to codemirror-snowsql-master/node_modules/lezer-snowsql and replace all the files there with the files from lezer-snowsql-master/dist. 
-
-------------
 
 
-To handle errors with these expressions, for example, the select expression or select statement,
-you will need to import ‘SelectStmt’ from ‘lezer-snowsql’.
+In a SnowSQL statement, there will be a variety of keywords being used, we’ll need to add these keyword tokens into three sections between the grammar and the tokens file, like below:
 
-Then, write a case for this SelectStmt, inside checkAST’s switch-case. 
-Like below:
+In snowsql.grammar:
 
-     case SelectStmt:
-        this.checkSelect(node)
-       break;
+```
+@external specialize {Identifier} specializeIdentifier from "./tokens" {
+  .
+  .
+  .
+  Select, From, Where, With, NewKeyword
+  
+}
+```
 
-Then you’ll need to define the checkSelect function to handle specific error cases.
 
------------
+In tokens.js:
 
-For syntax highlighting, you can add the tokens in the parser configuration inside `LezerLanguage.define`, which is present in the file snowsql.ts.
+First in: 
+```
+import {
+  .
+  .
+  .
+  Select,
+  From,
+  Where,
+  With,
+  NewKeyword
 
-The highlight definitions for these tags, along with their colours are present in src/app/theme.ts
+} from "./parser.terms.js";
+```
+And then in:
+```
+const keywordTokens = {
+  .
+  .
+  .
+  select : Select,
+  from : From,
+  where : Where,
+  with: With,
+  NewKeyword : NewKeyword
+  
+};
+```
 
+
+* Now, let us look at an actual statement. We’ll go with the Describe statement. 
+
+```
+
+DescribeStmt {
+  
+  (Describe | Desc) DescribeTargetSimple ObjName |
+
+  (Describe | Desc) (External)? Table ObjName (Type Eql (Columns | Stage))? |
+
+  (Describe | Desc) (Function | Procedure) Identifier UdfSig 
+
+}
+
+
+DescribeTargetSimple {
+
+  Materialized? View |
+  User |
+  (Masking | Network | Row Access) Policy |
+  File Format |
+  (Api | Storage | Security | Notification)? Integration |
+  Pipe |
+  Sequence |
+  Share |
+  Stage |
+  Stream |
+  Task 
+
+}
+```
+
+
+* We can have Describe or Desc at the beginning of the statement. So we’ll use the OR symbol (“|”) to have a choice between Desc and Describe.
+
+* `DescribeTargetSimple` is a non-terminal that has terminals (or keywords) like Stream, Task, Stage etc.
+
+We’ve clubbed all of the keywords that fit the identical definition, so we don’t have to write a separate Describe definition for each keyword.
+
+In the second Describe definition you have 
+
+```  (Describe | Desc) (External)? Table ObjName (Type Eql (Columns | Stage))? |```
+
+Where external is optional, because of the ‘?’ symbol. 
+
+The statement ends with a semicolon that is present in the top Stmts definition. The semicolon is a symbol added in the list present after //operator.  Like ``` Smc {";"}```, other symbols can be added.
+
+After you’re done writing the statement, you should run
+
+```npm run build``` 
+
+If there are no errors, you’ve successfully added the statement.
+
+--------------
+
+### Errors you may encounter :
+
+* Shift/Reduce:
+
+A shift/reduce conflict occurs when both the shift and reduce actions are valid and the parser doesn’t know which one to continue with.
+
+Besides the structural changes to avoid ambiguity, you can also add precedences for the problematic tokens. More on precedences in the Lezer docs
+
+* Reduce/Reduce:
+
+A reduce/reduce conflict occurs if there are two or more rules that apply to the same sequence of input. This usually means a serious error in the grammar.
+
+To solve this, you’ll have to fix the rule definitions such that an input can only be reduced “in one way” with the definitions. 
+
+**[Note : Both of the above errors can be isolated by not using the problematic rules/commenting them out. You can continue with adding different parts of the grammar]**
+ 
+* Grammar contains zero-length tokens in (“<Rule_name_here>’'):
+
+As the description suggests, there are zero-length tokens present in the rule. Which usually means an extra “|” symbol, placed accidentally. E.g. 
+```
+RuleDefintion { 
+
+  TokenA | TokenB | | Token C
+
+}
+```
+* Duplicate definition of rule (“<Rule_name_here>"):
+
+There are two identical rule names in the grammar, the rule body can differ.
+```
+RuleDefintion { 
+
+…
+
+}
+
+
+RuleDefintion { 
+
+…
+
+}
+```
