@@ -7,32 +7,53 @@
 
 This is a SnowSQL grammar for the [lezer](https://lezer.codemirror.net/) parser system.
 
+### Statements and Features
+
+- [x] Drop Statement
+- [x] Describe Statement
+- [x] Create Integration Statement
+- [x] Create Account Statement
+- [x] Create Resource Monitor Statement
+- [x] Create Role Statement
+- [x] Create Database Statement
+- [x] Create Share Statement
+- [x] Create Table Statement
+- [x] Grant Statement 
+- [x] Commit Statement
+- [x] Get Statement
+- [x] Use Statement
+- [x] Truncate Statement
+- [ ] Select Statment
+- [ ] Alter Statements
+- [ ] Call Statement
+- [ ] Insert Statement
+- [ ] Delete Statement
+- [ ] Merge Statement
+- [ ] Set Statement
+- [x] Comments - Inline + Block
+
 
 
 ## Installation
 
-This package is available as an npm package:
-
 ```bash
-npm install --save lezer-snowsql
-```
-
-**Note**: you will have to manually install the dependency `lezer` as it is a peer dependency to this package.
-
-```bash
-npm install --save lezer
+npm install
 ```
 
 ## Development
-
 ### Building
 
-    npm i
-    npm run build
-
+```bash
+ npm run build 
+```
 ### Testing
 
-    npm run test
+```bash
+ npm test
+```
+
+(You can also use yarn instead of npm.)
+
 
 ## License
 
