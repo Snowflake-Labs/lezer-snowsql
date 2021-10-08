@@ -23,6 +23,7 @@ This is a SnowSQL grammar for the [lezer](https://lezer.codemirror.net/) parser 
 - [x] Get Statement
 - [x] Use Statement
 - [x] Truncate Statement
+- [x] Copy Statement
 - [ ] Select Statment
 - [ ] Alter Statements
 - [ ] Call Statement
