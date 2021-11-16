@@ -1,3 +1,6 @@
+@dialects { dbt }
+
+
 @top SnowSQL {
   
   Stmts 
@@ -24,9 +27,6 @@
 
 Stmts {
 
-
-  // (Stmt (Smc+ Stmt)*)? Smc* |
-
   (DbtConfig? Stmt (Smc+ DbtConfig? Stmt)*)? Smc* |
 
   DbtConfig
@@ -36,7 +36,6 @@ Stmts {
 
 Stmt {
 
-  // SelectStmt | 
   QueryStatementExpression |
   DescribeStmt | 
   DropStmt |
@@ -62,17 +61,13 @@ Stmt {
   ShowStmt |
   CopyStmt |
   AlterTaskStmt |
-  // ParenSelectStmt |
   AlterViewStmt 
-  //AlterTableStmt
 
 }
 
 DbtConfig {
   
-  DbtIdentifier DbtIdentifier* |
-
-  DBTSetName DBTSetName*
+  DbtIdentifier DbtIdentifier* 
 
 } 
 
@@ -227,7 +222,7 @@ PrivilegeObj {
   Account |
   System |
   PrivilegeObjectType (ObjName UdfTypeSig | ObjName) |
-  ObjName | //improve?
+  ObjName | 
   All PrivilegeObjectTypePlural In (Schema | Database ) ObjName |
   Future PrivilegeObjectTypePlural In ( Schema | Database ) ObjName
 
@@ -391,76 +386,6 @@ ScalarObjName {
 }
 
 
-ObjNameSelectTargert {
-
-  ObjectLiteral  |
-
-  IdentifierForSelect  
-
-}
-
-
-Select_base {
-
-  Select Target_list From_clause (Where_clause)?
- 
-}
-
-
-
-From_clause {
-      
-    From From_list|						
-                
-}
-
-
-
-Target_list {
-
-  Star |
-
-  Identifier|
-
-  (Identifier)(Comma Identifier)*|
-
-  Select_with_parens (As ColIdentifier)?
-
-}
-
-
-From_list {
-
-  Identifier|
-
-  (Identifier)(Comma Identifier)*|
-
-  Select_with_parens As? ColIdentifier 
-
-}
-
-
-Table_ref {
-
-  Relation_expr
-  
-}
-
-
-Relation_expr {
-
-  Identifier
-
-}
-
-
-Where_clause { 
-
-  Where ScalarExpression	
-
-}
-
-
 ColListCmt {
 
   (Identifier (Comment StringLiteral)? )(Comma Identifier (Comment StringLiteral)? )*
@@ -482,33 +407,6 @@ IntegrationTypes {
 }
 
 
-// ExpressionA {
-
-//   Lparen ExpressionA Rparen |
-//   (ColIdentifier | Lparen ExpressionA Rparen | NumberLiteral | Select_with_parens (As ColIdentifier)?) 
-//   (Plus| Minus | Gtr | Lss | Eql | Gte | Lte | And | Or | In | Not In | Is (Not Null | Null)) 
-//   (ExpressionA | ColIdentifier | ExpressionA | StringLiteral | NumberLiteral | Select_with_parens (As ColIdentifier)?)
-
-// }
-
-
-ExpressionB {
-
-  ExpressionC |
-
-  Select_with_parens (As ColIdentifier)?|
- 
-  ExpressionB (Plus|Minus|Lss|Gtr) ExpressionB |
-
-  Plus ExpressionB |
-
-  MinusExpressionB
-
-}
-
-
-
-
 SelectStmt { 
 
   
@@ -522,8 +420,7 @@ SelectStmt {
   
   GroupByClause? 
 
-  HavingClause? QualifyClause? ConnectByClause? OrderByClause?// LimitClause?
-       
+  HavingClause? QualifyClause? ConnectByClause? OrderByClause?
 }
 
 
@@ -618,7 +515,6 @@ JoinExpression {
   (CrossAndNaturalJoinKW sampleExpression |
   JoinKW (JoinExpression | SourceObjName !plus AliasClause?) JoinSpecification )+
   
-  //temporary fix alias clause
 }
 
 
@@ -647,7 +543,6 @@ PipeOption {
   IfNotExists |
   CopyGrants  |
   WithKeyValueProperty 
-  //withTagClause
   
 
 }
@@ -708,7 +603,7 @@ JoinKW {
 
 sampleExpression {
 
-  (LateralView | BaseFromExpression) ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen  //was aliasExpression here
+  (LateralView | BaseFromExpression) ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen 
   (NumberLiteral | IntegerLiteral| BindVariable ) Rows? Rparen SampleSeedExpression?)? AliasClause?
 
 }
@@ -723,10 +618,7 @@ SampleSeedExpression {
 
 AliasExpression {
 
-  // LateralView |
   BaseFromExpression
-  //(PivotUnpivotMatchRecognizeClause)*
-  //(AliasClause)?
 
 } 
 
@@ -764,7 +656,7 @@ TableObjectName {
 
 ValuesDef {
 
-  Values ValueList (!plus Comma ValueList)*//temporary
+  Values ValueList (!plus Comma ValueList)*
 
 }
 
@@ -810,13 +702,12 @@ TableFunctionIdentifier {
 
   IdentifierExt Dot IdentifierExt | 
   
-  IdentifierExt // Table name identifier
+  IdentifierExt 
 
 }
 
 TableFunctionArgumentList {
 
- // NamedQueryStatementExpression (Comma NamedQueryStatementExpression )* |
   
   NamedExpression (Comma NamedExpression)*
         
@@ -842,16 +733,14 @@ PivotUnpivotMatchRecognizeClause {
 
   (AliasClause)?
   (
-    //PivotClause | 
     UnpivotClause 
-   //MatchRecognizeClause
   )
  
 }
 
 AliasClause {
 
-  As? IdentifierExt (Lparen AliasList Rparen)? //IdentifierExt here
+  As? IdentifierExt (Lparen AliasList Rparen)? 
 
 }
 
@@ -866,9 +755,8 @@ UnpivotClause {
 
 LateralView {
 
-  Lateral TableFunction// AliasClause? 
+  Lateral TableFunction
   
- // Lateral ParenthesizedFromExpression AliasClause?
 
 }
 
@@ -883,7 +771,6 @@ ParenthesizedFromExpression {
 
 SelectTarget {
 
-  //Star |
   (IdentifierExt Dot)? Star |
   (Connect_by_root? ScalarExpression) (As? IdentifierExt)?
 
@@ -900,27 +787,11 @@ Select_with_parens {
 
 
 
-// ParenSelectStmt {
-
-//   Lparen ParenSelectStmt Rparen |
-
-//   Lparen SelectStmt Rparen
-
-// }
-
-
 Select_no_parens {
 
   Select_base
 
 }
-
-
-// ExpressionC { 
-
-//   Lparen ExpressionA Rparen 
-
-// }
 
 
 ColIdentifier {
@@ -1054,26 +925,10 @@ CreateMaterializedView {
   (Comment Eql StringLiteral)?
   (Cluster By Lparen (Identifier (Comma Identifier)*) Rparen)?
    As SelectStmt 
-  // As QueryStatementExpression 
 
   
 }
 
-
-CreateNotificationIntegration {
-
-  //CreateNotificationIntegration?
-  Create OptOrReplace? Notification Integration IfNotExists?
-  Identifier Enabled Eql (True | False)
-  Type Eql Queue
-  (Notification_provider Eql Gcp_pubsub
-  Gcp_pubsub_subscription_name Eql  Identifier |
-  Notification_provider Eql Azure_storage_queue
-  Azure_storage_queue_primary_uri Eql  Identifier 
-  Azure_tenant_id Eql  Identifier) 
-  (Comment Eql StringLiteral)? 
-
-}
 
 CreateProcedureStmt {
 
@@ -1116,26 +971,6 @@ CreateSchema {
   (Max_data_extension_time_in_days Eql Identifier)?
   (Default_ddl_collation Eql  Identifier)?
   (Comment Eql StringLiteral)?  
-
-}
-
-
-
-CreateSequence {
-
-  Create OptOrReplace? Sequence IfNotExists? Identifier (With)?
-  (Start (With)? (Eql)? Identifier)?
-  (Increment (By)? (Eql)? Identifier)?
-  (Comment Eql StringLiteral)?  
-
-}
-
-
-
-
-NameOp {
-
-  (First_name Eql Identifier)? (Last_name Eql Identifier)?
 
 }
 
@@ -1263,23 +1098,9 @@ URLIdentifier {
 
 IdentifierExt { 
 
-  Identifier | QuotedString //|  KeywordsExtended
+  Identifier | QuotedString 
 
 }
-
-
-identifiergeneral { 
-
-  Identifier | QuotedString  //| KeywordsExtended
-
-}
-
-AliasIdentifier { 
-
-  identifiergeneral
-
-}
-
 
 
 IdentifierForSelect {
@@ -1486,7 +1307,7 @@ SessionVariableIdentifier {
 
 IdentifierNoString {
 
-  Identifier //| KeywordsExtended
+  Identifier
 
 }
 
@@ -1515,7 +1336,6 @@ ColumnIdentifier {
 
   Identifier | 
   QuotedString 
-  //add kw def
 
 }
 
@@ -1663,12 +1483,6 @@ IdentifierExtended {
 
 
 InsertStmt {
-
-
-  // Insert Overwrite? (All | First)? (MultiInsertInto)* (MultiInsertCase*)? 
-  
-  // (QueryStatementExpression | ValuesDef) 
-
   
   Insert Overwrite? 
   
@@ -1698,18 +1512,6 @@ MultiInsertInto {
   Into SourceObjName !plus (Lparen ColumnNameList Rparen)? (Values ValueList)?
 
 }
-
-// ValueList {
-
-//   Lparen ValueListItem (Comma ValueListItem)* Rparen
-
-// }
-
-// ValueListItem {
-
-//   ScalarExpression
-
-// }
 
 
 
@@ -1793,7 +1595,6 @@ CreateFunctionVolatility {
 Declaration {
 
   Identifier Cursor For Identifier Smc+
-  //add constucts
 
 }
 
@@ -1823,7 +1624,6 @@ InvocationPrivilegeType {
 Then_part {
 
   Then (Stmt+)
-  //improve
 
 }
 
@@ -1927,8 +1727,6 @@ ListableKeyValue {
   IdentifierExtended |
   KeyValuesExtended |
   BindVariable 
-  // ScalarIdentifer
-
 
 }
 
@@ -2107,8 +1905,7 @@ FormattypeoptionsXml {
 }
 
 CopyOptions {
-  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier |
-   // Abort_statement
+  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier
     )
   Size_limit Eql Identifier Purge Eql True | False
   Return_failed_only Eql True | False
@@ -2211,7 +2008,6 @@ PrimitiveType {
   Date |
   Time (Lparen scale {NegatableIntegerLiteral} Rparen)?|
   Bit Varying?
-  // len
 
 }
 
@@ -2258,21 +2054,17 @@ NumberAlias {
 
 TimestampType {
 
-  // Generic timestamp
   Timestamp (Lparen scale {NegatableIntegerLiteral} Rparen)? |
  
-  // Timestamp (with local timezone) |
   Timestampltz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp_ltz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp With Local Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? |
  
-  // Timestamp without timezone |
   Timestampntz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp_ntz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp Without Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Datetime (Lparen scale {NegatableIntegerLiteral} Rparen)? |
  
-  // Timestamp with timezone |
   Timestamptz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp_tz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
   Timestamp With Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? 
@@ -2305,11 +2097,13 @@ UnaryOp {
   "+"
 }
 
-DbtIdentifier {
 
-  Dlcly (FunctionCall | ObjName) Drcly (Dot Dlcly (FunctionCall | ObjName) Drcly  )*
+DbtIdentifier{
+
+  DBTDlcly (FunctionCall | ObjName) DBTDrcly (Dot DBTDlcly (FunctionCall | ObjName) DBTDrcly  )*
 
 }
+
 
 KeyValuesExtended {
   Azure |
@@ -2331,8 +2125,6 @@ SignedNumber {
 
 
 ScalarExpression {
-
-  // OrExpression
 
   ExpressionA
 
@@ -2395,26 +2187,11 @@ ExpressionA {
 
   ExpressionA Is Not? (Null | False | True ) | 
 
-  ExpressionA Not? !eql In Inexpression //fix
-
-  //AnyIdentifier in antlr here.
-
-  // ExpressionA Is Not? Distinct From ExpressionA 
-
-  // ExpressionA Not? Between ExpressionB And ExpressionA |
-
-
-  // Unique SelectQueryParen
-
+  ExpressionA Not? !eql In Inexpression 
 }
 
 expressionC {
 
-  //IdentifierExt |
-  
-  // StringLiteral |
-
-  // IntegerLiteral |
 
   CaseExpression | 
 
@@ -2450,7 +2227,7 @@ Inexpression {
 
   ScalarExpressionList
 
-} //temporary, improve
+}
 
 
 OrExpression {
@@ -2525,6 +2302,7 @@ EqualExpression {
 
 }
 
+
 EscapeExpression {
 
   Escape EscapeConstant |
@@ -2549,20 +2327,6 @@ ScalarExpressionList {
 }
 
 
-BitwiseOrExpression {
-
-  AmpersandExpression (BitwiseOR AmpersandExpression)*
-
-}
-
-
-AmpersandExpression {
-
-  IsExpression (Ampsd IsExpression)*
-
-}
-
-
 IsNullOperator {
 
   Is Not? Null 
@@ -2577,54 +2341,6 @@ IsDistinctFromOperator {
 }
 
 
-IsExpression {
-
-  PlusExpression (Is Not? Distinct From PlusExpression | Is Not? Null)?
-
-}
-
-
-PlusExpression {
-
-  StarExpression ((Plus | Sub | Concat ) StarExpression)* //add minus
-
-}
-
-
-StarExpression {
-
-  BitwiseXorExpression ((Star | Divide | Mod | Div) BitwiseXorExpression)*
-
-}
-
-
-BitwiseXorExpression {
-
-  UnaryPrefixExpression (BitwiseXOR UnaryPrefixExpression)*
-
-}
-
-// [+|-|~] expression
-UnaryPrefixExpression {
-
-  ((Plus | Minus | Tilde))*
-  UnarySuffixExpression
-
-}
-
-UnarySuffixExpression {
-
-  (AtomExpression)
-  (
-    Colon AnyIdentifier (Dot AnyIdentifier)* |
-    Lsqr ScalarExpression Rsqr (Dot AnyIdentifier)* |
-    Dcolon Type |
-    Collate StringLiteral |
-    Lparen Plus Rparen |
-    Over Lparen (Partition By PartitionByList)? OrderByClause? WindowFrameClause? Rparen
-  )*
-
-}
 
 
 FunctionOrderingClause {
@@ -2699,7 +2415,6 @@ RunningFinalFunctionCall {
 AnyUnquotedIdentifier {
 
   Identifier 
-  //| KeywordsExtended
 
 }
 
@@ -2714,35 +2429,14 @@ AnyIdentifier {
 
 AtomExpression {
 
-  //BacktrackingAtomExpression |
   SimpleAtomExpression
 
 }
-
-SimpleAtomExpression {
-
-  IntervalLiteral |
-  //FunctionCall |
-  Constant |
-  CaseExpression |
-  CastExpression |
-  ExplicitRowConstructorExpression |
-  //ObjNameSelectTargert |
-  ScalarObjectName |
-  OdbcEscapeAtom |
-  ParenExpression |
-  AnsiLiteral 
-  //ArrayExpression |
-  //objectExpression |
-
-}
-
 
 ScalarIdentifier {
   
   Identifier |
   QuotedString 
- // KeywordsExtended
 
 }
 
@@ -2776,7 +2470,6 @@ AnsiLiteral {
 
 ParenExpression  {
 
-  //Lparen QueryStatementExpression Rparen |
   Lparen ScalarExpression (Comma ScalarExpression)* Rparen
 
 }
@@ -2915,15 +2608,9 @@ OdbcFunctionNameIdentifier {
 
 FunctionCall {
 
-
   FunctionObjName Lparen DistinctAll? FunctionArgs? Rparen
- // (Within Group Lparen functionOrderingClause Rparen)?
 
 }
-
-
-
-
 
 
 DistinctAll {
@@ -2933,11 +2620,9 @@ DistinctAll {
 }
 
 
-
 FunctionArgs {
 
   Star |
-  //  QueryStatementExpression |
   FunctionArgExpression (Comma FunctionArgExpression)*
 
 }
@@ -2971,26 +2656,20 @@ FunctionArgExpression {
 
   ScalarExpression |
   StageNameIdentifier 
-  // AllColumnsTable
 
 }
 
 AllColumnsTable {
 
   Identifier Dot Star 
-  // Star -- fix
-
 
 }
-
-
 
 
 FunctionQualifiedNameIdentifier {
 
   Identifier |
   QuotedString
-  //expand
 
 }
 
@@ -2998,8 +2677,7 @@ FunctionNameIdentifier {
  
   Identifier |
   QuotedString
-  //callableKeywords
-  //expand
+
 }
 
 @skip { whitespace  | LineComment | BlockComment}
@@ -3101,13 +2779,6 @@ FunctionNameIdentifier {
 
   }
 
-
-  // DBTString {
-
-  //   '"' (![\\"] | "\\" _)* '"'? 
-
-  // }
-
   Identifier { 
   
     Dlr std.digit+ |
@@ -3170,7 +2841,9 @@ FunctionNameIdentifier {
   Lcly {"{"}
   Rcly {"}"}
   Dlcly {"{{"}
+  DBTDlcly[@dialect=dbt]{"{{"}
   Drcly {"}}"}
+  DBTDrcly[@dialect=dbt]{"}}"}
   Ddot {".."}
   Lsqr {"["}  
   Rsqr {"]"}
@@ -3187,11 +2860,7 @@ FunctionNameIdentifier {
   BitwiseAnd{"&"}
   Concat{"||"}
   Dcolon{"::"}
-
-
-  //SQL
   Comma {","}
-  // Special Modifier
   Atr { "@" }
 
 
@@ -3201,30 +2870,23 @@ FunctionNameIdentifier {
 
   @precedence { NumberLiteral, Plus, Minus}
 
-  //@precedence { ObjName, Identifier }
   @precedence { IdentifierKW, Identifier}
   @precedence { NumberLiteral, Identifier}
   @precedence { StorageURLFile, Identifier}
   @precedence {URLPathComponent, StringLiteral}
 
   @precedence {URLPathComponent, URLPath, StringLiteral}
-  //@precedence {URLPathComponent, Identifier, LineComment}
 
   @precedence {URLPathComponent, LineComment}
 
   @precedence {URLPathComponent, Atr}
   @precedence {Divide, LineComment}
-  @precedence {Sub, Minus}
 
   @precedence {IdentifierVar, Dlr}
 
   @precedence {QuotedString, StringLiteral}
   @precedence { PlusExpression, StarExpression}
 
-
-
-
-  // for select
   @precedence {StringLiteral, Identifier, Dlr}
   @precedence {IntegerLiteral, NumberLiteral}
   @precedence {Identifier, Letter, Uscr, Dlr}
