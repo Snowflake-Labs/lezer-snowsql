@@ -73,7 +73,7 @@ DropStmt {
 
   Drop DropTargetSimple ObjName |
   
-  Drop (Function | Procedure) ObjName UdfSig |
+  Drop (Function | Procedure) ObjName UdfTypeSig |
 
   Drop DropTargetWithIfExists IfExists? ObjName |
 
