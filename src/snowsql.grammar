@@ -40,82 +40,36 @@ Stmts {
 
 Stmt {
 
-  SelectStmt |
-  DescribeStmt | 
-  DropStmt |
-  InsertStmt |
-  CreateManagedAccount |
-  CreateStmt |
-  CreateStreamStmt |
-  CreateMaterializedView |
-  CreateResourceMonitor |
-  CreateRowAccessPolicy |
-  CreateIntegrationStmt |
-  CreateViewStmt |
-  CreatePipeStmt |
-  CreateTaskStmt |
-  CommitStmt |
-  RollbackStmt |
-  TruncateStmt |
-  UseStmt |
-  GrantRoleStmt |
-  GrantPrivilegesStmt |
-  CreateTableStmt |
-  GetStmt |
-  ShowStmt |
-  CopyStmt |
-  AlterViewStmt
+//   SelectStmt |
+//   DescribeStmt | 
+  DropStmt
+//   InsertStmt |
+//   CreateManagedAccount |
+//   CreateStmt |
+//   CreateStreamStmt |
+//   CreateMaterializedView |
+//   CreateResourceMonitor |
+//   CreateRowAccessPolicy |
+//   CreateIntegrationStmt |
+//   CreateViewStmt |
+//   CreatePipeStmt |
+//   CreateTaskStmt |
+//   CommitStmt |
+//   RollbackStmt |
+//   TruncateStmt |
+//   UseStmt |
+//   GrantRoleStmt |
+//   GrantPrivilegesStmt |
+//   CreateTableStmt |
+//   GetStmt |
+//   ShowStmt |
+//   CopyStmt |
+//   AlterViewStmt
 
 }
-
 
 DropStmt {
-
-  Drop DropTargetSimple ObjName |
-  
-  Drop (Function | Procedure) ObjName UdfTypeSig |
-
-  Drop DropTargetWithIfExists IfExists? ObjName |
-
-  Drop DropTargetWithOptions IfExists? ObjName DropOptions?
-
-}
-
-
-DropTargetSimple {
-
-  Share |
-  Resource Monitor |
-  Managed Account
-
-}
-
-
-DropTargetWithIfExists {
-
-  Network Policy
-  Pipe |
-  Tag |
-  Task |
-  User |
-  Materialized? View |
-  Stream |
-  Role |
-  (API | Notification | Security | Storage)? Integration |
-  Warehouse
-
-}
-
-
-DropTargetWithOptions {
-
-  External? Table |
-  Stage |
-  Sequence |
-  Schema |
-  (Row Access | Masking) Policy |
-  Database
-
+    Drop Identifier IfExists? Identifier (Restrict | Cascade)?
 }
 
 
