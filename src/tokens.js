@@ -28,7 +28,7 @@ import {
   Hour,
   Minute,
   Then,
-  Second,
+  Second, 
   D,
   T,
   Ts,
@@ -85,8 +85,8 @@ import {
   Views,
   Volumes,
   Warehouses,
-  Rely,
-  Norely,
+  Rely, 
+  Norely, 
   Enforced,
   Objects,
   Action,
@@ -162,6 +162,7 @@ import {
   Base64,
   Before,
   Between,
+
   Binary_as_text,
   Binary_format,
   Binary_input_format,
@@ -289,7 +290,7 @@ import {
   Novalidate,
   Match,
   Show,
-  Full,
+  Full, 
   Partial,
   Simple,
   Gcp_pubsub_subscription_name,
@@ -335,6 +336,7 @@ import {
   Large,
   Last,
   Last_name,
+
   Like,
   List,
   Local,
@@ -375,8 +377,8 @@ import {
   Inner,
   Left,
   Outer,
-  Right,
-  Sample,
+  Right, 
+  Sample, 
   Tablesample,
   Semi,
   Network_policy,
@@ -579,7 +581,6 @@ import {
   All,
   Overwrite,
   Into,
-  //   Comma,
   Regexp,
   Ilike,
   Precision,
@@ -602,13 +603,15 @@ import {
   Datetime,
   Timestamptz,
   Timestamp_tz,
-  Table_name,
+  Table_name
+
+
 } from "./parser.terms.js";
 
 const keywordTokens = {
   aad_provisioner: Aad_provisioner,
   abort_detached_query: Abort_detached_query,
-  //abort_statement: Abort_statement,
+  abort_statement: Abort_statement,
   access: Access,
   admin: Admin,
   admin_name: Admin_name,
@@ -633,7 +636,7 @@ const keywordTokens = {
   work: Work,
   auto_refresh: Auto_refresh,
   auto_refresh_materialized_views_on_secondary:
-    Auto_refresh_materialized_views_on_secondary,
+  Auto_refresh_materialized_views_on_secondary,
   rollback: Rollback,
   truncate: Truncate,
   auto_resume: Auto_resume,
@@ -682,7 +685,6 @@ const keywordTokens = {
   bz2: Bz2,
   commit: Commit,
   group: Group,
-  //   comma: Comma,
   connect: Connect,
   try_cast: Try_cast,
   undbounded: Unbounded,
@@ -698,7 +700,7 @@ const keywordTokens = {
   grouping: Grouping,
   sets: Sets,
   cube: Cube,
-  rollup: Rollup,
+  rollup:Rollup,
   called: Called,
   caller: Caller,
   lateral: Lateral,
@@ -734,8 +736,8 @@ const keywordTokens = {
   custom: Custom,
   daily: Daily,
   data_retention_time_in_days: Data_retention_time_in_days,
-  sample: Sample,
-  bernoulii: Bernoulli,
+  sample: Sample, 
+  bernoulii: Bernoulli, 
   block: Block,
   tablesample: Tablesample,
   date_format: Date_format,
@@ -796,7 +798,7 @@ const keywordTokens = {
   inner: Inner,
   left: Left,
   outer: Outer,
-  right: Right,
+  right: Right, 
   full: Full,
   semi: Semi,
   execution: Execution,
@@ -872,8 +874,8 @@ const keywordTokens = {
   exists: Exists,
   external: External,
   distinct: Distinct,
-  match: Match,
-  partial: Partial,
+  match:Match, 
+  partial: Partial, 
   simple: Simple,
   set: Set,
   external_oauth: External_oauth,
@@ -882,7 +884,7 @@ const keywordTokens = {
   external_oauth_issuer: External_oauth_issuer,
   external_oauth_jws_keys_url: External_oauth_jws_keys_url,
   external_oauth_token_user_mapping_claim:
-    External_oauth_token_user_mapping_claim,
+  External_oauth_token_user_mapping_claim,
   external_oauth_type: External_oauth_type,
   externalstage: Externalstage,
   false: False,
@@ -1137,7 +1139,7 @@ const keywordTokens = {
   char: Char,
   string: String,
   binary: Binary,
-  varbinary: Varbinary,
+  varbinary:Varbinary,
   decimal: Decimal,
   dec: Dec,
   number: Number,
@@ -1149,14 +1151,17 @@ const keywordTokens = {
   without: Without,
   datetieme: Datetime,
   timestamptz: Timestamptz,
-  timestamp_tz: Timestamp_tz,
+  timestamp_tz: Timestamp_tz
+
 };
 
 export const specializeIdentifier = (value, stack) => {
   return keywordTokens[value.toLowerCase()] || -1;
 };
 
+
 const contextualKeywordTokens = {
+
   action: Action,
   integration: Integration,
   aws_sns_topic: Aws_sns_topic,
@@ -1190,8 +1195,7 @@ const contextualKeywordTokens = {
   rsa_public_key_2: Rsa_public_key_2,
   external_oauth_rsa_public_key: External_oauth_rsa_public_key,
   external_oauth_rsa_public_key_2: External_oauth_rsa_public_key_2,
-  external_oauth_snowflake_user_mapping_attribute:
-    External_oauth_snowflake_user_mapping_attribute,
+  external_oauth_snowflake_user_mapping_attribute: External_oauth_snowflake_user_mapping_attribute,
   middle_name: Middle_name,
   comment: Comment,
   password: Password,
@@ -1226,8 +1230,10 @@ const contextualKeywordTokens = {
   owner: Owner,
   call: Call,
   queue: Queue,
-};
+
+
+}
 
 export const extendIdentifier = (value, stack) => {
   return contextualKeywordTokens[value.toLowerCase()] || -1;
-};
+}

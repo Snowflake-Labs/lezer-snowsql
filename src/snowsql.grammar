@@ -6,6 +6,7 @@
 
 
 @precedence {
+
   uminus @right,
   pow @left,
   mul @left,
@@ -31,6 +32,7 @@
   
 }
 
+
 Stmts {
 
   (Stmt (Smc+ Stmt)*)? Smc*
@@ -40,36 +42,82 @@ Stmts {
 
 Stmt {
 
-//   SelectStmt |
-//   DescribeStmt | 
-  DropStmt
-//   InsertStmt |
-//   CreateManagedAccount |
-//   CreateStmt |
-//   CreateStreamStmt |
-//   CreateMaterializedView |
-//   CreateResourceMonitor |
-//   CreateRowAccessPolicy |
-//   CreateIntegrationStmt |
-//   CreateViewStmt |
-//   CreatePipeStmt |
-//   CreateTaskStmt |
-//   CommitStmt |
-//   RollbackStmt |
-//   TruncateStmt |
-//   UseStmt |
-//   GrantRoleStmt |
-//   GrantPrivilegesStmt |
-//   CreateTableStmt |
-//   GetStmt |
-//   ShowStmt |
-//   CopyStmt |
-//   AlterViewStmt
+  SelectStmt |
+  DescribeStmt | 
+  DropStmt |
+  InsertStmt |
+  CreateManagedAccount |
+  CreateStmt |
+  CreateStreamStmt |
+  CreateMaterializedView |
+  CreateResourceMonitor |
+  CreateRowAccessPolicy |
+  CreateIntegrationStmt |
+  CreateViewStmt |
+  CreatePipeStmt |
+  CreateTaskStmt |
+  CommitStmt |
+  RollbackStmt |
+  TruncateStmt |
+  UseStmt |
+  GrantRoleStmt |
+  GrantPrivilegesStmt |
+  CreateTableStmt |
+  GetStmt |
+  ShowStmt |
+  CopyStmt |
+  AlterViewStmt
 
 }
 
+
 DropStmt {
-    Drop Identifier IfExists? Identifier (Restrict | Cascade)?
+
+  Drop DropTargetSimple ObjName |
+  
+  Drop (Function | Procedure) ObjName UdfTypeSig |
+
+  Drop DropTargetWithIfExists IfExists? ObjName |
+
+  Drop DropTargetWithOptions IfExists? ObjName DropOptions?
+
+}
+
+
+DropTargetSimple {
+
+  Share |
+  Resource Monitor |
+  Managed Account
+
+}
+
+
+DropTargetWithIfExists {
+
+  Network Policy
+  Pipe |
+  Tag |
+  Task |
+  User |
+  Materialized? View |
+  Stream |
+  Role |
+  (API | Notification | Security | Storage)? Integration |
+  Warehouse
+
+}
+
+
+DropTargetWithOptions {
+
+  External? Table |
+  Stage |
+  Sequence |
+  Schema |
+  (Row Access | Masking) Policy |
+  Database
+
 }
 
 
@@ -147,7 +195,6 @@ PrivilegeObj {
   Future PrivilegeObjectTypePlural In ( Schema | Database ) ObjName
 
 }
-
 
 
 CreateStmt  {
@@ -256,7 +303,6 @@ ObjName {
 }
 
 
-
 ColListCmt {
 
   (Identifier (Comment StringLiteral)? )(Comma Identifier (Comment StringLiteral)? )*
@@ -334,7 +380,6 @@ SelectTargetList{
   SelectTarget (Comma SelectTarget)*
 
 }
-
 
 
 ConnectByClause {
@@ -629,10 +674,7 @@ NamedQueryStatementExpression {
 
 PivotUnpivotMatchRecognizeClause {
 
-  (AliasClause)?
-  (
-    UnpivotClause 
-  )
+  (AliasClause)?  (UnpivotClause)
  
 }
 
@@ -645,11 +687,10 @@ AliasClause {
 
 
 UnpivotClause {
-    Unpivot
-    Lparen ObjName
-        For ObjName
-        In Lparen Identifier (Comma Identifier)* Rparen
-    Rparen
+
+  Unpivot Lparen ObjName For ObjName 
+  In Lparen Identifier (Comma Identifier)* Rparen Rparen
+
 }
 
 
@@ -676,27 +717,6 @@ SelectTarget {
   (Connect_by_root? ScalarExpression) (As? IdentifierExt)?
 
 }
-
-
-Select_with_parens {
-
-  Lparen Select_no_parens Rparen |		
-
-  Lparen Select_with_parens Rparen		
-
-}
-
-
-SelectStmtParen {
-
-  Lparen SelectStmt Rparen |
-
-  Lparen SelectStmtParen Rparen
-
-}
-
-
-
 
 
 ColIdentifier {
@@ -782,33 +802,6 @@ CloneProvision {
 }
 
 
-CreateAPIIntegration {
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql (Aws_api_gateway | Aws_private_api_gateway)
-  Api_aws_role_arn Eql Sqt UrLi Sqt
-  (Api_key Eql  Identifier)?
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  |
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql Azure_api_management
-  Azure_tenant_id Eql  Identifier  Azure_ad_application_id Eql  Identifier (Api_key Eql  Identifier)?
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  |
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql Google_api_gateway
-  Google_audience Eql  Identifier 
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  
-    
-}
-
-
 CreateManagedAccount {
 
   Create Managed Account Identifier Admin_name Eql Identifier Comma Admin_password StringLiteral Comma
@@ -861,12 +854,14 @@ CreateResourceMonitor {
 
 }
 
+
 CreateRowAccessPolicy {
 
   Create OptOrReplace? Row Access Policy IfNotExists? Identifier As
   Lparen Identifier+ Rparen Returns Boolean Arr Identifier (Comment Eql StringLiteral)?  
 
 }
+
 
 CreateSchema {
 
@@ -879,19 +874,6 @@ CreateSchema {
   (Comment Eql StringLiteral)?  
 
 }
-
-
-
-CreateSequence {
-
-  Create OptOrReplace? Sequence IfNotExists? Identifier (With)?
-  (Start (With)? (Eql)? Identifier)?
-  (Increment (By)? (Eql)? Identifier)?
-  (Comment Eql StringLiteral)?  
-
-}
-
-
 
 
 NameOp {
@@ -931,11 +913,15 @@ CreateViewStmt {
 
 ViewColumnSpecificationList {
 
-    ViewColumnSpecification (COMMA ViewColumnSpecification)*
+  ViewColumnSpecification (COMMA ViewColumnSpecification)*
+
 }
 
+
 ViewColumnSpecification {
-    Identifier CommentClause? (IinlineViewConstraint)*
+
+  Identifier CommentClause? (IinlineViewConstraint)*
+
 }
 
 
@@ -1020,7 +1006,6 @@ AliasIdentifier {
   identifiergeneral
 
 }
-
 
 
 IdentifierForSelect {
@@ -1161,7 +1146,6 @@ TemporaryType {
 }
 
 
-
 ForeignKeyUpdateRule {
 
   On Update (Cascade | Set Null | Set Default |
@@ -1222,7 +1206,7 @@ SessionVariableIdentifier {
 
   (Dlr) (Letter | Uscr) (Letter | Digit | Uscr)*
 
- }
+}
  
 
 IdentifierNoString {
@@ -1329,7 +1313,6 @@ KeyValueList {
   Lparen Rparen
 
 }
-
 
 
 CreateFunctionStmt {
@@ -2066,7 +2049,6 @@ ScalarExpression {
 }
 
 
-
 ExpressionA {
 
   Lparen ExpressionA Rparen |
@@ -2206,7 +2188,6 @@ CompOperatorQuantifier {
   All | Any 
 
 }
-
 
 
 EscapeExpression {
@@ -2363,7 +2344,6 @@ constant {
 }
 
 
-
 ObjectLiteral {
 
   IdentifierKW Lparen (StringLiteral | BindVariable | IntegerLiteral) Rparen
@@ -2411,7 +2391,6 @@ ExplicitRowConstructorExpression {
   Row Lparen ScalarExpression (Comma ScalarExpression)* Rparen
 
 }
-
 
 
 LimitClause {
@@ -2779,7 +2758,6 @@ FunctionNameIdentifier {
   Intersect, Union, Except, Order, Next, Fetch, Case, Cast, Over, Prior, Overwrite, Values, Lateral, Unpivot, Precision, Varying, Varchar, Character, Char, String, Binary, Varbinary, Decimal, Dec, Number, Timestampltz,
   Timestamp_ltz, Zone, Timestampntz, Timestamp_ntz, Without, Datetime, Timestamptz, Timestamp_tz
 
-
 }
 
 
@@ -2792,4 +2770,5 @@ FunctionNameIdentifier {
   External_oauth_snowflake_user_mapping_attribute, Middle_name, Comment, Password,  Last_name,
   Must_change_password, First_name, Login_name, Region, Policy, Location, Materialized, Schema, Minute, D, Account, Day, Views, Identity, Alter, View, Table_name, Resume,
   Endset, Database, Kms_key_id, Timestamp, Key, Columns, Keys, Role, X, Owner, Call, Queue
+  
 }
