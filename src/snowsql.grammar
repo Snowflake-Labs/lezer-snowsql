@@ -18,7 +18,9 @@
   in,
   between,
   escape,
+  any,
   like,
+  regexp,
   comp @left,
   eql @left,
   bitOr @left,
@@ -448,24 +450,31 @@ FromClause {
 
 FromExpression {
 
-  sampleExpression JoinExpression? | 
+  sampleExpression JoinExpression* | 
   
-  Lcly Oj sampleExpression JoinExpression? Rcly
+  Lcly Oj sampleExpression JoinExpression* Rcly
 
 }
 
 
 JoinExpression {
   
-  (CrossAndNaturalJoinKW sampleExpression |
-  JoinKW (JoinExpression | ObjName !or AliasClause?) JoinSpecification )+
-  
+  CrossAndNaturalJoinKW sampleExpression |
+  !plus JoinKW ( joinExprRepeat JoinSpecification | sampleExpression )
+
+}
+
+
+joinExprRepeat {
+
+  sampleExpression JoinExpression*
+
 }
 
 
 JoinSpecification {
 
-  On ScalarExpression |
+  On ExpressionA |
   Using Lparen ColumnNames Rparen
 
 }
@@ -549,8 +558,13 @@ JoinKW {
 
 sampleExpression {
 
-  (LateralView | BaseFromExpression) ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen  
-  (NumberLiteral | IntegerLiteral| BindVariable ) Rows? Rparen SampleSeedExpression?)? AliasClause?
+  ( 
+  //LateralView | 
+  BaseFromExpression AliasClause?
+  )
+  
+  ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen  
+  (NumberLiteral | IntegerLiteral| BindVariable ) Rows? Rparen SampleSeedExpression?)?
 
 }
 
@@ -899,28 +913,223 @@ DbOp {
   
 }
 
+
 CreateViewStmt {
 
-  Create OptOrReplace? Force? Secure? Recursive? View IfNotExists?
+  Create OptOrReplace? Force? Secure? Recursive? TemporaryType? View IfNotExists?
+  
   ObjName
-  (With? KeyValueProperty Comma?)*  
 
-  (Copy Grants)?
+  ViewOption* ViewSpecification
 
-  As QueryStatementExpression
+}
+
+
+ViewSpecification {
+
+  (ViewColumnSpecificationsWithConstraints | 
+
+  ViewOutOfLineConstraints ViewOption* )?
+
+  As SelectStmt 
+
+}
+
+ViewOption {
+
+  CommonCreateOption |
+  
+  WithRowAccessPolicyClause
+
+}
+
+
+CommonCreateOption {
+
+  IfNotExists | 
+  CopyGrants | 
+  WithKeyValueProperty | 
+  WithTagClause
+
+}
+
+
+
+
+WithTagClause {
+
+  With? Tag Lparen TagValuePairsList Rparen
+        
+}
+
+
+TagValuePairsList {
+
+  TagValuePair (Comma TagValuePair)*
+
+}
+
+
+TagValuePair {
+
+  ObjName Eql KeyValue
+
+}
+
+
+TagNamesList {
+
+  ObjName (Comma ObjName)*
+
+}
+
+
+ViewOutOfLineConstraints {
+
+  Lparen OutOfLineViewConstraintList Rparen
+
+}
+
+
+ViewColumnSpecifications {
+
+  Lparen ViewColumnSpecificationList Rparen
+
+}
+
+
+ViewColumnSpecificationsWithConstraints {
+
+  Lparen ViewColumnSpecification (Comma ViewColumnSpecification)*
+  (Comma OutOfLineViewConstraintList)? Rparen
+
+}
+
+
+OutOfLineViewConstraintList {
+
+  OutOfLineViewConstraint (Comma OutOfLineViewConstraint)*
+
 }
 
 
 ViewColumnSpecificationList {
 
-  ViewColumnSpecification (COMMA ViewColumnSpecification)*
-
+  ViewColumnSpecification (Comma ViewColumnSpecification)*
+  
 }
 
 
 ViewColumnSpecification {
 
-  Identifier CommentClause? (IinlineViewConstraint)*
+  IdentifierExt ColumnWithMaskingPolicyClause? WithTagClause? CommentClause? (InlineViewConstraint)*
+
+}
+
+
+OutOfLineTableConstraint {
+
+  (Constraint IdentifierExt)? Unique Lparen ColumnNameOnlyList Rparen
+  OutOfLineTableConstraintProperties* | 
+  
+  (Constraint IdentifierExt)? Primary Key Lparen ColumnNameOnlyList
+  Rparen OutOfLineTableConstraintProperties* | 
+  
+  (Constraint IdentifierExt)? Foreign Key Lparen 
+  ColumnNameOnlyList Rparen References ObjName 
+  (Lparen ColumnNameOnlyList Rparen)? ForeignKeyMatch? ForeignKeyDeleteUpdateRule?
+  OutOfLineTableConstraintProperties* 
+
+}
+
+
+InlineViewConstraint {
+
+  (Constraint IdentifierExt)? Unique ViewConstraintProperties?  |
+  (Constraint IdentifierExt)? Primary Key ViewConstraintProperties? |
+  (Constraint IdentifierExt)? References
+  ObjName (Lparen IdentifierExt Rparen)?
+  ViewConstraintProperties? 
+}
+
+
+ForeignKeyMatch {
+
+  Match (Full | Partial | Simple)
+
+}
+
+
+ForeignKeyUpdateRule {
+
+  On Update (Cascade | Set Null | Set Default |
+  Restrict | No Action)
+}
+
+
+ForeignKeyDeleteRule {
+
+  On Delete (Cascade | Set Null | Set Default |
+  Restrict | No Action)
+
+}
+
+
+TableConstraintProperties {
+
+  ConstraintDeferrableProp |
+  (Initiallly (Deferred | Immediate)) |
+  (Rely | Norely) | 
+  ConstraintEnableProp (Validate | Novalidate)?
+
+}
+
+
+OutOfLineTableConstraintProperties {
+
+  TableConstraintProperties | CommentClause
+
+}
+
+
+OutOfLineTableConstraintList {
+
+  OutOfLineTableConstraint (Comma OutOfLineTableConstraint)*
+
+}
+
+
+OutOfLineViewConstraint {
+
+  OutOfLineTableConstraint
+
+}
+
+
+WithRowAccessPolicyClause {
+
+  With? Row Access Policy ObjName On Lparen ColumnNameOnlyList? Rparen 
+
+}
+
+
+ColumnWithMaskingPolicyClause {
+
+  With? Masking Policy ObjName (Using Lparen ColumnNameOnlyList Rparen)?
+
+}
+
+
+ColumnNameOnlyList {
+
+  IdentifierExt (Comma IdentifierExt)*
+
+}
+
+
+ViewConstraintProperties {
+
+  (Rely | Norely)? (Disable | Not Enforced)
 
 }
 
@@ -1146,51 +1355,10 @@ TemporaryType {
 }
 
 
-ForeignKeyUpdateRule {
-
-  On Update (Cascade | Set Null | Set Default |
-  Restrict | No Action)
-
-}
-
-
-ForeignKeyDeleteRule {
-
-  On Delete (Cascade | Set Null | Set Default |
-  Restrict | No Action)
-
-}
-
-
 ForeignKeyDeleteUpdateRule {
 
   ForeignKeyUpdateRule ForeignKeyDeleteRule? | 
   ForeignKeyDeleteRule ForeignKeyUpdateRule?
-
-}
-
-
-ForeignKeyMatch {
-
-  Match (Full | Partial | Simple)
-
-}
-
-
-OutOfLineTableConstraintProperties {
-
-  TableConstraintProperties | 
-  CommentClause
-
-}
-
-
-TableConstraintProperties {
-
-  ConstraintDeferrableProp | 
-  (Initiallly (Deferred | Immediate)) |
-  (Rely | Norely) |
-  ConstraintEnableProp (Validate | Novalidate)?
 
 }
 
@@ -2051,6 +2219,7 @@ ScalarExpression {
 
 ExpressionA {
 
+
   Lparen ExpressionA Rparen |
 
   expressionB |
@@ -2095,18 +2264,21 @@ ExpressionA {
 
   ExpressionA !is Is Not? Null |
 
-  ExpressionA? !plus Not? (!like (Like All? | Ilike | Rlike) | Regexp ) ExpressionA | 
+  ExpressionA !not Not? (!like (Like All? | Ilike | Rlike) |!regexp Regexp ) ExpressionA | 
 
-  ExpressionA? !like (Like | Ilike) Any ExpressionA | 
+  ExpressionA !like (Like | Ilike) !any Any ExpressionA | 
 
-  ExpressionA !like Not? !like (Like| Ilike) ExpressionA !escape Escape ExpressionA |
+  ExpressionA !not Not? !like (Like| Ilike) ExpressionA !escape Escape ExpressionA |
 
-  ExpressionA !is Is !like Not? (Null | False | True ) | 
+  ExpressionA !is Is !not Not? (Null | False | True ) | 
 
-  ExpressionA !not Not? !in In Inexpression 
+  ExpressionA !not Not? !in In Inexpression |
 
+  !not Not ExpressionA
 
 }
+
+
 
 expressionB {
 
@@ -2133,7 +2305,9 @@ expressionB {
   Over Lparen (Partition By PartitionByList)? OrderByClause? WindowFrameClause? Rparen |
 
   Dcolon Types) 
+
 }
+
 
 
 Inexpression {
