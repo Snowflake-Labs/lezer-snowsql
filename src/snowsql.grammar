@@ -43,6 +43,7 @@ Stmt {
   CreateIntegrationStmt |
   CreateViewStmt |
   CreatePipeStmt |
+  CreateTaskStmt |
   CommitStmt |
   RollbackStmt |
   TruncateStmt |
@@ -477,6 +478,24 @@ WithKeyValueProperty {
       
 }
 
+CreateTaskStmt {
+    Create OptOrReplace? Task IfNotExists? ObjName TaskOptions* TaskSpecification
+}
+
+TaskOption {
+    (Warehouse Eql StringLiteral)* |
+    (UserTaskManagedInitialWarehouseSize Eql StringLiteral)? |
+    (Schedule Eql StringLiteral)? |
+    (Allow_overlapping_execution Eql BooleanValue)? |
+    //[ <session_parameter> = <value> [ , <session_parameter> = <value> ... ] ] // TODO: What is this??
+    (User_task_timeout_ms Eql Number)? |
+    (CopyGrants)? | 
+    (Comment Eql StringLiteral)? |
+    (After ObjName)? |
+    (WhenExpression)? // TODO: Add WhenExpression
+}
+
+
 
 CopyGrants {
 
@@ -851,7 +870,7 @@ ExFOp2
 {
   //Api_integration Eql Identifier 
   (Headers Eql (Identifier  Eql  Identifier)+)?
-  (Context_headers Eql (Identifier  Comma Identifier))?
+  (Context_headers Eql (Identifier Comma Identifier))?
   (Max_batch_rows Eql NumberLiteral)?
   (Compression Eql Identifier)?
 }
@@ -2796,7 +2815,7 @@ FunctionNameIdentifier {
   Rely, Norely, Disable, Enforced, Deferrable, Starts, Limit, History, Show, Terse, Initiallly, Deferred, Immediate, Validate, Novalidate, Match, Full, Partial, Simple, Set, No, Get, Into, Else, Rlike, Having, Qualify, Initially, Attach, Schemas, Oj,
   Join, Inner, Left ,Outer, Right, Semi, Sample, Tablesample, Bernoulli, Block, Distinct, Top, Rows, Seed, Repeatable, Natural, Cross, Connect, Try_cast, Div , Unbounded, Preceding, Following, Range, Asc, Nulls, Year, Month, Day, Hour, Minute, Second, D, T, Ts, Fn, Extract, Position,
   Intersect, Union, Except, Order, Next, Fetch, Case, Cast, Over, Prior, Overwrite, Values, X, Lateral, Unpivot, Precision, Varying, Varchar, Character, Char, String, Binary, Varbinary, Decimal, Dec, Number, Timestampltz,
-  Timestamp_ltz, Zone, Timestampntz, Timestamp_ntz, Without, Datetime, Timestamptz, Timestamp_tz
+  Timestamp_ltz, Zone, Timestampntz, Timestamp_ntz, Without, Datetime, Timestamptz, Timestamp_tz, UserTaskManagedInitialWarehouseSize
 
 
 }
