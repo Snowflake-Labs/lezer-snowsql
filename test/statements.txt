@@ -381,10 +381,10 @@ SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integr
 
 # Create storage integration with mutliple storage_allowed_locations
 
-CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integration TYPE=EXTERNAL_STAGE ENABLED=TRUE AZURE_TENANT_ID='3f78fa49-fd80-4d3c-91b8-f34f31d7417e' STORAGE_ALLOWED_LOCATIONS=(
-  'azure://loggingeus2sfc.blob.core.windows.net/insights-logs-auditlogs',
-  'azure://loggingeus2sfc.blob.core.windows.net.blob.core.windows.net/insights-operational-logs',
-  'azure://loggingeus2sfc.blob.core.windows.net.blob.core.windows.net/insights-logs-signinlogs'
+CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integration TYPE=EXTERNAL_STAGE ENABLED=TRUE AZURE_TENANT_ID='DDD' STORAGE_ALLOWED_LOCATIONS=(
+  'AAA',
+  'BBB',
+  'CCC'
 )
 ;
 
