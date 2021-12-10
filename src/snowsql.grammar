@@ -1,26 +1,38 @@
 @dialects { dbt }
 
-
 @top SnowSQL {
   
-  Stmts 
+  Stmts
 
 }
 
 
 @precedence {
 
-  pow @right,
+  uminus @right,
+  pow @left,
   mul @left,
   plus @left,
+  is,
+  isnull,
+  notnull,
+  arb,
+  in,
+  between,
+  escape,
+  any,
+  like,
+  regexp,
+  comp @left,
   eql @left,
   bitOr @left,
   bitXor @left,
   bitAnd @left,
+  not @right,
   and @left,
   or @left,
-  like,
-  in
+  intersect @left,
+  union @left
   
 }
 
@@ -33,37 +45,6 @@ Stmts {
      
 }
 
-
-Stmt {
-
-  QueryStatementExpression |
-  DescribeStmt | 
-  DropStmt |
-  InsertStmt |
-  CreateManagedAccount |
-  CreateStmt |
-  CreateStreamStmt |
-  CreateMaterializedView |
-  CreateResourceMonitor |
-  CreateRowAccessPolicy |
-  CreateIntegrationStmt |
-  CreateViewStmt |
-  CreatePipeStmt |
-  CreateTaskStmt |
-  CommitStmt |
-  RollbackStmt |
-  TruncateStmt |
-  UseStmt |
-  GrantRoleStmt |
-  GrantPrivilegesStmt |
-  CreateTableStmt |
-  GetStmt |
-  ShowStmt |
-  CopyStmt |
-  AlterTaskStmt |
-  AlterViewStmt 
-
-}
 
 DbtConfig {
   
@@ -88,15 +69,49 @@ DBTSetObjName {
 }
 
 
+Stmt {
+
+  SelectStmt |
+  DescribeStmt | 
+  DropStmt |
+  InsertStmt |
+  CreateManagedAccount |
+  CreateStmt |
+  CreateStreamStmt |
+  CreateMaterializedView |
+  CreateResourceMonitor |
+  CreateRowAccessPolicy |
+  CreateIntegrationStmt |
+  CreateViewStmt |
+  CreatePipeStmt |
+  CreateTaskStmt |
+  CommitStmt |
+  RollbackStmt |
+  TruncateStmt |
+  UseStmt |
+  GrantRoleStmt |
+  GrantPrivilegesStmt |
+  CreateTableStmt |
+  GetStmt |
+  ShowStmt |
+  CopyStmt |
+  AlterViewStmt |
+  AlterTaskStmt
+
+}
+
+
 DropStmt {
 
   Drop DropTargetSimple ObjName |
   
-  Drop (Function | Procedure) ObjName UdfSig |
+  Drop (Function | Procedure) ObjName UdfTypeSig |
 
   Drop  Materialized? View IfExists? SourceObjName |
 
   Drop DropTargetWithIfExists IfExists? ObjName |
+
+  Drop External? Table IfExists? SourceObjName DropOptions? |
 
   Drop DropTargetWithOptions IfExists? ObjName DropOptions?
 
@@ -129,7 +144,6 @@ DropTargetWithIfExists {
 
 DropTargetWithOptions {
 
-  External? Table |
   Stage |
   Sequence |
   Schema |
@@ -143,30 +157,16 @@ GrantPrivilegesStmt {
 
   Grant (PrivilegePrefix PrivilegeSuffix?) (Comma PrivilegePrefix PrivilegeSuffix?)* 
 
-  On PrivilegeObj To (Share | Role)? GrantObjName (With Grant Option)? ((Revoke| Copy) Current Grants)? | 
+  On PrivilegeObj To (Share | Role)? ObjName (With Grant Option)? ((Revoke| Copy) Current Grants)? | 
 
-  Grant Imported Privileges On PrivilegeObj To (Share | Role)? GrantObjName
+  Grant Imported Privileges On PrivilegeObj To (Share | Role)? ObjName
 
 }
 
 
 GrantRoleStmt {
 
-  Grant Role GrantObjName (Comma GrantObjName)* To (Role | User) GrantObjName
-
-}
-
-
-GrantObjName {
-
-  objName
-
-}
-
-AlterTaskStmt {
-
-
-  Alter Task IfExists? SourceObjName (Suspend | Resume) 
+  Grant Role ObjName (Comma ObjName)* To (Role | User) ObjName
 
 }
 
@@ -222,12 +222,11 @@ PrivilegeObj {
   Account |
   System |
   PrivilegeObjectType (ObjName UdfTypeSig | ObjName) |
-  ObjName | 
+  ObjName |
   All PrivilegeObjectTypePlural In (Schema | Database ) ObjName |
   Future PrivilegeObjectTypePlural In ( Schema | Database ) ObjName
 
 }
-
 
 
 CreateStmt  {
@@ -269,7 +268,6 @@ CreateStreamStmt {
 
   CloneDefintion (Copy Grants)?)? PropsList?
   
-
 }
 
 
@@ -280,21 +278,6 @@ CloneDefintion {
 }
 
 
-KeywordsExtended {
-
-  Type |
-  Azure |
-  Gcs |
-  Text|
-  Channel |
-  S3|
-  Data|
-  Enabled |
-  Security |
-  Data |
-  Public 
-}
-
 UseStmt {
 
   Use ObjName | 
@@ -302,6 +285,14 @@ UseStmt {
   Use Database ObjName | 
   Use Warehouse ObjName | 
   Use Role ObjName
+
+}
+
+
+AlterTaskStmt {
+
+
+  Alter Task IfExists? ObjName (Suspend | Resume) 
 
 }
 
@@ -328,8 +319,6 @@ ShowLimitClause  {
 }
 
 
-
-
 ShowStmt {
 
   Show Terse? (Tasks | Views) (Like StringLiteral)? ShowInClause? (Starts With StringLiteral)? ShowLimitClause? |
@@ -343,12 +332,6 @@ ShowStmt {
 
 ObjName {
 
-  /*
-  (Identifier | QuotedString | KeywordsExtended ) (Dot (Identifier|QuotedString | KeywordsExtended))* |
-
-  (Identifier|QuotedString | KeywordsExtended ) Dot Dot (Identifier|QuotedString | KeywordsExtended) |
-  */
-
   IdentifierKW Lparen IdentifierVar Rparen |
 
   ObjectLiteral |
@@ -360,28 +343,10 @@ ObjName {
 }
 
 
+SourceObjName {
 
-
-
-
-
-objName { 
-
-  
-  IdentifierKW Lparen IdentifierVar Rparen |
-
-  ObjectLiteral |
-
-  IdentifierExt Ddot IdentifierExt |
-
-  IdentifierExt (Dot IdentifierExt)* 
-  
-}
-
-
-ScalarObjName {
-
-  objName
+  objName |
+  DbtIdentifier
 
 }
 
@@ -407,10 +372,39 @@ IntegrationTypes {
 }
 
 
-SelectStmt { 
+SelectStmt {
 
-  
-  WithClause?
+  SelectDefinition |  //without parenthesis
+  ParenSelect  //with parenthisis
+
+}
+
+
+SelectDefinition { 
+
+  SelectBase |    
+  WithClause SelectClause 
+
+}
+
+
+ParenSelect {
+
+  Lparen ParenSelect Rparen |
+  Lparen SelectDefinition Rparen
+
+}
+
+
+SelectClause {
+
+  SelectBase | 
+  ParenSelect
+
+}
+
+
+SelectBase {
 
   Select 
   
@@ -418,9 +412,14 @@ SelectStmt {
   
   (Into ObjName)? FromClause? WhereClause? 
   
-  GroupByClause? 
+  GroupByClause? OrderByClause? LimitClause?
+  
+  HavingClause? QualifyClause? ConnectByClause? |
 
-  HavingClause? QualifyClause? ConnectByClause? OrderByClause?
+  SelectClause !union Union (All|Distinct)? SelectClause |
+
+  SelectClause !intersect (Except | Intersect) (All)? SelectClause 
+
 }
 
 
@@ -430,13 +429,6 @@ SelectTargetList{
 
 }
 
-ParenSelectStmt {
-
-  Lparen ParenSelectStmt Rparen |
-
-  Lparen SelectStmt Rparen
-
-}
 
 ConnectByClause {
 
@@ -459,6 +451,7 @@ GroupByClause {
   Group By GroupByExpression (Comma GroupByExpression)*
 
 }
+
 
 GroupByExpression {
 
@@ -503,27 +496,35 @@ FromClause {
 
 FromExpression {
 
-  sampleExpression JoinExpression? | 
+  sampleExpression JoinExpression* | 
   
-  Lcly Oj sampleExpression JoinExpression? Rcly
+  Lcly Oj sampleExpression JoinExpression* Rcly
 
 }
 
 
 JoinExpression {
   
-  (CrossAndNaturalJoinKW sampleExpression |
-  JoinKW (JoinExpression | SourceObjName !plus AliasClause?) JoinSpecification )+
-  
+  CrossAndNaturalJoinKW sampleExpression |
+  !plus JoinKW ( joinExprRepeat JoinSpecification | sampleExpression )
+
+}
+
+
+joinExprRepeat {
+
+  sampleExpression JoinExpression*
+
 }
 
 
 JoinSpecification {
 
-  On ScalarExpression |
+  On ExpressionA |
   Using Lparen ColumnNames Rparen
 
 }
+
 
 CreatePipeStmt { 
 
@@ -603,8 +604,13 @@ JoinKW {
 
 sampleExpression {
 
-  (LateralView | BaseFromExpression) ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen 
-  (NumberLiteral | IntegerLiteral| BindVariable ) Rows? Rparen SampleSeedExpression?)? AliasClause?
+  ( 
+  //LateralView | 
+  BaseFromExpression AliasClause?
+  )
+  
+  ((Sample | Tablesample) (Bernoulli | Block | Row | System)? Lparen  
+  (NumberLiteral | IntegerLiteral| BindVariable ) Rows? Rparen SampleSeedExpression?)?
 
 }
 
@@ -628,19 +634,15 @@ BaseFromExpression {
 
   TableObjectName |
   ValuesDef |
-  ParenSelectStmt 
+  ParenSelect 
 
 }
-
-
 
 tableFunctionArgumentList {
 
   NamedExpression ( Comma  NamedExpression )*
 
-
 }
-
 
 
 TableObjectName {
@@ -650,6 +652,13 @@ TableObjectName {
   IdentifierExt Dot Dot IdentifierExt |
   IdentifierExt |
   DbtIdentifier
+
+}
+
+
+DbtIdentifier{
+
+  DBTDlcly (FunctionCall | ObjName) DBTDrcly (Dot DBTDlcly (FunctionCall | ObjName) DBTDrcly  )*
 
 }
 
@@ -694,6 +703,7 @@ TableFunctionName {
 
 }
 
+
 TableFunctionIdentifier {
 
   IdentifierExt Dot IdentifierExt Dot IdentifierExt |
@@ -706,8 +716,8 @@ TableFunctionIdentifier {
 
 }
 
-TableFunctionArgumentList {
 
+TableFunctionArgumentList {
   
   NamedExpression (Comma NamedExpression)*
         
@@ -722,6 +732,7 @@ NamedExpression {
 
 }
 
+
 NamedQueryStatementExpression {
 
   (IdentifierExt Darw)? QueryStatementExpression
@@ -731,12 +742,10 @@ NamedQueryStatementExpression {
 
 PivotUnpivotMatchRecognizeClause {
 
-  (AliasClause)?
-  (
-    UnpivotClause 
-  )
+  (AliasClause)?  (UnpivotClause)
  
 }
+
 
 AliasClause {
 
@@ -746,12 +755,12 @@ AliasClause {
 
 
 UnpivotClause {
-    Unpivot
-    Lparen ObjName
-        For ObjName
-        In Lparen Identifier (Comma Identifier)* Rparen
-    Rparen
+
+  Unpivot Lparen ObjName For ObjName 
+  In Lparen Identifier (Comma Identifier)* Rparen Rparen
+
 }
+
 
 LateralView {
 
@@ -759,6 +768,7 @@ LateralView {
   
 
 }
+
 
 ParenthesizedFromExpression {
 
@@ -773,23 +783,6 @@ SelectTarget {
 
   (IdentifierExt Dot)? Star |
   (Connect_by_root? ScalarExpression) (As? IdentifierExt)?
-
-}
-
-
-Select_with_parens {
-
-    Lparen Select_no_parens Rparen|		
-
-    Lparen Select_with_parens Rparen		
-
-}
-
-
-
-Select_no_parens {
-
-  Select_base
 
 }
 
@@ -835,16 +828,17 @@ AliasList {
 
 }
 
+
 WithExpression {
 
-  Lparen (QueryStatementExpression) Rparen
+  Lparen (QueryStatementExpression | ScalarExpression) Rparen
 
 }
 
 
 CreateTaskStmt {
 
-  Create OptOrReplace Task IfNotExists? SourceObjName PropsList? AfterTask? (TaskCondition? TaskSpecification | CloneProvision)?
+  Create OptOrReplace Task IfNotExists? ObjName PropsList? AfterTask? (TaskCondition? TaskSpecification | CloneProvision)?
 }
 
 
@@ -876,33 +870,6 @@ CloneProvision {
 }
 
 
-CreateAPIIntegration {
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql (Aws_api_gateway | Aws_private_api_gateway)
-  Api_aws_role_arn Eql Sqt UrLi Sqt
-  (Api_key Eql  Identifier)?
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  |
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql Azure_api_management
-  Azure_tenant_id Eql  Identifier  Azure_ad_application_id Eql  Identifier (Api_key Eql  Identifier)?
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  |
-
-  Create OptOrReplace? Api Integration IfNotExists? Identifier Api_provider Eql Google_api_gateway
-  Google_audience Eql  Identifier 
-  Api_allowed_prefixes Eql Lparen Sqt UrLi Sqt Rparen
-  (Api_blocked_prefixes Eql Lparen UrLi Rparen)?
-  Enabled Eql (True | False)
-  (Comment Eql StringLiteral)?  
-    
-}
-
-
 CreateManagedAccount {
 
   Create Managed Account Identifier Admin_name Eql Identifier Comma Admin_password StringLiteral Comma
@@ -924,7 +891,7 @@ CreateMaterializedView {
   (Lparen ColListCmt Rparen)?
   (Comment Eql StringLiteral)?
   (Cluster By Lparen (Identifier (Comma Identifier)*) Rparen)?
-   As SelectStmt 
+  As QueryStatementExpression 
 
   
 }
@@ -955,12 +922,14 @@ CreateResourceMonitor {
 
 }
 
+
 CreateRowAccessPolicy {
 
   Create OptOrReplace? Row Access Policy IfNotExists? Identifier As
   Lparen Identifier+ Rparen Returns Boolean Arr Identifier (Comment Eql StringLiteral)?  
 
 }
+
 
 CreateSchema {
 
@@ -975,31 +944,17 @@ CreateSchema {
 }
 
 
+NameOp {
+
+  (First_name Eql Identifier)? (Last_name Eql Identifier)?
+
+}
+
+
 AccountOptional {
 
   (Region_group Eql Identifier)?  (Region Eql Identifier)? (Comment Eql StringLiteral)?
 
-}
-
-
-ExFOp1 {
-
-  Returns Identifier (Null |Not  Null)?
-  ((Called On Null Input | (Returns Null On Null Input | Strict)))?
-  (Volatile | Immutable)?
-  (Comment Eql StringLiteral)?
-  Api_integration Eql Identifier 
-
-}
-
-
-ExFOp2
-{
-  //Api_integration Eql Identifier 
-  (Headers Eql (Identifier  Eql  Identifier)+)?
-  (Context_headers Eql (Identifier  Comma Identifier))?
-  (Max_batch_rows Eql NumberLiteral)?
-  (Compression Eql Identifier)?
 }
 
 
@@ -1012,25 +967,224 @@ DbOp {
   
 }
 
+
 CreateViewStmt {
 
-  Create OptOrReplace? Force? Secure? Recursive? View IfNotExists?
+  Create OptOrReplace? Force? Secure? Recursive? TemporaryType? View IfNotExists?
+  
   ObjName
-  (With? KeyValueProperty Comma?)*  
 
-  (Copy Grants)?
-  //As SelectStmt
-  As QueryStatementExpression
+  ViewOption* ViewSpecification
+
+}
+
+
+ViewSpecification {
+
+  (ViewColumnSpecificationsWithConstraints | 
+
+  ViewOutOfLineConstraints ViewOption* )?
+
+  As SelectStmt 
+
+}
+
+ViewOption {
+
+  CommonCreateOption |
+  
+  WithRowAccessPolicyClause
+
+}
+
+
+CommonCreateOption {
+
+  IfNotExists | 
+  CopyGrants | 
+  WithKeyValueProperty | 
+  WithTagClause
+
+}
+
+
+
+
+WithTagClause {
+
+  With? Tag Lparen TagValuePairsList Rparen
+        
+}
+
+
+TagValuePairsList {
+
+  TagValuePair (Comma TagValuePair)*
+
+}
+
+
+TagValuePair {
+
+  ObjName Eql KeyValue
+
+}
+
+
+TagNamesList {
+
+  ObjName (Comma ObjName)*
+
+}
+
+
+ViewOutOfLineConstraints {
+
+  Lparen OutOfLineViewConstraintList Rparen
+
+}
+
+
+ViewColumnSpecifications {
+
+  Lparen ViewColumnSpecificationList Rparen
+
+}
+
+
+ViewColumnSpecificationsWithConstraints {
+
+  Lparen ViewColumnSpecification (Comma ViewColumnSpecification)*
+  (Comma OutOfLineViewConstraintList)? Rparen
+
+}
+
+
+OutOfLineViewConstraintList {
+
+  OutOfLineViewConstraint (Comma OutOfLineViewConstraint)*
+
 }
 
 
 ViewColumnSpecificationList {
 
-    ViewColumnSpecification (COMMA ViewColumnSpecification)*
+  ViewColumnSpecification (Comma ViewColumnSpecification)*
+  
 }
 
+
 ViewColumnSpecification {
-    Identifier CommentClause? (IinlineViewConstraint)*
+
+  IdentifierExt ColumnWithMaskingPolicyClause? WithTagClause? CommentClause? (InlineViewConstraint)*
+
+}
+
+
+OutOfLineTableConstraint {
+
+  (Constraint IdentifierExt)? Unique Lparen ColumnNameOnlyList Rparen
+  OutOfLineTableConstraintProperties* | 
+  
+  (Constraint IdentifierExt)? Primary Key Lparen ColumnNameOnlyList
+  Rparen OutOfLineTableConstraintProperties* | 
+  
+  (Constraint IdentifierExt)? Foreign Key Lparen 
+  ColumnNameOnlyList Rparen References ObjName 
+  (Lparen ColumnNameOnlyList Rparen)? ForeignKeyMatch? ForeignKeyDeleteUpdateRule?
+  OutOfLineTableConstraintProperties* 
+
+}
+
+
+InlineViewConstraint {
+
+  (Constraint IdentifierExt)? Unique ViewConstraintProperties?  |
+  (Constraint IdentifierExt)? Primary Key ViewConstraintProperties? |
+  (Constraint IdentifierExt)? References
+  ObjName (Lparen IdentifierExt Rparen)?
+  ViewConstraintProperties? 
+}
+
+
+ForeignKeyMatch {
+
+  Match (Full | Partial | Simple)
+
+}
+
+
+ForeignKeyUpdateRule {
+
+  On Update (Cascade | Set Null | Set Default |
+  Restrict | No Action)
+}
+
+
+ForeignKeyDeleteRule {
+
+  On Delete (Cascade | Set Null | Set Default |
+  Restrict | No Action)
+
+}
+
+
+TableConstraintProperties {
+
+  ConstraintDeferrableProp |
+  (Initiallly (Deferred | Immediate)) |
+  (Rely | Norely) | 
+  ConstraintEnableProp (Validate | Novalidate)?
+
+}
+
+
+OutOfLineTableConstraintProperties {
+
+  TableConstraintProperties | CommentClause
+
+}
+
+
+OutOfLineTableConstraintList {
+
+  OutOfLineTableConstraint (Comma OutOfLineTableConstraint)*
+
+}
+
+
+OutOfLineViewConstraint {
+
+  OutOfLineTableConstraint
+
+}
+
+
+WithRowAccessPolicyClause {
+
+  With? Row Access Policy ObjName On Lparen ColumnNameOnlyList? Rparen 
+
+}
+
+
+ColumnWithMaskingPolicyClause {
+
+  With? Masking Policy ObjName (Using Lparen ColumnNameOnlyList Rparen)?
+
+}
+
+
+ColumnNameOnlyList {
+
+  IdentifierExt (Comma IdentifierExt)*
+
+}
+
+
+ViewConstraintProperties {
+
+  (Rely | Norely)? (Disable | Not Enforced)
+
 }
 
 
@@ -1050,6 +1204,7 @@ GetStmt {
   Get URLDefinitionSource URLDefinitionDest WithProvision?
 
 }
+
 
 URLDefinitionSource {
 
@@ -1099,6 +1254,19 @@ URLIdentifier {
 IdentifierExt { 
 
   Identifier | QuotedString 
+
+}
+
+
+identifiergeneral { 
+
+  Identifier | QuotedString  
+
+}
+
+AliasIdentifier { 
+
+  identifiergeneral
 
 }
 
@@ -1241,52 +1409,10 @@ TemporaryType {
 }
 
 
-
-ForeignKeyUpdateRule {
-
-  On Update (Cascade | Set Null | Set Default |
-  Restrict | No Action)
-
-}
-
-
-ForeignKeyDeleteRule {
-
-  On Delete (Cascade | Set Null | Set Default |
-  Restrict | No Action)
-
-}
-
-
 ForeignKeyDeleteUpdateRule {
 
   ForeignKeyUpdateRule ForeignKeyDeleteRule? | 
   ForeignKeyDeleteRule ForeignKeyUpdateRule?
-
-}
-
-
-ForeignKeyMatch {
-
-  Match (Full | Partial | Simple)
-
-}
-
-
-OutOfLineTableConstraintProperties {
-
-  TableConstraintProperties | 
-  CommentClause
-
-}
-
-
-TableConstraintProperties {
-
-  ConstraintDeferrableProp | 
-  (Initiallly (Deferred | Immediate)) |
-  (Rely | Norely) |
-  ConstraintEnableProp (Validate | Novalidate)?
 
 }
 
@@ -1302,12 +1428,12 @@ SessionVariableIdentifier {
 
   (Dlr) (Letter | Uscr) (Letter | Digit | Uscr)*
 
- }
+}
  
 
 IdentifierNoString {
 
-  Identifier
+  Identifier 
 
 }
 
@@ -1411,7 +1537,6 @@ KeyValueList {
 }
 
 
-
 CreateFunctionStmt {
 
   Create OptOrReplace? (Temporary | Temp)? Secure? Function IfNotExists? Identifier UdfSig
@@ -1436,9 +1561,9 @@ OptOrReplace {
 DescribeStmt {
   
   (Describe | Desc) DescribeTargetSimple ObjName |
+  
+  (Describe | Desc) Materialized? View SourceObjName |
 
-  (Describe | Desc) Task SourceObjName |
-   
   (Describe | Desc) (External)? Table SourceObjName (Type Eql (Columns | Stage))? |
 
   (Describe | Desc) (Function | Procedure) Identifier UdfSig 
@@ -1448,7 +1573,6 @@ DescribeStmt {
 
 DescribeTargetSimple {
 
-  Materialized? View |
   User |
   (Masking | Network | Row Access) Policy |
   File Format |
@@ -1457,14 +1581,16 @@ DescribeTargetSimple {
   Sequence |
   Share |
   Stage |
-  Stream 
+  Stream |
+  Task 
+
 }
 
 
 UdfParam {
 
   UdfParamIdentifier | 
-  IdentifierExtended Types | 
+  IdentifierExtended Types |
   NonUserDefinedType
 
 }
@@ -1500,12 +1626,14 @@ MultiInsertCase {
 
 }
 
+
 MultiInsertCondition {
 
   (When ScalarExpression Then)  |
   Else 
 
 }
+
 
 MultiInsertInto {
 
@@ -1514,13 +1642,13 @@ MultiInsertInto {
 }
 
 
-
 InsertSource {
 
   QueryStatementExpression |
   ValuesDef
 
 }
+
 
 FuncBody {
 
@@ -1595,6 +1723,7 @@ CreateFunctionVolatility {
 Declaration {
 
   Identifier Cursor For Identifier Smc+
+
 
 }
 
@@ -1760,43 +1889,50 @@ BinaryLiteral {
 
 }
 
+
 CreateTableStmt {
+
   Create OptOrReplace? (((Local | Global)? Temporary? | Volatile) | Transient)?
   Table (If Not Exists)? Identifier CTP (Cluster By (Identifier (Comma Identifier)*))?
   StageFileFormat
   CreateTableExtra1
   CreateTableExtra2
+
 }
 
+
 CTP {
+
   (Lparen Identifier Identifier (Collate Identifier )?
   (Default Identifier | (Autoincrement | Identity) ((Identifier Comma Identifier) |
   Start Identifier Increment Identifier)?)? (Not Null)?
   (Identifier Identifier (Comma Identifier Identifier)*)?
   Outoflineconstraint? Rparen)*
+
 }
 
+
 CTP1 {
+
   Lparen Identifier Identifier (Collate Identifier )?
   (Default Identifier | (Autoincrement | Identity) ((Identifier Comma Identifier) | Start Identifier Increment Identifier)? )?
   (Not Null)?
+
 }
-/*
-Inlineconstraint {
-  ((Constraint Identifier)? Unique LineParams |
-  (Constraint Identifier)? Primary Key LineParams |
-  (Constraint Identifier)? (Foreign Key)? References Identifier (Lparen Identifier Rparen)? 
-  FkParams LineParams)
-}
-*/
+
+
 Outoflineconstraint {
+
   ((Constraint Identifier)? Unique (Lparen Identifier (Comma Identifier)* Rparen)? LineParams |
   (Constraint Identifier)?  Primary Key (Lparen Identifier (Comma Identifier)* Rparen)? LineParams |
   ((Constraint Identifier)? (Foreign Key)? (Lparen Identifier (Comma Identifier)* Rparen)?
   References Identifier (Lparen Identifier (Comma Identifier)* Rparen)? FkParams LineParams))
+
 }
 
+
 StageFileFormat {
+
   (Stage_file_format Eql  ((Format_name Eql Identifier) |
   (Type Eql  Csv (FormattypeoptionsCsv)?) |
   (Type Eql Json (FormattypeoptionsJson)?) |
@@ -1804,37 +1940,52 @@ StageFileFormat {
   (Type Eql Orc (FormattypeoptionsOrc)?) |
   (Type Eql Parquet (FormattypeoptionsParquet)?) |
   (Type Eql Xml (FormattypeoptionsXml)?)))?
+
 }
 
+
 CreateTableExtra1{
+
   (Stage_copy_options Eql (CopyOptions))?
   (Data_retention_time_in_days Eql Identifier)?
   (Max_data_extension_time_in_days Eql Identifier)?
+
 }
 
+
 CreateTableExtra2 {
+
   (Change_tracking Eql (True | False))?
   (Default_ddl_collation Eql Identifier )?
   (Copy Grants)?
   (Comment Eql Identifier )?
+
 }
 
+
 LineParams {
+
   (Enforced | Not Enforced)?
   (Deferrable | Not Deferrable)?
   (Initially (Deferred | Immediate))?
   (Enable | Disable)?
   (Validate | Novalidate)?
   (Rely | Norely)?
+
 }
 
+
 FkParams {
+
   (Match (Full | Simple | Partial))?
   (On (Update (Cascade | Set Null | Set Default | Restrict | No Action))?
   (Delete (Cascade | Set Null | Set Default | Restrict | No Action))?)?
+
 }
 
+
 FormattypeoptionsCsv {
+
   Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
   Record_delimiter Eql Identifier | None
   Field_delimiter Eql Identifier | None
@@ -1855,9 +2006,12 @@ FormattypeoptionsCsv {
   Empty_field_as_null Eql True | False
   Skip_byte_order_mark Eql True | False
   Encoding Eql Identifier | Utf8
+
 }
 
+
 FormattypeoptionsJson {
+
   Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
   Date_format Eql Identifier | Auto
   Time_format Eql Identifier | Auto
@@ -1873,28 +2027,40 @@ FormattypeoptionsJson {
   Replace_invalid_characters Eql True | False
   Ignore_utf8_errors Eql True | False
   Skip_byte_order_mark Eql True | False
+
 }
 
+
 FormattypeoptionsAvro {
+
   Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
   Trim_space Eql True | False
   Null_if Eql (Identifier  (Comma Identifier )*)
+
 }
+
 
 FormattypeoptionsOrc {
+
   Trim_space Eql True | False
   Null_if Eql (Identifier  (Comma Identifier )*)
+
 }
 
+
 FormattypeoptionsParquet {
+
   Compression Eql Auto | Lzo | Snappy | None
   Snappy_compression Eql True | False
   Binary_as_text Eql True | False
   Trim_space Eql True | False
   Null_if Eql (Identifier  (Comma Identifier )*)
+
 }
 
+
 FormattypeoptionsXml {
+
   Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
   Ignore_utf8_errors Eql True | False
   Preserve_space Eql True | False
@@ -1902,10 +2068,15 @@ FormattypeoptionsXml {
   Disable_snowflake_data Eql True | False
   Disable_auto_convert Eql True | False
   Skip_byte_order_mark Eql True | False
+
 }
 
+
 CopyOptions {
-  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier
+
+  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier |
+    
+    
     )
   Size_limit Eql Identifier Purge Eql True | False
   Return_failed_only Eql True | False
@@ -1913,18 +2084,8 @@ CopyOptions {
   Enforce_length Eql True | False
   Truncatecolumns Eql True | False
   Force Eql True | False
-}
-
-
-AlterTableStmt {
-
-  Alter Table IfExists? ObjName 
-  ( Add Search Optimization |
-    Add ColumnAddNameTypeList
-  )
 
 }
-
 
 
 UdfParamIdentifier {
@@ -2006,7 +2167,7 @@ PrimitiveType {
   BigInt |
   Integer |
   Date |
-  Time (Lparen scale {NegatableIntegerLiteral} Rparen)?|
+  Time (Lparen NegatableIntegerLiteral Rparen)?|
   Bit Varying?
 
 }
@@ -2030,14 +2191,7 @@ BinaryType {
 
 NumberType {
   
-  NumberAlias (Lparen precision {NegatableIntegerLiteral} (Comma scale {NegatableIntegerLiteral})? Rparen)?
-
-}
-
-negatableIntegerLiteral {
-
-  IntegerLiteral |
-  Minus IntegerLiteral
+  NumberAlias (Lparen NegatableIntegerLiteral (Comma NegatableIntegerLiteral)? Rparen)?
 
 }
 
@@ -2054,22 +2208,23 @@ NumberAlias {
 
 TimestampType {
 
-  Timestamp (Lparen scale {NegatableIntegerLiteral} Rparen)? |
+  Timestamp (Lparen NegatableIntegerLiteral Rparen)? |
  
-  Timestampltz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp_ltz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp With Local Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? |
+  Timestampltz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp_ltz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp With Local Time Zone (Lparen NegatableIntegerLiteral Rparen)? |
  
-  Timestampntz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp_ntz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp Without Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Datetime (Lparen scale {NegatableIntegerLiteral} Rparen)? |
+  Timestampntz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp_ntz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp Without Time Zone (Lparen NegatableIntegerLiteral Rparen)? |
+  Datetime (Lparen NegatableIntegerLiteral Rparen)? |
  
-  Timestamptz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp_tz (Lparen scale {NegatableIntegerLiteral} Rparen)? |
-  Timestamp With Time Zone (Lparen scale {NegatableIntegerLiteral} Rparen)? 
+  Timestamptz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp_tz (Lparen NegatableIntegerLiteral Rparen)? |
+  Timestamp With Time Zone (Lparen NegatableIntegerLiteral Rparen)? 
 
 } 
+
 
 ArrayType {
 
@@ -2088,19 +2243,6 @@ ObjectType {
 VariantType {
 
   Variant (With Template StringLiteral)?
-
-}
-
-UnaryOp {
-
-  "-" |
-  "+"
-}
-
-
-DbtIdentifier{
-
-  DBTDlcly (FunctionCall | ObjName) DBTDrcly (Dot DBTDlcly (FunctionCall | ObjName) DBTDrcly  )*
 
 }
 
@@ -2131,17 +2273,16 @@ ScalarExpression {
 }
 
 
-
 ExpressionA {
 
 
   Lparen ExpressionA Rparen |
 
-  expressionC |
+  expressionB |
 
-  !plus Plus ExpressionA |
+  !uminus Plus ExpressionA |
 
-  !plus Minus ExpressionA  |
+  !uminus Minus ExpressionA  |
 
   ExpressionA !plus Plus ExpressionA |
 
@@ -2161,37 +2302,41 @@ ExpressionA {
 
   ExpressionA !or Or ExpressionA |
 
-  ExpressionA !or And ExpressionA |
+  ExpressionA !and And ExpressionA |
 
-  ExpressionA !eql Gtr ExpressionA |
+  ExpressionA !comp Gtr ExpressionA |
 
-  ExpressionA !eql Lss ExpressionA |
+  ExpressionA !comp Lss ExpressionA |
+
+  ExpressionA !comp Lte ExpressionA |
+
+  ExpressionA !comp Gte ExpressionA |
 
   ExpressionA !eql Eql ExpressionA |
 
-  ExpressionA !eql Lte ExpressionA |
-
-  ExpressionA !eql Gte ExpressionA |
-
   ExpressionA !eql Neq ExpressionA |
 
-  ExpressionA !plus Concat ExpressionA |
+  ExpressionA !eql Concat ExpressionA |
 
-  ExpressionA !eql Is Not? Null |
+  ExpressionA !is Is Not? Null |
 
-  ExpressionA? Not? !eql (Like All? | Ilike | Rlike | Regexp ) ExpressionA |
+  ExpressionA !not Not? (!like (Like All? | Ilike | Rlike) |!regexp Regexp ) ExpressionA | 
 
-  ExpressionA? !eql (Like | Ilike) Any ExpressionA |
+  ExpressionA !like (Like | Ilike) !any Any ExpressionA | 
 
-  ExpressionA Not? !eql (Like| Ilike) ExpressionA Escape ExpressionA |
+  ExpressionA !not Not? !like (Like| Ilike) ExpressionA !escape Escape ExpressionA |
 
-  ExpressionA Is Not? (Null | False | True ) | 
+  ExpressionA !is Is !not Not? (Null | False | True ) | 
 
-  ExpressionA Not? !eql In Inexpression 
+  ExpressionA !not Not? !in In Inexpression |
+
+  !not Not ExpressionA
+
 }
 
-expressionC {
 
+
+expressionB {
 
   CaseExpression | 
 
@@ -2201,54 +2346,37 @@ expressionC {
 
   IntervalLiteral |
 
-  DBTTag |
+  SqrIdentifier |
   
   constant |
 
-  ScalarObjName |
+  ObjName |
 
-  !plus ParenSelectStmt |
+  !plus ParenSelect |
 
-  expressionC (Colon IdentifierExt (Dot IdentifierExt)* |
+  expressionB (Colon IdentifierExt (Dot IdentifierExt)* |
+
   Lsqr ExpressionA Rsqr (Dot IdentifierExt)* |
+
+  Over Lparen (Partition By PartitionByList)? OrderByClause? WindowFrameClause? Rparen |
+
   Dcolon Types) 
 
 }
 
-DBTTag {
 
-  Lsqr ObjName (Comma ObjName)* Rsqr
-
-}
 
 Inexpression {
 
-  ParenSelectStmt |
 
+  ParenSelect |
   ScalarExpressionList
 
-}
+} 
 
+SqrIdentifier {
 
-OrExpression {
-
-  AndExpression (Or AndExpression)*
-
-}
-
-
-AndExpression {
-
-  NotExpression (And NotExpression)*
-
-}
-
-
-NotExpression {
-
-  Exists Lparen QueryStatementExpression Rparen |
-  Not NotExpression |
-  EqualExpression
+  Lsqr ObjName (Comma ObjName)* Rsqr
 
 }
 
@@ -2292,17 +2420,6 @@ CompOperatorQuantifier {
 }
 
 
-EqualExpression {
-
-  BitwiseOrExpression
-  (EqualNegatableOperator BitwiseOrExpression EscapeExpression? |
-  EqualCompOperator OperatorQuantifierClause|
-  Not? In (ScalarExpressionList | Lparen QueryStatementExpression Rparen) |
-  Not? Between BitwiseOrExpression And BitwiseOrExpression)*
-
-}
-
-
 EscapeExpression {
 
   Escape EscapeConstant |
@@ -2339,9 +2456,6 @@ IsDistinctFromOperator {
   Is Not? Distinct From 
 
 }
-
-
-
 
 FunctionOrderingClause {
 
@@ -2427,11 +2541,32 @@ AnyIdentifier {
 }
 
 
-AtomExpression {
+objName { 
 
-  SimpleAtomExpression
+  
+  IdentifierKW Lparen IdentifierVar Rparen |
+
+  ObjectLiteral |
+
+  IdentifierExt Ddot IdentifierExt |
+
+  IdentifierExt (Dot IdentifierExt)* 
+  
+}
+
+
+ScalarObjectName {
+  
+  Prior ScalarIdentifier (Dot IdentifierExt)* |
+  
+  ObjectLiteral  |
+  
+  IdentifierExt (Dot IdentifierExt)* |
+  
+  IdentifierExt Dot Dot IdentifierExt Dot IdentifierExt
 
 }
+
 
 ScalarIdentifier {
   
@@ -2451,7 +2586,6 @@ constant {
   BindVariable
 
 }
-
 
 
 ObjectLiteral {
@@ -2503,7 +2637,6 @@ ExplicitRowConstructorExpression {
 }
 
 
-
 LimitClause {
 
   (Offset LimitBoundary (Row | Rows)?)?
@@ -2512,6 +2645,7 @@ LimitClause {
 
 }
 
+
 LimitBoundary {
 
   StringLiteral |
@@ -2519,6 +2653,7 @@ LimitBoundary {
   Null
 
 }
+
 
 ConstantBoundary {
 
@@ -2529,46 +2664,10 @@ ConstantBoundary {
 }
 
 
-QueryPrimary {
-
-  SelectStmt |
-  Lparen QueryStatementExpression Rparen
-
-}
-
 QueryStatementExpression {
 
-  SelectStmt (UnionOperator SelectStmt)* |
-  Lparen QueryStatementExpression Rparen
+  SelectStmt 
   
-}
-
-
-QueryStatementExpression1 {
-
-  WithClause | UnionExpression
-
-}
-
-
-UnionExpression {
-
-  UnionExpression1 OrderByClause? LimitClause?
-
-}
-
-
-UnionExpression1 {
-
-  IntersectionExpression (UnionOperator IntersectionExpression)*
-
-}
-
-
-IntersectionExpression {
-
-  QueryPrimary (IntersectionOperator QueryPrimary)*
-
 }
 
 
@@ -2608,7 +2707,9 @@ OdbcFunctionNameIdentifier {
 
 FunctionCall {
 
-  FunctionObjName Lparen DistinctAll? FunctionArgs? Rparen
+
+  ObjName Lparen DistinctAll? FunctionArgs? Rparen
+
 
 }
 
@@ -2622,25 +2723,10 @@ DistinctAll {
 
 FunctionArgs {
 
-  Star |
+  (IdentifierExt Dot)? Star |
   FunctionArgExpression (Comma FunctionArgExpression)*
 
 }
-
-FunctionObjName {
-
-  objName
-
-}
-
-
-SourceObjName {
-
-  objName |
-  DbtIdentifier
-
-}
-
 
 FunctionObjectName {
   
@@ -2655,16 +2741,9 @@ FunctionObjectName {
 FunctionArgExpression {
 
   ScalarExpression |
-  StageNameIdentifier 
+  StageNameIdentifier
 
 }
-
-AllColumnsTable {
-
-  Identifier Dot Star 
-
-}
-
 
 FunctionQualifiedNameIdentifier {
 
@@ -2807,7 +2886,6 @@ FunctionNameIdentifier {
          
   LabelName { (std.asciiLetter | "_") (std.asciiLetter | std.digit | "_")* }
 
-
   // Operator
   Smc {";"}
   Uscr {"_"}
@@ -2866,7 +2944,7 @@ FunctionNameIdentifier {
 
   @precedence { BlockComment, LineComment }
 
-  @precedence { BlockComment, LineComment, Sub, Minus}
+  @precedence { BlockComment, LineComment, Minus}
 
   @precedence { NumberLiteral, Plus, Minus}
 
@@ -2885,7 +2963,6 @@ FunctionNameIdentifier {
   @precedence {IdentifierVar, Dlr}
 
   @precedence {QuotedString, StringLiteral}
-  @precedence { PlusExpression, StarExpression}
 
   @precedence {StringLiteral, Identifier, Dlr}
   @precedence {IntegerLiteral, NumberLiteral}
@@ -2894,15 +2971,13 @@ FunctionNameIdentifier {
 }
 
 
-// Keywords
-
 @external specialize {Identifier} specializeIdentifier from "./tokens" {
 
   Aad_provisioner, Abort_detached_query, All, Abort_statement, Access, Group, Grouping, Sets, Cube, Rollup, Admin, Admin_name, Admin_password, After, Allow_duplicate, Allow_overlapping_execution, Allowed_IP_List, And, Api, Api_allowed_prefixes, Api_aws_role_arn, 
   Api_blocked_prefixes, Api_integration, Api_key, Api_provider, As, At, Auto, Auto_ingest, Auto_refresh, Auto_refresh_materialized_views_on_secondary, Auto_resume, Auto_suspend, Autocommit, Autoincrement, Avro, Aws_api_gateway, 
   Aws_cse, Aws_key_id, Aws_private_api_gateway, Aws_role, Aws_secret_key, Aws_sse_kms, Aws_sse_s3, Aws_token, Azure_ad_application_id, Azure_api_management, Azure_cse, Azure_sas_token, Azure_storage_queue, 
   Azure_storage_queue_primary_uri, Azure_tenant_id, Array, Base64, Before, Between, Binary_as_text, Binary_format, Binary_input_format, Binary_output_format, Blob, Blocked_IP_List, Blocked_roles_list, Bool, Boolean, Brotli, Business, 
-  Business_critical, By, Double, ByteInt, Variant, Object, TinyInt, SmallInt, Int, BigInt, Integer, Date, Time, Bit, Bz2, Called, Caller, Cascade, Case_insensitive, Case_sensitive, Change, Change_tracking, Clone, Cluster, Collate, Columns, Compression, Confidential, Constraint, Context_headers, Continue, 
+  Business_critical, By, Double, ByteInt, Variant, Object, TinyInt, SmallInt, Int, BigInt, Integer, Date, Time, Bit, Bz2, Called, Caller, Cascade, Case_insensitive, Case_sensitive, Change, Change_tracking, Clone, Cluster, Collate, Compression, Confidential, Constraint, Context_headers, Continue, 
   Copy, Copy_options, Copyoptions, Core, Declare, Create, Credentials, Credit_quota, Critical, Cron, Csv, Custom, Daily, Data_retention_time_in_days, Date_format, Date_input_format, Date_output_format, Days_to_expiry, 
   Default, Deflate, Desc, Describe, Disable_auto_convert, Disable_snowflake_data, Disabled, Do, Drop, Economy, Edition, 
   Email_address, Empty_field_as_null, Enable, Enable_for_privilege, Enable_octal, Encoding, Encryption, End_timestamp, Enforce_length, Enterprise, Error_on_column_count_mismatch, Error_on_nondeterministic_merge, 
@@ -2913,24 +2988,23 @@ FunctionNameIdentifier {
   Initially_suspended, Interval, Is, Json, Json_indent, Language, Large, Last, Like, List, Local, Lock_timeout, Lzo, Managed, Masking, Master_key, Match_by_column_name, 
   Max_batch_rows, Max_cluster_count, Max_concurrency_level, Max_data_extension_time_in_days, Medium, Min_cluster_count, Mins_to_bypass_mfa, Mins_to_unlock, Monitor, Monthly, Must, 
   Net, Network, Network_policy, Never, None, Not, Notification, Notification_provider, Notify, Null_if, Numeric, Oauth, Oauth_allow_non_tls_redirect_uri, Oauth_client, Oauth_client_rsa_public_key, Oauth_client_rsa_public_key_2, 
-  Oauth_client_type, Oauth_enforce_pkce, Oauth_issue_refresh_tokens, Oauth_redirect_uri, Oauth_refresh_token_validity, Of, Offset, Okta, Okta_provisioner, On, On_error, Only, Or, Orc, Owner, Parquet, Partition,
-  Pattern, Percent, Ping_federate, Pipe, Use, Session,Pre_authorized_roles_list, Preserve_space, Primary, Procedure, Purge, Query_tag, Queue, Raw_deflate, Real, Reader, Record_delimiter, Recursive, References, Refresh_on_create, 
-  Region_group, Replace, Replace_invalid_characters, Replica, Resource, Resource_monitor, Restrict, Return_failed_only, Returns, Ribe, Role, Row, Rows_per_resultset, Run_as_role, 
+  Oauth_client_type, Oauth_enforce_pkce, Oauth_issue_refresh_tokens, Oauth_redirect_uri, Oauth_refresh_token_validity, Of, Offset, Okta, Okta_provisioner, On, On_error, Only, Or, Orc, Parquet, Partition,
+  Pattern, Percent, Ping_federate, Pipe, Use, Session,Pre_authorized_roles_list, Preserve_space, Primary, Procedure, Purge, Query_tag, Raw_deflate, Real, Reader, Record_delimiter, Recursive, References, Refresh_on_create, 
+  Region_group, Replace, Replace_invalid_characters, Replica, Resource, Resource_monitor, Restrict, Return_failed_only, Returns, Ribe, Row, Rows_per_resultset, Run_as_role, 
   Saml2, Saml2_enable_sp_initiated, Saml2_force_authn, Saml2_issuer, Saml2_post_logout_redirect_url, Saml2_provider, Saml2_requested_nameid_format, Saml2_sign_request, Saml2_snowflake_acs_url, Saml2_snowflake_issuer_url, 
   Saml2_snowflake_x509_cert, Saml2_sp_initiated_login_page_label, Saml2_sso_url, Saml2_x509_cert, Scaling_policy, Scim, Scim_client, Secure, Select, Sequence, Share, Simulated_data_sharing_consumer, 
   Size_limit, Skip_blank_lines, Skip_byte_order_mark, Skip_file, Skip_header, Small, Snappy, Snappy_compression, Snowflake_support, Stage, Stage_copy_options, Stage_file_format, Standard, Start, Start_timestamp, Statement, 
   Statement_queued_timeout_in_seconds, Statement_timeout_in_seconds, Storage, Storage_integration, Strict, Strict_json_output, Strip_null_values, Strip_outer_array, Strip_outer_element, Supported, Suspend, Suspend_immediate, 
-  Table, Task, Template, Temp,  Temporary, Time_format, Time_input_format, Time_output_format, Timestamp, Timestamp_day_is_always_24h, Timestamp_format, Timestamp_input_format, Timestamp_ltz_output_format, Timestamp_ntz_output_format, 
+  Table, Task, Template, Temp,  Temporary, Time_format, Time_input_format, Time_output_format, Timestamp_day_is_always_24h, Timestamp_format, Timestamp_input_format, Timestamp_ltz_output_format, Timestamp_ntz_output_format, 
   Timestamp_output_format, Timestamp_type_mapping, Timestamp_tz_output_format, Timezone, Transaction_default_isolation_level, Transient, Triggers, Trim_space, True, Truncatecolumns, Two_digit_century_start,
   Unique, Unsupported_ddl_action, Use_cached_result, User_task_timeout_ms, Using, Utf8, Validate_utf8, Volatile, Warehouse_size, Week_of_year_policy, Week_start, Weekly, When, Where, Windows, With, Commit, Work
   X4large, Xlarge, Xml, Xsmall, Xxlarge, Xxxlarge, Yearly, Zstd , Cursor, Begin, Exception, Then, Label, End, Rollback, Truncate, Search, Index, Grant, To, Privileges, Activate, Delete, Import, Insert , Manage, Modify, Override, Ownership, Operate
-  Provision ,Pacwrite, Pacread, Setup, Update, Rebuild, Reference, Usage, Read, Write, Apply, Any, Exchange, Listing, Profile, Execution, Stream, Replication, Restrictions, System, Support, Volume, Parameters, Release, Optimization, Credential, Application
+  Provision ,Pacwrite, Pacread, Setup, Update, Rebuild, Reference, Usage, Read, Write, Apply, Any, Exchange, Listing, Profile, Execution, Stream, Replication,Restrictions, System, Support, Volume, Parameters, Release, Optimization, Credential, Application
   Gscluster, Databases, File, Formats, Connect_by_root, Functions, Integrations, Procedures, Stages, Scheams, Sequences, Tables, Pipes, Streams, Tasks, Users,  Volumes, Warehouses, Objects, Monitors, Networks, Applications, Policies, Future, Option, Revoke, Current, Imported, API
   Rely, Norely, Disable, Enforced, Deferrable, Starts, Limit, History, Show, Terse, Initiallly, Deferred, Immediate, Validate, Novalidate, Match, Full, Partial, Simple, Set, No, Get, Into, Else, Rlike, Having, Qualify, Initially, Attach, Schemas, Oj,
   Join, Inner, Left ,Outer, Right, Semi, Sample, Tablesample, Bernoulli, Block, Distinct, Top, Rows, Seed, Repeatable, Natural, Cross, Connect, Try_cast, Div , Unbounded, Preceding, Following, Range, Asc, Nulls, Year, Month, Hour, Second, T, Ts, Fn, Extract, Position,
-  Intersect, Union, Except, Order, Next, Fetch, Case, Cast, Over, Prior, Overwrite, Values, X, Lateral, Unpivot, Precision, Varying, Varchar, Character, Char, String, Binary, Varbinary, Decimal, Dec, Number, Timestampltz,
+  Intersect, Union, Except, Order, Next, Fetch, Case, Cast, Over, Prior, Overwrite, Values, Lateral, Unpivot, Precision, Varying, Varchar, Character, Char, String, Binary, Varbinary, Decimal, Dec, Number, Timestampltz,
   Timestamp_ltz, Zone, Timestampntz, Timestamp_ntz, Without, Datetime, Timestamptz, Timestamp_tz
-
 
 }
 
@@ -2940,7 +3014,9 @@ FunctionNameIdentifier {
   Action, Integration, Aws_sns_topic, Null, Url, Regexp, Ilike, Tag, Name, Input, Type, Azure,
   Gcs, Text, Channel, S3, Enabled, Security, Data, Public, Schedule, User, Display_name, Email,
   Organization, Warehouse, Default_ddl_collation, Default_namespace, Default_role, Default_warehouse,
-  Rsa_public_key, Rsa_public_key_2, External_oauth_rsa_public_key, External_oauth_rsa_public_key_2, External_oauth_snowflake_user_mapping_attribute,
-  Middle_name, Comment, Password,  Last_name, Must_change_password, First_name, Login_name, Region, Policy, Location, Materialized,
-  Schema, Minute, D, Account, Day, Views, Identity, Alter, View, Table_name, Resume, Endset, Database, Keys, Key, Kms_key_id
+  Rsa_public_key, Rsa_public_key_2, External_oauth_rsa_public_key, External_oauth_rsa_public_key_2,
+  External_oauth_snowflake_user_mapping_attribute, Middle_name, Comment, Password,  Last_name,
+  Must_change_password, First_name, Login_name, Region, Policy, Location, Materialized, Schema, Minute, D, Account, Day, Views, Identity, Alter, View, Table_name, Resume,
+  Endset, Database, Kms_key_id, Timestamp, Key, Columns, Keys, Role, X, Owner, Call, Queue
+  
 }
