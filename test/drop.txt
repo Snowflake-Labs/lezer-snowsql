@@ -14,7 +14,7 @@ drop table if exists foo cascade;
 
 ==>
 
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Table),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
+SnowSQL(Stmts(Stmt(DropStmt(Drop,Table,IfExists(If,Exists),SourceObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
 
 
 # Drop managed account
@@ -41,7 +41,7 @@ drop procedure add_accounting_user(varchar);
 
 ==>
 
-SnowSQL(Stmts(Stmt(DropStmt(Drop,Procedure,ObjName(IdentifierExt(Identifier)),UdfSig(Lparen,UdfParam(NonUserDefinedType(StringType(Varchar))),Rparen))),Smc))
+SnowSQL(Stmts(Stmt(DropStmt(Drop,Procedure,ObjName(IdentifierExt(Identifier)),UdfTypeSig(Lparen,Types(NonUserDefinedType(StringType(Varchar))),Rparen))),Smc))
 
 
 # Drop tag if exists

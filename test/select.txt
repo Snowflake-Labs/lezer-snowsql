@@ -4,7 +4,8 @@ select * from foo;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc))
+
 
 # Select with fields
 
@@ -12,7 +13,7 @@ select foo, bar from foobar;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc))
 
 
 # Select with where
@@ -21,7 +22,7 @@ select foo from foobar where foobar = 11;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))))),Smc))
 
 
 # Select with basic arithmetic expression
@@ -30,7 +31,8 @@ select foo,bar from foobar where (foo + bar) > 3;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(Lparen,ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Rparen),Gtr,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(Lparen,ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Rparen),Gtr,ExpressionA(IntegerLiteral)))))))),Smc))
+
 
 # Select number 
 
@@ -47,7 +49,7 @@ select foo,bar from foobar where foo + bar > 3;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Gtr,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Gtr,ExpressionA(IntegerLiteral)))))))),Smc))
 
 
 # Select with where and string
@@ -56,7 +58,7 @@ select foo, bar from foobar;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc))
 
 
 # Select with where and gte operator
@@ -65,7 +67,8 @@ select foo from foobar where foo >= 50;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Gte,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Gte,ExpressionA(IntegerLiteral)))))))),Smc))
+
 
 # Select with union
 
@@ -76,7 +79,8 @@ group by val;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Union,All,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))),Union,All,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))))),Smc))
+
 
 # Select with intersect
 
@@ -87,7 +91,8 @@ order by id;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Intersect,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))),Intersect,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))))),Smc))
+
 
 # Nested select statement
 
@@ -95,7 +100,8 @@ select foo,bar from foobar where bar in (select foobar from foo WHERE barfoo = '
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,Inexpression(ParenSelect(Lparen,SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(StringLiteral)))))),Rparen))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,Inexpression(ParenSelect(Lparen,SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(ObjName(IdentifierExt(QuotedString)))))))),Rparen))))))))),Smc))
+
 
 # With clause
 
@@ -109,7 +115,8 @@ where bar.val = foo.val;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(WithClause(With,WithItem(WithIdentifier(IdentifierExt(Identifier)),As,WithExpression(Lparen,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(Star),Rparen))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))),Rparen))),SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier))),FromClause(From,FromExpression(IdentifierExt(Identifier)),Comma,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))),Eql,ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(WithClause(With,WithItem(WithIdentifier(IdentifierExt(Identifier)),As,WithExpression(Lparen,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(Star),Rparen))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))),Rparen))),SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier)),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),IdentifierExt(Identifier))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier)))),Comma,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))),Eql,ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))))))))))),Smc))
+
 
 # Basic RCTE
 
@@ -125,7 +132,7 @@ from cte;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(WithClause(With,WithItem(WithIdentifier(IdentifierExt(Identifier)),As,WithExpression(Lparen,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(IntegerLiteral)),As,IdentifierExt(Identifier))))),Union,All,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(IntegerLiteral))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Lss,ExpressionA(IntegerLiteral)))))))))),Rparen))),SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(WithClause(With,WithItem(WithIdentifier(IdentifierExt(Identifier)),As,WithExpression(Lparen,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(IntegerLiteral)),As,IdentifierExt(Identifier))))),Union,All,SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(IntegerLiteral))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Lss,ExpressionA(IntegerLiteral)))))))))),Rparen))),SelectClause(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier)))))))))),Smc))
 
 
 # Join with using
@@ -136,7 +143,8 @@ JOIN my_other_table b USING (q, w);
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier),AliasClause(IdentifierExt(Identifier)),JoinExpression(JoinKW(Join),ObjName(IdentifierExt(Identifier)),AliasClause(IdentifierExt(Identifier)),JoinSpecification(Using,Lparen,ColumnNames(Identifier,Comma,Identifier),Rparen)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))),AliasClause(IdentifierExt(Identifier)),JoinExpression(JoinKW(Join),BaseFromExpression(TableObjectName(IdentifierExt(Identifier))),AliasClause(IdentifierExt(Identifier)),JoinSpecification(Using,Lparen,ColumnNames(Identifier,Comma,Identifier),Rparen)))))))),Smc))
+
 
 # Join on condition
 
@@ -144,7 +152,8 @@ select * from foobar join barfoo on true;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier),JoinExpression(JoinKW(Join),ObjName(IdentifierExt(Identifier)),JoinSpecification(On,ScalarExpression(ExpressionA(BooleanValue(True))))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))),JoinExpression(JoinKW(Join),BaseFromExpression(TableObjectName(IdentifierExt(Identifier))),JoinSpecification(On,ExpressionA(BooleanValue(True)))))))))),Smc))
+
 
 # limit clause
 
@@ -155,7 +164,7 @@ limit 99;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),Desc)),LimitClause(Limit,LimitBoundary(ConstantBoundary(IntegerLiteral))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))),Desc)),LimitClause(Limit,LimitBoundary(ConstantBoundary(IntegerLiteral))))))),Smc))
 
 
 # having clause
@@ -167,7 +176,7 @@ having count(d) < 59;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),HavingClause(Having,ScalarExpression(ExpressionA(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(FunctionArgExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),Rparen)),Lss,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),GroupByClause(Group,By,GroupByExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),HavingClause(Having,ScalarExpression(ExpressionA(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(FunctionArgExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),Rparen)),Lss,ExpressionA(IntegerLiteral)))))))),Smc))
 
 
 # Select Max Aggregate function
@@ -176,7 +185,7 @@ select max(val) from foobar;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(FunctionArgExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),Rparen))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(FunctionArgExpression(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),Rparen))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc))
 
 
 # Order by clause
@@ -185,4 +194,4 @@ select * from tablefoo order by id;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),OrderByClause(Order,By,ColumnRefOrder(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))))))),Smc))

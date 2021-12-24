@@ -156,7 +156,8 @@ select foo from foobar where foobar = 11;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))))),Smc))
+
 
 # Insert into
 
@@ -167,7 +168,7 @@ insert into foobar (colA, colB, colC) values
 
 ==>
 
-SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,ObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(ValuesDef(Values,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen))))),Smc))
+SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,SourceObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(ValuesDef(Values,ValueList(Lparen,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(ObjName(IdentifierExt(QuotedString)))),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen))))),Smc))
 
 
 # Insert and select
@@ -176,7 +177,7 @@ insert into foobar (a, b) select a, b from barfoo;
 
 ==>
 
-SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,ObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier)))))))))),Smc))
+SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,SourceObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier)))))))))))),Smc))
 
 
 # Copy from stage
@@ -200,7 +201,7 @@ foo
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Lss,ExpressionA(IntegerLiteral)))))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Lss,ExpressionA(IntegerLiteral)))))))),Smc))
 
 # No semicolon
 
@@ -208,7 +209,8 @@ describe table val
 
 ==>
 
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier))))))
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,SourceObjName(IdentifierExt(Identifier))))))
+
 
 # Empty statement
 
@@ -251,4 +253,4 @@ select * from val;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc,LineComment,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))))),Smc),LineComment)
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,LineComment,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc),LineComment)

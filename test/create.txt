@@ -48,8 +48,7 @@ create storage integration gcs_int type = external_stage storage_provider = gcs 
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
-
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(IdentifierExtended(QuotedString)),Comma,ListableKeyValue(IdentifierExtended(QuotedString)),Rparen))))),Smc))
 
 # Create storage integration with mutliple storage_allowed_locations
 
@@ -63,7 +62,8 @@ CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integra
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,IfNotExists(If,Not,Exists),ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Azure_tenant_id),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,IfNotExists(If,Not,Exists),ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Azure_tenant_id),Eql,KeyValue(ListableKeyValue(IdentifierExtended(QuotedString)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(IdentifierExtended(QuotedString)),Comma,ListableKeyValue(IdentifierExtended(QuotedString)),Comma,ListableKeyValue(IdentifierExtended(QuotedString)),Rparen))))),Smc))
+
 
 # Create api integration 
 
@@ -71,7 +71,8 @@ create or replace api integration demonstration_external_api_integration_01 api_
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,OptOrReplace(Or,Replace),IntegrationTypes(Api),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Api_provider),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Aws_api_gateway)))),KeyValueProperty(KeyName(Api_aws_role_arn),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Api_allowed_prefixes),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Rparen))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))))),Smc))
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,OptOrReplace(Or,Replace),IntegrationTypes(Api),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Api_provider),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Aws_api_gateway)))),KeyValueProperty(KeyName(Api_aws_role_arn),Eql,KeyValue(ListableKeyValue(IdentifierExtended(QuotedString)))),KeyValueProperty(KeyName(Api_allowed_prefixes),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(IdentifierExtended(QuotedString)),Rparen))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))))),Smc))
+
 
 # Create view 
 
@@ -79,7 +80,7 @@ create view myview comment='Test view' as select col1, col2 from mytable;
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateViewStmt(Create,View,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Comment),Eql,KeyValue(ListableKeyValue(StringLiteral))),As,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))))))),Smc))
+SnowSQL(Stmts(Stmt(CreateViewStmt(Create,View,ObjName(IdentifierExt(Identifier)),ViewOption(CommonCreateOption(WithKeyValueProperty(KeyValueProperty(KeyName(Comment),Eql,KeyValue(ListableKeyValue(IdentifierExtended(QuotedString))))))),ViewSpecification(As,SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))))),Smc))
 
 
 # Create stream

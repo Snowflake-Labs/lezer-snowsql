@@ -6,7 +6,7 @@ describe table foo;
 
 ==>
 
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier)))),Smc))
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,SourceObjName(IdentifierExt(Identifier)))),Smc))
 
 
 # Describe stream
@@ -32,7 +32,7 @@ describe view foo;
 
 ==>
 
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(View),ObjName(IdentifierExt(Identifier)))),Smc))
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,View,SourceObjName(IdentifierExt(Identifier)))),Smc))
 
 
 # Describe integration
