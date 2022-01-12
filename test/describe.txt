@@ -8,7 +8,6 @@ describe table foo;
 
 SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier)))),Smc))
 
-
 # Describe stream
 
 describe stream foo;

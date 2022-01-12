@@ -37,8 +37,8 @@
 
 Stmts {
 
-  (Stmt (Smc+ Stmt)*)? Smc*
-     
+  (Stmt (Smc+ Stmt)*)? Smc* 
+  
 }
 
 
@@ -68,7 +68,8 @@ Stmt {
   GetStmt |
   ShowStmt |
   CopyStmt |
-  AlterViewStmt
+  AlterViewStmt |
+  AlterTaskStmt
 
 }
 
@@ -255,6 +256,14 @@ UseStmt {
   Use Database ObjName | 
   Use Warehouse ObjName | 
   Use Role ObjName
+
+}
+
+
+AlterTaskStmt {
+
+
+  Alter Task IfExists? ObjName (Suspend | Resume) 
 
 }
 
@@ -559,7 +568,7 @@ JoinKW {
 sampleExpression {
 
   ( 
-  //LateralView | 
+  LateralView | 
   BaseFromExpression AliasClause?
   )
   
@@ -710,8 +719,8 @@ UnpivotClause {
 
 LateralView {
 
-  Lateral TableFunction
-  
+  Lateral TableFunction AliasClause? 
+  // Lateral ParenthesizedFromExpression AliasClause?
 
 }
 
@@ -1507,7 +1516,7 @@ OptOrReplace {
 DescribeStmt {
   
   (Describe | Desc) DescribeTargetSimple ObjName |
-
+  
   (Describe | Desc) (External)? Table ObjName (Type Eql (Columns | Stage))? |
 
   (Describe | Desc) (Function | Procedure) Identifier UdfSig 
@@ -1578,6 +1587,7 @@ MultiInsertCondition {
   Else 
 
 }
+
 
 MultiInsertInto {
 
@@ -2485,6 +2495,19 @@ AnyIdentifier {
 }
 
 
+objName { 
+  
+  IdentifierKW Lparen IdentifierVar Rparen |
+
+  ObjectLiteral |
+
+  IdentifierExt Ddot IdentifierExt |
+
+  IdentifierExt (Dot IdentifierExt)* 
+
+}
+
+
 ScalarObjectName {
   
   Prior ScalarIdentifier (Dot IdentifierExt)* |
@@ -2653,7 +2676,7 @@ DistinctAll {
 
 FunctionArgs {
 
-  Star |
+  (IdentifierExt Dot)? Star |
   FunctionArgExpression (Comma FunctionArgExpression)*
 
 }
@@ -2781,8 +2804,10 @@ FunctionNameIdentifier {
 
   QuotedString {
 
-      '"' (![\\\n"] | "\\" _)* '"'? |
-      "'" (![\\\n'] | "\\" _)* "'"?
+    '"' (![\\\n"] | "\\" _)* '"'? |
+    "'" (![\\\n'] | "\\" _)* "'"? |
+    '"' (![\\"] | "\\" _)* '"'? |
+    "'" (![\\'] | "\\" _)* "'"? 
 
   }
 
