@@ -1,0 +1,70 @@
+
+
+# Describe table
+
+describe table foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier)))),Smc))
+
+# Describe stream
+
+describe stream foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Stream),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Describe function
+
+desc function multiply(number, number);
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Desc,Function,Identifier,UdfSig(Lparen,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Comma,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen))),Smc))
+
+# Describe view
+
+describe view foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(View),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Describe integration
+
+describe api integration foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Api,Integration),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Describe network policy
+
+describe network policy foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Network,Policy),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Describe file format
+
+describe file format foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(File,Format),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Describe with desc keyword
+
+desc file format foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Desc,DescribeTargetSimple(File,Format),ObjName(IdentifierExt(Identifier)))),Smc))

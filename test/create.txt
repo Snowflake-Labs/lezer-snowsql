@@ -1,0 +1,110 @@
+# Create materialized view
+
+create materialized view foobar as select foo from bar; 
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateMaterializedView(Create,Materialized,View,Identifier,As,QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))))),Smc))
+
+
+# Create database
+
+create database mytestdb;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Database,Identifier,DbOp)),Smc))
+
+
+# Create account
+
+create account foobar admin_name = foo admin_password = 'TestPassword1' email = myemail@myorg.org  edition = enterprise;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Account,Identifier,Admin_name,Eql,Identifier,Admin_password,Eql,StringLiteral,Email,Eql,EmailAddr,Edition,Eql,Enterprise,AccountOptional)),Smc))
+
+
+# Create network policy
+
+create network policy foo allowed_ip_list=('1.1.1.0/24');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen)),Smc))
+
+
+# Create network policy with blocked ip list
+
+create network policy foo allowed_ip_list=('1.1.1.0/24') blocked_ip_list=('1.1.1.1');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen,Blocked_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen)),Smc))
+
+
+# Create storage integration 
+
+create storage integration gcs_int type = external_stage storage_provider = gcs enabled = true storage_allowed_locations = ('gcs://mybucket1/path1/', 'gcs://mybucket2/path2/');
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
+
+
+# Create storage integration with mutliple storage_allowed_locations
+
+
+CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integration TYPE=EXTERNAL_STAGE ENABLED=TRUE AZURE_TENANT_ID='DDD' STORAGE_ALLOWED_LOCATIONS=(
+  'AAA',
+  'BBB',
+  'CCC'
+)
+;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,IfNotExists(If,Not,Exists),ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Azure_tenant_id),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
+
+
+# Create api integration 
+
+create or replace api integration demonstration_external_api_integration_01 api_provider=aws_api_gateway api_aws_role_arn='arn:aws:iam::123456789012:role/my_cloud_account_role' api_allowed_prefixes=('https://xyz.execute-api.us-west-2.amazonaws.com/production') enabled=true;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,OptOrReplace(Or,Replace),IntegrationTypes(Api),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Api_provider),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Aws_api_gateway)))),KeyValueProperty(KeyName(Api_aws_role_arn),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Api_allowed_prefixes),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Rparen))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))))),Smc))
+
+
+# Create view 
+
+create view myview comment='Test view' as select col1, col2 from mytable;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateViewStmt(Create,View,ObjName(IdentifierExt(Identifier)),ViewOption(CommonCreateOption(WithKeyValueProperty(KeyValueProperty(KeyName(Comment),Eql,KeyValue(ListableKeyValue(StringLiteral)))))),ViewSpecification(As,SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))))),Smc))
+
+
+# Create stream
+
+create stream foo on table bar;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStreamStmt(Create,Stream,ObjName(IdentifierExt(Identifier)),On,Table,ObjName(IdentifierExt(Identifier)))),Smc))
+
+# Create stream with time travel
+
+create stream mystream on table mytable before (timestamp => to_timestamp(40*365*86400));
+
+==>
+
+SnowSQL(Stmts(Stmt(CreateStreamStmt(Create,Stream,ObjName(IdentifierExt(Identifier)),On,Table,ObjName(IdentifierExt(Identifier)),TimeTravelClause(Before,Lparen,Timestamp,Darw,ScalarExpression(ExpressionA(FunctionCall(ObjName(IdentifierExt(Identifier)),Lparen,FunctionArgs(FunctionArgExpression(ScalarExpression(ExpressionA(ExpressionA(ExpressionA(IntegerLiteral),Mul,ExpressionA(IntegerLiteral)),Mul,ExpressionA(IntegerLiteral))))),Rparen))),Rparen))),Smc))
+
+# Create pipe 
+
+create pipe foobar as copy into tablefoo from @mystage;
+
+==>
+
+SnowSQL(Stmts(Stmt(CreatePipeStmt(Create,Pipe,ObjName(IdentifierExt(Identifier)),PipeSpecification(As,CopyStmt(Copy,Into,ObjName(IdentifierExt(Identifier)),From,URLDefinition(URLIdentifier(StageNameIdentifier(Atr,URLPathComponent))))))),Smc))

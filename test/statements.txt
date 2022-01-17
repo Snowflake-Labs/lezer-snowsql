@@ -1,260 +1,3 @@
-# Simple select statement
-
-select * from foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Smc))
-
-
-# Select with fields
-
-select foo, bar from foobar;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Smc))
-
-# Select with where
-
-select foo from foobar where foobar = 11;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))),Smc))
-
-
-# Select with basic arithmetic expression
-
-select foo,bar from foobar where (foo + bar) > 3;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(Lparen,ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Rparen),Gtr,ExpressionA(IntegerLiteral)))))),Smc))
-
-# Select with basic arithmetic expression without parentheses
-
-select foo,bar from foobar where foo + bar > 3;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Plus,ExpressionA(ObjName(IdentifierExt(Identifier)))),Gtr,ExpressionA(IntegerLiteral)))))),Smc))
-
-# Select with where and string
-
-select foo, bar from foobar;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Smc))
-
-# Select with where and gte operator
-
-select foo from foobar where foo >= 50;
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Gte,ExpressionA(IntegerLiteral)))))),Smc))
-
-
-# Nested select statement
-
-select foo,bar from foobar where bar in (select foobar from foo WHERE barfoo = 'foobar'); 
-
-==>
-
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(StringLiteral))))),Rparen))))))),Smc))
-
-
-# Create materialized view
-
-create materialized view foobar comment= 'Test view' as select foo from bar; 
-
-==>
-
-SnowSQL(Stmts(Stmt(CreateMaterializedViewStmt(Create,Materialized,View,Identifier,Comment,Eql,StringLiteral,As,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier)))))),Smc))
-
-
-# Create database
-
-create database mytestdb;
- 
-==>
-
-SnowSQL(Stmts(Stmt(CreateStmt(Create,Database,Identifier,DbOp)),Smc))
-
-
-# Create account
-
-create account foobar admin_name = foo admin_password = 'TestPassword1' email = myemail@myorg.org  edition = enterprise;
- 
-==>
-
-SnowSQL(Stmts(Stmt(CreateStmt(Create,Account,Identifier,Admin_name,Eql,Identifier,Admin_password,Eql,StringLiteral,Email,Eql,EmailAddr,Edition,Eql,Enterprise,AccountOptional)),Smc))
-
-
-# Create netowrk policy
-
-create network policy foo allowed_ip_list=('1.1.1.0/24');
-
-==>
-
-SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen)),Smc))
-
-
-# Create netowrk policy with blocked ip list
-
-create network policy foo allowed_ip_list=('1.1.1.0/24') blocked_ip_list=('1.1.1.1');
-
-==>
-
-SnowSQL(Stmts(Stmt(CreateStmt(Create,Network,Policy,Identifier,Allowed_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen,Blocked_IP_List,Eql,Lparen,Sqt,IpA,Sqt,Rparen)),Smc))
-
-
-# Describe table
-
-describe table foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe stream
-
-describe stream foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Stream),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe function
-
-desc function multiply(number, number);
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Desc,Function,Identifier,UdfSig(Lparen,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Comma,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen))),Smc))
-
-# Describe view
-
-describe view foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(View),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe integration
-
-describe api integration foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Api,Integration),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe network policy
-
-describe network policy foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(Network,Policy),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe file format
-
-describe file format foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Describe,DescribeTargetSimple(File,Format),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Describe with desc keyword
-
-desc file format foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DescribeStmt(Desc,DescribeTargetSimple(File,Format),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Drop sequence
-
-drop sequence if exists foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Sequence),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Drop table
-
-drop table if exists foo cascade;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Table),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
-
-
-# Drop managed account
-
-drop managed account foo_bar;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetSimple(Managed,Account),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Drop warehouse
-
-drop warehouse foo;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Warehouse),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Drop procedure
-
-drop procedure add_accounting_user(varchar);
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,Procedure,ObjName(IdentifierExt(Identifier)),UdfSig(Lparen,UdfParam(NonUserDefinedType(StringType(Varchar))),Rparen))),Smc))
-
-
-# Drop tag if exists
-
-drop tag if exists foobar ;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Tag),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)))),Smc))
-
-
-# Drop schema, with cascade option
-
-drop schema myschema cascade;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
-
-
-# Drop sequence, with restrict option
-
-
-drop schema myschema cascade;
-
-==>
-
-SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
-
-
 # Commit
 
 commit;
@@ -370,35 +113,40 @@ grant all privileges on function mydb.myschema.add5(number) to role analyst;
 
 SnowSQL(Stmts(Stmt(GrantPrivilegesStmt(Grant,PrivilegePrefix(All,Privileges),On,PrivilegeObj(PrivilegeObjectType(Function),ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier),Dot,IdentifierExt(Identifier)),UdfTypeSig(Lparen,Types(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen)),To,Role,ObjName(IdentifierExt(Identifier)))),Smc))
 
-# Create storage integration 
+# Grant all privlegs on function
 
-create storage integration gcs_int type = external_stage storage_provider = gcs enabled = true storage_allowed_locations = ('gcs://mybucket1/path1/', 'gcs://mybucket2/path2/');
+grant all privileges on function mydb.myschema.add5(number) to role analyst;
+ 
+==>
+
+SnowSQL(Stmts(Stmt(GrantPrivilegesStmt(Grant,PrivilegePrefix(All,Privileges),On,PrivilegeObj(PrivilegeObjectType(Function),ObjName(IdentifierExt(Identifier),Dot,IdentifierExt(Identifier),Dot,IdentifierExt(Identifier)),UdfTypeSig(Lparen,Types(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen)),To,Role,ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+
+# Show terse 
+
+show terse schemas in database foobar;
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
+SnowSQL(Stmts(Stmt(ShowStmt(Show,Terse,Schemas,ShowInClause(In,Database,ObjName(IdentifierExt(Identifier))))),Smc))
 
 
-# Create storage integration with mutliple storage_allowed_locations
+# Show with like 
 
-CREATE STORAGE INTEGRATION IF NOT EXISTS azure_log_azeastus2prod_storage_integration TYPE=EXTERNAL_STAGE ENABLED=TRUE AZURE_TENANT_ID='DDD' STORAGE_ALLOWED_LOCATIONS=(
-  'AAA',
-  'BBB',
-  'CCC'
-)
-;
+show tables like 'myrole';
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,IntegrationTypes(Storage),Integration,IfNotExists(If,Not,Exists),ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Type),Eql,KeyValue(ListableKeyValue(IdentifierExtended(Identifier)))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))),KeyValueProperty(KeyName(Azure_tenant_id),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Identifier),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Comma,ListableKeyValue(StringLiteral),Rparen))))),Smc))
+SnowSQL(Stmts(Stmt(ShowStmt(Show,Tables,Like,StringLiteral)),Smc))
 
-# Create api integration 
+# Show with starts with option
 
-create or replace api integration demonstration_external_api_integration_01 api_provider=aws_api_gateway api_aws_role_arn='arn:aws:iam::123456789012:role/my_cloud_account_role' api_allowed_prefixes=('https://xyz.execute-api.us-west-2.amazonaws.com/production') enabled=true;
+show tables history like 'foo' in account starts with 'bar';
 
 ==>
 
-SnowSQL(Stmts(Stmt(CreateIntegrationStmt(Create,OptOrReplace(Or,Replace),IntegrationTypes(Api),Integration,ObjName(IdentifierExt(Identifier)),KeyValueProperty(KeyName(Api_provider),Eql,KeyValue(ListableKeyValue(KeyValuesExtended(Aws_api_gateway)))),KeyValueProperty(KeyName(Api_aws_role_arn),Eql,KeyValue(ListableKeyValue(StringLiteral))),KeyValueProperty(KeyName(Api_allowed_prefixes),Eql,KeyValue(KeyValueList(Lparen,ListableKeyValue(StringLiteral),Rparen))),KeyValueProperty(KeyName(Enabled),Eql,KeyValue(ListableKeyValue(BooleanValue(True)))))),Smc))
+SnowSQL(Stmts(Stmt(ShowStmt(Show,Tables,History,Like,StringLiteral,ShowInClause(In,ObjName(IdentifierExt(Identifier))),Starts,With,StringLiteral)),Smc))
 
 # Multiple queries
 
@@ -408,13 +156,100 @@ select foo from foobar where foobar = 11;
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Smc,Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))))),Smc,Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))),Smc))
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(IntegerLiteral)))))))),Smc))
 
 
-# Nested select query 16 levels
+# Insert into
 
-select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from (select * from foobar) as foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in (select foo,bar from foobar where bar in ( select foo,bar from foobar where bar in (select foobar from foo WHERE barfoo = 'foobar'))))))))))))))); 
+insert into foobar (colA, colB, colC) values
+    ('PosA', 'ObjA', 22), 
+    ('PosB', 'ObjB', 99),
+    ('PosC', 'ObjC', 91);
 
 ==>
 
-SnowSQL(Stmts(Stmt(SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(ParenSelectStmt(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(IdentifierExt(Identifier)))),Rparen),AliasClause(As,IdentifierExt(Identifier)))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),In,ExpressionA(SelectStmtParen(Lparen,SelectStmt(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(IdentifierExt(Identifier))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Eql,ExpressionA(StringLiteral))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen)))))),Rparen))))))),Smc))
+SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,ObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(ValuesDef(Values,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen),Comma,ValueList(Lparen,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(StringLiteral)),Comma,ScalarExpression(ExpressionA(IntegerLiteral)),Rparen))))),Smc))
+
+
+# Insert and select
+
+insert into foobar (a, b) select a, b from barfoo;
+
+==>
+
+SnowSQL(Stmts(Stmt(InsertStmt(Insert,Into,ObjName(IdentifierExt(Identifier)),Lparen,ColumnNameList(IdentifierExt(Identifier),Comma,IdentifierExt(Identifier)),Rparen,InsertSource(QueryStatementExpression(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier))))),Comma,SelectTarget(ScalarExpression(ExpressionA(ObjName(IdentifierExt(Identifier)))))),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier)))))))))))),Smc))
+
+
+# Copy from stage
+
+copy into foobar from @foo_bar_stage;
+
+==>
+
+SnowSQL(Stmts(Stmt(CopyStmt(Copy,Into,ObjName(IdentifierExt(Identifier)),From,URLDefinition(URLIdentifier(StageNameIdentifier(Atr,URLPathComponent))))),Smc))
+
+# Continues on new Line
+
+select
+*
+from
+foobar 
+where 
+foo
+< 
+4;
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))),WhereClause(Where,ScalarExpression(ExpressionA(ExpressionA(ObjName(IdentifierExt(Identifier))),Lss,ExpressionA(IntegerLiteral)))))))),Smc))
+
+# Statement without a semicolon
+
+describe table val
+
+==>
+
+SnowSQL(Stmts(Stmt(DescribeStmt(Describe,Table,ObjName(IdentifierExt(Identifier))))))
+
+# Empty statement
+
+;
+
+==>
+
+SnowSQL(Stmts(Smc))
+
+
+# Line comment
+
+-- a comment here
+
+==>
+
+SnowSQL(Stmts,LineComment)
+
+# Block comment
+
+/*
+a
+comment
+here
+*/
+
+==>
+
+SnowSQL(Stmts,BlockComment)
+
+
+
+# Comments between statments
+
+select * from foobar;
+-- a comment here
+select * from val;
+-- a comment here
+
+
+==>
+
+SnowSQL(Stmts(Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc,LineComment,Stmt(SelectStmt(SelectDefinition(SelectBase(Select,SelectTargetList(SelectTarget(Star)),FromClause(From,FromExpression(BaseFromExpression(TableObjectName(IdentifierExt(Identifier))))))))),Smc),LineComment)

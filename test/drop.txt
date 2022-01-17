@@ -1,0 +1,73 @@
+
+# Drop sequence
+
+drop sequence if exists foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Sequence),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Drop table
+
+drop table if exists foo cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Table),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
+
+
+# Drop managed account
+
+drop managed account foo_bar;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetSimple(Managed,Account),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Drop warehouse
+
+drop warehouse foo;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Warehouse),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Drop procedure
+
+drop procedure add_accounting_user(varchar);
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,Procedure,ObjName(IdentifierExt(Identifier)),UdfTypeSig(Lparen,Types(NonUserDefinedType(StringType(Varchar))),Rparen))),Smc))
+
+
+# Drop tag if exists
+
+drop tag if exists foobar ;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithIfExists(Tag),IfExists(If,Exists),ObjName(IdentifierExt(Identifier)))),Smc))
+
+
+# Drop schema, with cascade option
+
+drop schema myschema cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
+
+
+# Drop sequence, with restrict option
+
+
+drop schema myschema cascade;
+
+==>
+
+SnowSQL(Stmts(Stmt(DropStmt(Drop,DropTargetWithOptions(Schema),ObjName(IdentifierExt(Identifier)),DropOptions(Cascade))),Smc))
+
