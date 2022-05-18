@@ -1,7 +1,4 @@
 # lezer-snowsql
-
-<!-- [![CircleCI](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql.svg?style=shield)](https://circleci.com/gh/Snowflake-Labs/lezer-snowsql) [![NPM version](https://img.shields.io/npm/v/lezer-snowsql.svg)](https://www.npmjs.org/package/lezer-snowsql)
- -->
  
 ## Overview
 
