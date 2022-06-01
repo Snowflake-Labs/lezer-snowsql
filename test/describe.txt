@@ -23,7 +23,7 @@ desc function multiply(number, number);
 
 ==>
 
-SnowSQL(Stmts(Stmt(DescribeStmt(Desc,Function,Identifier,UdfSig(Lparen,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Comma,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen))),Smc))
+SnowSQL(Stmts(Stmt(DescribeStmt(Desc,Function,Identifier,UdfSig(Lparen,UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),UdfParam(NonUserDefinedType(NumberType(NumberAlias(Number)))),Rparen))),Smc))
 
 # Describe view
 

@@ -128,7 +128,7 @@ DropTargetWithOptions {
 
 GrantPrivilegesStmt {
 
-  Grant (PrivilegePrefix PrivilegeSuffix?) (Comma PrivilegePrefix PrivilegeSuffix?)* 
+  Grant (PrivilegePrefix PrivilegeSuffix?) (comma PrivilegePrefix PrivilegeSuffix?)* 
 
   On PrivilegeObj To (Share | Role)? ObjName (With Grant Option)? ((Revoke| Copy) Current Grants)? | 
 
@@ -139,7 +139,7 @@ GrantPrivilegesStmt {
 
 GrantRoleStmt {
 
-  Grant Role ObjName (Comma ObjName)* To (Role | User) ObjName
+  Grant Role ObjName (comma ObjName)* To (Role | User) ObjName
 
 }
 
@@ -221,8 +221,8 @@ CreateStmt  {
   Auto_refresh_materialized_views_on_secondary Eql (True | False) |
 
   //create network policy
-  Create  Network  Policy  Identifier  Allowed_IP_List Eql Lparen Sqt IpA Sqt (Comma Sqt IpA Sqt)* Rparen  
-  (Blocked_IP_List Eql Lparen  Sqt IpA Sqt (Comma Sqt IpA Sqt)* Rparen)? |
+  Create  Network  Policy  Identifier  Allowed_IP_List Eql Lparen Sqt IpA Sqt (comma Sqt IpA Sqt)* Rparen  
+  (Blocked_IP_List Eql Lparen  Sqt IpA Sqt (comma Sqt IpA Sqt)* Rparen)? |
 
   //Create Role
   Create OptOrReplace? Role IfNotExists? Identifier (Comment Eql StringLiteral)? |
@@ -325,14 +325,14 @@ SourceObjName {
 
 ColListCmt {
 
-  (Identifier (Comment StringLiteral)? )(Comma Identifier (Comment StringLiteral)? )*
+  (Identifier (Comment StringLiteral)? )(comma Identifier (Comment StringLiteral)? )*
 
 }
 
 
 CreateIntegrationStmt {
   
-  Create OptOrReplace? System? IntegrationTypes Integration IfNotExists? ObjName ((With)? KeyValueProperty (Comma? KeyValueProperty)*)?
+  Create OptOrReplace? System? IntegrationTypes Integration IfNotExists? ObjName ((With)? KeyValueProperty (comma? KeyValueProperty)*)?
 
 }
 
@@ -397,7 +397,7 @@ SelectBase {
 
 SelectTargetList{
 
-  SelectTarget (Comma SelectTarget)*
+  SelectTarget (comma SelectTarget)*
 
 }
 
@@ -420,18 +420,18 @@ WhereClause {
 
 GroupByClause {
       
-  Group By GroupByExpression (Comma GroupByExpression)*
+  Group By GroupByExpression (comma GroupByExpression)*
 
 }
 
 
 GroupByExpression {
 
-  (Grouping Sets| Rollup | Cube) Lparen GroupingSet (Comma GroupingSet)* Rparen |
+  (Grouping Sets| Rollup | Cube) Lparen GroupingSet (comma GroupingSet)* Rparen |
 
-  // Rollup Lparen GroupingSet (Comma GroupingSet)* Rparen |
+  // Rollup Lparen GroupingSet (comma GroupingSet)* Rparen |
 
-  // Cube Lparen GroupingSet (Comma GroupingSet)* Rparen |
+  // Cube Lparen GroupingSet (comma GroupingSet)* Rparen |
 
   ScalarExpression
 
@@ -440,7 +440,7 @@ GroupByExpression {
 
 GroupingSet {
 
-  Lparen (ScalarExpression (Comma ScalarExpression)*)? Rparen 
+  Lparen (ScalarExpression (comma ScalarExpression)*)? Rparen 
 
 }
 
@@ -461,7 +461,7 @@ QualifyClause {
 
 FromClause {
 
-  From FromExpression (Comma FromExpression)*
+  From FromExpression (comma FromExpression)*
 
 }
 
@@ -522,7 +522,7 @@ PipeOption {
 
 WithKeyValueProperty {
 
-  With? KeyValueProperty (Comma KeyValueProperty)*
+  With? KeyValueProperty (comma KeyValueProperty)*
       
 }
 
@@ -548,7 +548,7 @@ CopyStmt {
 
 ColumnNames {
 
-  Identifier (Dot Identifier)? (Comma (Identifier (Dot Identifier)?))*
+  Identifier (Dot Identifier)? (comma (Identifier (Dot Identifier)?))*
 
 }
 
@@ -609,7 +609,7 @@ BaseFromExpression {
 
 tableFunctionArgumentList {
 
-  NamedExpression ( Comma  NamedExpression )*
+  NamedExpression ( comma  NamedExpression )*
 
 }
 
@@ -626,14 +626,14 @@ TableObjectName {
 
 ValuesDef {
 
-  Values ValueList (!plus Comma ValueList)*
+  Values ValueList (!plus comma ValueList)*
 
 }
 
 
 ValueList {
 
-  Lparen ScalarExpression (Comma ScalarExpression)* Rparen 
+  Lparen ScalarExpression (comma ScalarExpression)* Rparen 
 
 }
 
@@ -680,7 +680,7 @@ TableFunctionIdentifier {
 
 TableFunctionArgumentList {
   
-  NamedExpression (Comma NamedExpression)*
+  NamedExpression (comma NamedExpression)*
         
 }
 
@@ -718,7 +718,7 @@ AliasClause {
 UnpivotClause {
 
   Unpivot Lparen ObjName For ObjName 
-  In Lparen Identifier (Comma Identifier)* Rparen Rparen
+  In Lparen Identifier (comma Identifier)* Rparen Rparen
 
 }
 
@@ -758,7 +758,7 @@ ColIdentifier {
 
 WithClause {
 
-  With Recursive? WithItem (Comma WithItem)* 
+  With Recursive? WithItem (comma WithItem)* 
 
 }
 
@@ -786,7 +786,7 @@ WithItemColumnList {
 
 AliasList {
 
-  IdentifierExt (Comma IdentifierExt)*
+  IdentifierExt (comma IdentifierExt)*
 
 }
 
@@ -834,8 +834,8 @@ CloneProvision {
 
 CreateManagedAccount {
 
-  Create Managed Account Identifier Admin_name Eql Identifier Comma Admin_password StringLiteral Comma
-  Type Eql Reader (Comma Comment Eql StringLiteral)? 
+  Create Managed Account Identifier Admin_name Eql Identifier comma Admin_password StringLiteral comma
+  Type Eql Reader (comma Comment Eql StringLiteral)? 
 
 }
 
@@ -852,7 +852,7 @@ CreateMaterializedView {
   Create OptOrReplace? (Secure)? Materialized View IfNotExists? Identifier  (Copy Grants)? 
   (Lparen ColListCmt Rparen)?
   (Comment Eql StringLiteral)?
-  (Cluster By Lparen (Identifier (Comma Identifier)*) Rparen)?
+  (Cluster By Lparen (Identifier (comma Identifier)*) Rparen)?
   As QueryStatementExpression 
 
   
@@ -974,7 +974,7 @@ WithTagClause {
 
 TagValuePairsList {
 
-  TagValuePair (Comma TagValuePair)*
+  TagValuePair (comma TagValuePair)*
 
 }
 
@@ -988,7 +988,7 @@ TagValuePair {
 
 TagNamesList {
 
-  ObjName (Comma ObjName)*
+  ObjName (comma ObjName)*
 
 }
 
@@ -1009,22 +1009,22 @@ ViewColumnSpecifications {
 
 ViewColumnSpecificationsWithConstraints {
 
-  Lparen ViewColumnSpecification (Comma ViewColumnSpecification)*
-  (Comma OutOfLineViewConstraintList)? Rparen
+  Lparen ViewColumnSpecification (comma ViewColumnSpecification)*
+  (comma OutOfLineViewConstraintList)? Rparen
 
 }
 
 
 OutOfLineViewConstraintList {
 
-  OutOfLineViewConstraint (Comma OutOfLineViewConstraint)*
+  OutOfLineViewConstraint (comma OutOfLineViewConstraint)*
 
 }
 
 
 ViewColumnSpecificationList {
 
-  ViewColumnSpecification (Comma ViewColumnSpecification)*
+  ViewColumnSpecification (comma ViewColumnSpecification)*
   
 }
 
@@ -1103,7 +1103,7 @@ OutOfLineTableConstraintProperties {
 
 OutOfLineTableConstraintList {
 
-  OutOfLineTableConstraint (Comma OutOfLineTableConstraint)*
+  OutOfLineTableConstraint (comma OutOfLineTableConstraint)*
 
 }
 
@@ -1131,7 +1131,7 @@ ColumnWithMaskingPolicyClause {
 
 ColumnNameOnlyList {
 
-  IdentifierExt (Comma IdentifierExt)*
+  IdentifierExt (comma IdentifierExt)*
 
 }
 
@@ -1255,7 +1255,7 @@ StagePathIdentifier {
 
 ColumnNameList {
 
-  (IdentifierExt (Dot IdentifierExt)?) (Comma (IdentifierExt (Dot Identifier)?))*
+  (IdentifierExt (Dot IdentifierExt)?) (comma (IdentifierExt (Dot Identifier)?))*
 
 
 }
@@ -1450,7 +1450,7 @@ KeyName {
 
 KeyNameList {
 
-  KeyName (Comma KeyName)* |
+  KeyName (comma KeyName)* |
   Enabled Eql (True | False)
 
 }
@@ -1463,7 +1463,7 @@ KeyValue {
   All | 
   Properties | 
   KeyValueList | 
-  Lparen Properties (Comma Properties)* Rparen |
+  Lparen Properties (comma Properties)* Rparen |
   URLIdentifier
 
 }
@@ -1479,14 +1479,14 @@ Properties {
 
 PropsList {
 
-  KeyValueProperty (Comma? KeyValueProperty)*
+  KeyValueProperty (comma? KeyValueProperty)*
 
 }
 
 
 KeyValueList {
 
-  Lparen ListableKeyValue (Comma ListableKeyValue)* Rparen | 
+  Lparen ListableKeyValue (comma ListableKeyValue)* Rparen | 
   Lparen Rparen
 
 }
@@ -1615,14 +1615,14 @@ FuncBody {
 
 UdfSig {
 
-  Lparen (UdfParam (Comma UdfParam)* )? Rparen
+  Lparen (UdfParam (comma UdfParam)* )? Rparen
 
 }
 
 
 UdfTypeSig {
 
-  Lparen (Types (Comma Types)* )? Rparen
+  Lparen (Types (comma Types)* )? Rparen
 
 }
 
@@ -1772,7 +1772,7 @@ LiteralKeyValueProperty {
 
 LiteralKeyPropsList {
 
- LiteralKeyValueProperty (Comma? LiteralKeyValueProperty)*
+ LiteralKeyValueProperty (comma? LiteralKeyValueProperty)*
 
 }
 
@@ -1847,7 +1847,7 @@ BinaryLiteral {
 CreateTableStmt {
 
   Create OptOrReplace? (((Local | Global)? Temporary? | Volatile) | Transient)?
-  Table (If Not Exists)? Identifier CTP (Cluster By (Identifier (Comma Identifier)*))?
+  Table (If Not Exists)? Identifier CTP (Cluster By (Identifier (comma Identifier)*))?
   StageFileFormat
   CreateTableExtra1
   CreateTableExtra2
@@ -1858,9 +1858,9 @@ CreateTableStmt {
 CTP {
 
   (Lparen Identifier Identifier (Collate Identifier )?
-  (Default Identifier | (Autoincrement | Identity) ((Identifier Comma Identifier) |
+  (Default Identifier | (Autoincrement | Identity) ((Identifier comma Identifier) |
   Start Identifier Increment Identifier)?)? (Not Null)?
-  (Identifier Identifier (Comma Identifier Identifier)*)?
+  (Identifier Identifier (comma Identifier Identifier)*)?
   Outoflineconstraint? Rparen)*
 
 }
@@ -1869,7 +1869,7 @@ CTP {
 CTP1 {
 
   Lparen Identifier Identifier (Collate Identifier )?
-  (Default Identifier | (Autoincrement | Identity) ((Identifier Comma Identifier) | Start Identifier Increment Identifier)? )?
+  (Default Identifier | (Autoincrement | Identity) ((Identifier comma Identifier) | Start Identifier Increment Identifier)? )?
   (Not Null)?
 
 }
@@ -1877,10 +1877,10 @@ CTP1 {
 
 Outoflineconstraint {
 
-  ((Constraint Identifier)? Unique (Lparen Identifier (Comma Identifier)* Rparen)? LineParams |
-  (Constraint Identifier)?  Primary Key (Lparen Identifier (Comma Identifier)* Rparen)? LineParams |
-  ((Constraint Identifier)? (Foreign Key)? (Lparen Identifier (Comma Identifier)* Rparen)?
-  References Identifier (Lparen Identifier (Comma Identifier)* Rparen)? FkParams LineParams))
+  ((Constraint Identifier)? Unique (Lparen Identifier (comma Identifier)* Rparen)? LineParams |
+  (Constraint Identifier)?  Primary Key (Lparen Identifier (comma Identifier)* Rparen)? LineParams |
+  ((Constraint Identifier)? (Foreign Key)? (Lparen Identifier (comma Identifier)* Rparen)?
+  References Identifier (Lparen Identifier (comma Identifier)* Rparen)? FkParams LineParams))
 
 }
 
@@ -1953,7 +1953,7 @@ FormattypeoptionsCsv {
   Escape_unenclosed_field Eql Identifier | None
   Trim_space Eql True | False
   Field_optionally_enclosed_by Eql Identifier | None
-  Null_if Eql (Identifier  (Comma Identifier)*)
+  Null_if Eql (Identifier  (comma Identifier)*)
   Error_on_column_count_mismatch Eql True | False
   Replace_invalid_characters Eql True | False
   Validate_utf8 Eql True | False
@@ -1972,7 +1972,7 @@ FormattypeoptionsJson {
   Timestamp_format Eql Identifier | Auto
   Binary_format Eql Hex | Base64 | Utf8
   Trim_space Eql True | False
-  Null_if Eql (Identifier  (Comma Identifier)*)
+  Null_if Eql (Identifier  (comma Identifier)*)
   File_extension Eql Identifier
   Enable_octal Eql True | False
   Allow_duplicate Eql True | False
@@ -1989,7 +1989,7 @@ FormattypeoptionsAvro {
 
   Compression Eql Auto | Gzip | Bz2 | Brotli | Zstd | Deflate | Raw_deflate | None
   Trim_space Eql True | False
-  Null_if Eql (Identifier  (Comma Identifier )*)
+  Null_if Eql (Identifier  (comma Identifier )*)
 
 }
 
@@ -1997,7 +1997,7 @@ FormattypeoptionsAvro {
 FormattypeoptionsOrc {
 
   Trim_space Eql True | False
-  Null_if Eql (Identifier  (Comma Identifier )*)
+  Null_if Eql (Identifier  (comma Identifier )*)
 
 }
 
@@ -2008,7 +2008,7 @@ FormattypeoptionsParquet {
   Snappy_compression Eql True | False
   Binary_as_text Eql True | False
   Trim_space Eql True | False
-  Null_if Eql (Identifier  (Comma Identifier )*)
+  Null_if Eql (Identifier  (comma Identifier )*)
 
 }
 
@@ -2069,7 +2069,7 @@ UserDefinedType {
 IntervalType {
 
   Interval 
-  IntervalPeriod (Lparen IntegerLiteral (Comma IntegerLiteral)? Rparen)? 
+  IntervalPeriod (Lparen IntegerLiteral (comma IntegerLiteral)? Rparen)? 
   (To IntervalPeriod (Lparen IntegerLiteral Rparen)?)?
 
 }
@@ -2145,7 +2145,7 @@ BinaryType {
 
 NumberType {
   
-  NumberAlias (Lparen NegatableIntegerLiteral (Comma NegatableIntegerLiteral)? Rparen)?
+  NumberAlias (Lparen NegatableIntegerLiteral (comma NegatableIntegerLiteral)? Rparen)?
 
 }
 
@@ -2332,7 +2332,7 @@ Inexpression {
 
 SqrIdentifier {
 
-  Lsqr ObjName (Comma ObjName)* Rsqr
+  Lsqr ObjName (comma ObjName)* Rsqr
 
 }
 
@@ -2395,7 +2395,7 @@ EscapeConstant {
 
 ScalarExpressionList {
 
-  Lparen ScalarExpression (Comma ScalarExpression)* Rparen
+  Lparen ScalarExpression (comma ScalarExpression)* Rparen
 
 }
 
@@ -2415,14 +2415,14 @@ IsDistinctFromOperator {
 
 FunctionOrderingClause {
 
-  Order By ColumnRefOrder (Comma ColumnRefOrder)*
+  Order By ColumnRefOrder (comma ColumnRefOrder)*
 
 }
 
 
 OrderByClause {
 
-  Order By ColumnRefOrder (Comma ColumnRefOrder)*
+  Order By ColumnRefOrder (comma ColumnRefOrder)*
 
 }
 
@@ -2470,7 +2470,7 @@ WindowFrameBetween {
 
 PartitionByList {
 
-  ScalarExpression (Comma ScalarExpression)*  | Lparen Rparen
+  ScalarExpression (comma ScalarExpression)*  | Lparen Rparen
   
 }
 
@@ -2559,14 +2559,14 @@ AnsiLiteral {
 
 ParenExpression  {
 
-  Lparen ScalarExpression (Comma ScalarExpression)* Rparen
+  Lparen ScalarExpression (comma ScalarExpression)* Rparen
 
 }
 
 
 ScalarExpressionOrList {
 
-  Lparen ScalarExpression (Comma ScalarExpression)* Rparen
+  Lparen ScalarExpression (comma ScalarExpression)* Rparen
 
 }
 
@@ -2587,7 +2587,7 @@ CaseExpression {
 
 ExplicitRowConstructorExpression {
 
-  Row Lparen ScalarExpression (Comma ScalarExpression)* Rparen
+  Row Lparen ScalarExpression (comma ScalarExpression)* Rparen
 
 }
 
@@ -2647,7 +2647,7 @@ OdbcEscapeAtom {
   Lcly D StringLiteral Rcly |
   Lcly T StringLiteral Rcly |
   Lcly Ts StringLiteral Rcly |
-  Lcly Fn OdbcFunctionNameIdentifier Lparen (ScalarExpression (Comma ScalarExpression)*)? Rparen Rcly |
+  Lcly Fn OdbcFunctionNameIdentifier Lparen (ScalarExpression (comma ScalarExpression)*)? Rparen Rcly |
   Lcly Fn Position Lparen BitwiseOrExpression  In ScalarExpression Rparen Rcly |
   Lcly Fn Extract Lparen IdentifierExt From ScalarExpression Rparen Rcly 
 
@@ -2679,7 +2679,7 @@ DistinctAll {
 FunctionArgs {
 
   (IdentifierExt Dot)? Star |
-  FunctionArgExpression (Comma FunctionArgExpression)*
+  FunctionArgExpression (comma FunctionArgExpression)*
 
 }
 
@@ -2889,7 +2889,7 @@ FunctionNameIdentifier {
   BitwiseAnd{"&"}
   Concat{"||"}
   Dcolon{"::"}
-  Comma {","}
+  comma {","}
   Atr { "@" }
 
 
