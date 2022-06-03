@@ -2882,49 +2882,38 @@ FunctionNameIdentifier {
 
 @external specialize {Identifier} specializeIdentifier from "./tokens" {
 
-  Access, Admin_name, Admin_password, After, All, Allow_duplicate, Allowed_IP_List, And, Any, Api_allowed_prefixes, Api_aws_role_arn,
-  Api_blocked_prefixes, Api_key, Api_provider, API, Api, Apply, Array, As, Asc, At, Attach, Auto_ingest,
-  Auto_refresh_materialized_views_on_secondary, Auto, Autoincrement, Avro, Aws_api_gateway, 
-  Aws_private_api_gateway, Azure_ad_application_id, Azure_api_management, Azure_tenant_id, Base64, Before, Begin, Bernoulli, Between, BigInt, Binary_as_text, 
-  Binary_format, Binary, Bit, Block, Blocked_IP_List, Boolean, Brotli, Business_critical, 
-  By, ByteInt, Bz2, Called, Caller, Cascade, Case_insensitive, Case_sensitive, Case, Cast, Change_tracking, Char, Character, Clone, Cluster,
-  Collate, Compression, Connect_by_root, Connect, Connection, Constraint, Continue, Copy,
-  Create, Credit_quota, Cross, Csv, Cube, Current, Cursor, Daily, Data_retention_time_in_days, Databases,
-  Date_format, Date, Datetime, Dec, Decimal, Declare, Default, Deferrable, Deferred, Deflate, Delete, Desc, Describe, Disable_auto_convert,
-  Disable_snowflake_data, Disable, Distinct, Do, Double, Drop, Edition, Else, Empty_field_as_null, 
-  Enable_octal, Enable, Encoding, End_timestamp, End, Enforce_length, Enforced, Enterprise, Error_on_column_count_mismatch, Escape_unenclosed_field, Escape, 
-  Except, Exception, Exchange, Execute, Execution, Exists, External, Extract, False, Fetch, Field_delimiter, Field_optionally_enclosed_by, File_extension, 
-  File, First, Float, Fn, Following, For, Force, Foreign, Format_name, Format, Formats, Frequency, From, Full, Function, Functions,
-  Future, Get, Global, Google_api_gateway, Google_audience, Grant, Grants, Group, Grouping, Gzip, Having,
-  Hex, History, If, Ignore_utf8_errors, Immediate, Immediately, Immutable, Import, Imported, In, Increment, Initiallly, Initially, 
-  Inner, Insert, Int, Integer, Integrations, Intersect, Interval, Into, Is, Join, Json, Label, Language, Last, Lateral, Like, Limit, List, 
-  Local, Lzo, Manage, Managed, Masking, Match_by_column_name, Match,
-  Max_data_extension_time_in_days, Modify, Monitor, Monthly, Must, Natural,
-  Network, Networks, Never, Next, No, None, Norely, Not, Notification, Notify, Novalidate, Null_if, Nulls, Number, Numeric, Object, Of, 
-  Offset, Oj, On_error, On, Only, Operate, Option, Or, Orc, Order, Outer, Over, Override, Overwrite, Ownership,
-  Parquet, Partial, Partition, Pipe, Pipes, Position, Preceding, Precision, Preserve_space, Primary, Prior, Privileges, Procedure, 
-  Procedures, Purge, Qualify, Range, Raw_deflate, Read, Reader, Real, Record_delimiter, Recursive, References,
-  Region_group, Rely, Repeatable, Replace_invalid_characters, Replace, Replica, Replication, Resource, Restrict, 
-  Restrictions, Return_failed_only,Returns, Revoke, Right, Rlike, Rollback, Rollup, Row, Rows, Sample, 
-  Schemas, Second, Secure, Seed, Select, Semi, Sequence, Sequences, Session, Set, Sets, Share, Show, Simple,
-  Size_limit, Skip_blank_lines, Skip_byte_order_mark, Skip_file, Skip_header, SmallInt, Snappy_compression, Snappy, Stage_copy_options, 
-  Stage_file_format, Stages, Standard, Start_timestamp, Start, Starts, Statement, 
-  Storage, Stream, Streams, Strict, String, Strip_null_values, Strip_outer_array, Strip_outer_element, Support, Suspend_immediate, Suspend,
-  System, T, Table, Tables, Tablesample, Task, Tasks, Temp, Template, Temporary, Terse, Then, Time_format, Time, Timestamp_format, Timestamp_ltz, Timestamp_ntz, Timestamp_tz,
-  Timestampltz, Timestampntz, Timestamptz, TinyInt, To, Top, Triggers, Trim_space, True, Truncate, Truncatecolumns, Try_cast, Ts, Unbounded, Union, Unique, Unpivot,
-  Update, Usage, Use, Using, Utf8, Validate_utf8, Validate, Values, Varbinary, Varchar,Variant, Varying, Volatile, 
-  Weekly, When, Where, With, Without, Xml,
-  Yearly, Zone, Zstd
+  Access, Admin_name, Admin_password, After, All, Allow_duplicate, Allowed_IP_List, And, Any, Api_allowed_prefixes, Api_aws_role_arn, Api_blocked_prefixes, 
+  Api_key, Api_provider, API, Api, Apply, Array, As, Asc, At, Attach, Auto_ingest, Auto_refresh_materialized_views_on_secondary, Auto, Autoincrement, Avro, 
+  Aws_api_gateway, Aws_private_api_gateway, Azure_ad_application_id, Azure_api_management, Azure_tenant_id, Base64, Before, Begin, Bernoulli, Between, BigInt,
+  Binary_as_text, Binary_format, Binary, Bit, Block, Blocked_IP_List, Boolean, Brotli, Business_critical, By, ByteInt, Bz2, Called, Caller, Cascade, 
+  Case_insensitive, Case_sensitive, Case, Cast, Change_tracking, Char, Character, Clone, Cluster, Collate, Compression, Connect_by_root, Connect, Connection, 
+  Constraint, Continue, Copy, Create, Credit_quota, Cross, Csv, Cube, Current, Cursor, Daily, Data_retention_time_in_days, Databases, Date_format, Date,
+  Datetime, Dec, Decimal, Declare, Default, Deferrable, Deferred, Deflate, Delete, Desc, Describe, Disable_auto_convert, Disable_snowflake_data, Disable, 
+  Distinct, Do, Double, Drop, Edition, Else, Empty_field_as_null, Enable_octal, Enable, Encoding, End_timestamp, End, Enforce_length, Enforced, Enterprise,
+  Error_on_column_count_mismatch, Escape_unenclosed_field, Escape, Except, Exception, Exchange, Execute, Execution, Exists, External, Extract, False, Fetch, 
+  Field_delimiter, Field_optionally_enclosed_by, File_extension, File, First, Float, Fn, Following, For, Force, Foreign, Format_name, Format, Formats, Frequency,
+  From, Full, Function, Functions, Future, Get, Global, Google_api_gateway, Google_audience, Grant, Grants, Group, Grouping, Gzip, Having, Hex, History, If,
+  Ignore_utf8_errors, Immediate, Immediately, Immutable, Import, Imported, In, Increment, Initiallly, Initially, Inner, Insert, Int, Integer, Integrations, 
+  Intersect, Interval, Into, Is, Join, Json, Label, Language, Last, Lateral, Like, Limit, List, Local, Lzo, Manage, Managed, Masking, Match_by_column_name,
+  Match, Max_data_extension_time_in_days, Modify, Monitor, Monthly, Must, Natural, Network, Networks, Never, Next, No, None, Norely, Not, Notification, Notify,
+  Novalidate, Null_if, Nulls, Number, Numeric, Object, Of, Offset, Oj, On_error, On, Only, Operate, Option, Or, Orc, Order, Outer, Over, Override, Overwrite, 
+  Ownership, Parquet, Partial, Partition, Pipe, Pipes, Position, Preceding, Precision, Preserve_space, Primary, Prior, Privileges, Procedure, Procedures, Purge, 
+  Qualify, Range, Raw_deflate, Read, Reader, Real, Record_delimiter, Recursive, References, Region_group, Rely, Repeatable, Replace_invalid_characters, Replace,
+  Replica, Replication, Resource, Restrict, Restrictions, Return_failed_only,Returns, Revoke, Right, Rlike, Rollback, Rollup, Row, Rows, Sample, Schemas, Second, 
+  Secure, Seed, Select, Semi, Sequence, Sequences, Session, Set, Sets, Share, Show, Simple, Size_limit, Skip_blank_lines, Skip_byte_order_mark, Skip_file, Skip_header, 
+  SmallInt, Snappy_compression, Snappy, Stage_copy_options, Stage_file_format, Stages, Standard, Start_timestamp, Start, Starts, Statement, Storage, Stream, Streams, 
+  Strict, String, Strip_null_values, Strip_outer_array, Strip_outer_element, Support, Suspend_immediate, Suspend, System, T, Table, Tables, Tablesample, Task, Tasks, 
+  Temp, Template, Temporary, Terse, Then, Time_format, Time, Timestamp_format, Timestamp_ltz, Timestamp_ntz, Timestamp_tz, Timestampltz, Timestampntz, Timestamptz, 
+  TinyInt, To, Top, Triggers, Trim_space, True, Truncate, Truncatecolumns, Try_cast, Ts, Unbounded, Union, Unique, Unpivot, Update, Usage, Use, Using, Utf8, 
+  Validate_utf8, Validate, Values, Varbinary, Varchar,Variant, Varying, Volatile, Weekly, When, Where, With, Without, Xml, Yearly, Zone, Zstd
 
 }
 
 
 @external extend {Identifier} extendIdentifier from "./tokens" {
 
-  Account, Action, Alter, Application, Azure, Channel, Columns, Comment, Commit, D, Data, Database, Day, Default_ddl_collation, 
-  Email, Enabled, First_name, Gcs, Hour, Identity, Ilike, Input, Integration, 
-  Key, Last_name, Left, Stage, Materialized, Month, Must_change_password, Null, Organization, Owner, 
-  Percent, Policies, Policy, Regexp, Region, Resume, Role, S3, Schema, Minute, Security, Tag, Text, Timestamp, Transient, Type, Url, 
-  User, View, Views, Warehouse, X, Year
+  Account, Action, Alter, Application, Azure, Channel, Columns, Comment, Commit, D, Data, Database, Day, Default_ddl_collation, Email, Enabled, First_name, Gcs, 
+  Hour, Identity, Ilike, Input, Integration, Key, Last_name, Left, Stage, Materialized, Month, Must_change_password, Null, Organization, Owner, Percent, Policies, 
+  Policy, Regexp, Region, Resume, Role, S3, Schema, Minute, Security, Tag, Text, Timestamp, Transient, Type, Url, User, View, Views, Warehouse, X, Year
 
 }
