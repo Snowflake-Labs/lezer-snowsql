@@ -1999,8 +1999,8 @@ FormattypeoptionsXml {
 
 CopyOptions {
 
-  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier |
-  )
+  On_error Eql (Continue | Skip_file | Skip_file Identifier | Skip_file Identifier |()
+)
   Size_limit Eql Identifier Purge Eql True | False
   Return_failed_only Eql True | False
   Match_by_column_name Eql Case_sensitive | Case_insensitive | None
